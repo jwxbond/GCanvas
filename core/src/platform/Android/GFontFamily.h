@@ -11,7 +11,7 @@
 
 #include "GFontStyle.h"
 
-#include <export.h>
+#include "GExport.h"
 #include <vector>
 
 namespace gcanvas

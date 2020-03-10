@@ -11,7 +11,7 @@
 
 #include "GGL.h"
 #include "GContext2dType.h"
-#include "export.h"
+#include "GExport.h"
 
 #include <cmath>
 #include <iostream>

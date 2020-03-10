@@ -10,7 +10,7 @@
 #ifndef GCANVAS_GCONVERT_H
 #define GCANVAS_GCONVERT_H
 
-#include "export.h"
+#include "GExport.h"
 #include "GPoint.h"
 
 #define GColorTransparent       GColorRGBA({0,0,0,0})

@@ -12,7 +12,7 @@
 #include <iostream>
 #include <list>
 #include <map>
-#include <export.h>
+#include "GExport.h"
 
 class GCanvasContext;
 

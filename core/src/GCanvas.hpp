@@ -11,7 +11,7 @@
 
 #include "gcanvas/GCanvas2dContext.h"
 #include "support/Log.h"
-#include "export.h"
+#include "GExport.h"
 
 namespace gcanvas
 {

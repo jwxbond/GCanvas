@@ -15,7 +15,7 @@
 #include "GCanvas2dContext.h"
 #include "support/DynArray.h"
 #include "support/Log.h"
-#include "export.h"
+#include "GExport.h"
 
 #ifdef ANDROID
 

@@ -17,7 +17,6 @@
         #define API_EXPORT
         #define API_LOCAL
     #endif
-
 #else
     #error "##### requires gcc version >= 4.0 #####"
 #endif
