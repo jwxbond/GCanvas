@@ -10,23 +10,112 @@ else()
 message("not core_dir default local build")
 set(CORE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../core/")
 endif()
-message(STATUS ${CORE_DIR})
+message(STATUS "CORE_DIR:${CORE_DIR}")
 project(canvas)
+
+
+ #Find system library
+ find_package(OpenGL REQUIRED)
+ message(STATUS "OpenGL library status:" )
+ message(STATUS "        version:" )
+ message(STATUS "        include path:${OPENGL_INCLUDE_DIR}")
+ message(STATUS "        library path:${OPENGL_LIBRARIES}")
+ include_directories(${OPENGL_INCLUDE_DIR})
+
+find_package(GLUT REQUIRED)
+ message(STATUS "GLUT library status:" )
+ message(STATUS "        version:" )
+ message(STATUS "        include path:${GLUT_INCLUDE_DIR}")
+ message(STATUS "        library path:${GLUT_LIBRARIES}")
+include_directories(${GLUT_INCLUDE_DIR})
+
+ find_package(Freetype)
+ if( Freetype_FOUND )
+  message(STATUS "Freetype library status:" )
+  message(STATUS "        include path:${FREETYPE_INCLUDE_DIR_freetype2}")
+  message(STATUS "        library path:${FREETYPE_LIBRARIES}")
+  include_directories(${FREETYPE_INCLUDE_DIR_freetype2})
+ endif()
+
+find_package(Boost)
+ if( Boost_FOUND )
+  message(STATUS "Boost library status:" )
+  message(STATUS "        include path:${Boost_INCLUDE_DIRS}")
+  message(STATUS "        library path:${Boost_LIBRARY_DIRS}")
+  include_directories(${Boost_INCLUDE_DIRS})
+ endif()
+
+
+if (APPLE)
+ find_package(GLFW3 REQUIRED)
+  if(GLFW3_FOUND)
+    message(STATUS "GLFW3 library status:" )
+    message(STATUS "            Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
+    include_directories(${GLFW3_INCLUDE_DIR})
+  endif()
+
+ find_package(JPEG REQUIRED)
+  if(JPEG_FOUND)
+    message(STATUS "JPEG library status:" )
+	  message(STATUS "                    include path:${JPEG_INCLUDE_DIR}")
+    message(STATUS "                    library path:${JPEG_LIBRARIES}")	
+    include_directories(${JPEG_INCLUDE_DIR})
+  endif()
+
+
+  find_package(PNG REQUIRED)
+  if(PNG_FOUND)
+    message(STATUS "PNG library status:" )
+	  message(STATUS "                    include path:${PNG_INCLUDE_DIR}")
+    message(STATUS "                    library path:${PNG_LIBRARIES}")	
+    include_directories(${PNG_INCLUDE_DIR})
+  endif()
+endif()
+
+
+ 
+ #Apple, need libEGL.dylib and libGLESv2.dylib
+ if (APPLE)
+   message(STATUS "Downloading http://uedmid-font.cn-hangzhou.oss.aliyun-inc.com/prebuilt/mac/ANGLE/libEGL.dylib")
+   file(DOWNLOAD
+     "http://uedmid-font.cn-hangzhou.oss.aliyun-inc.com/prebuilt/mac/ANGLE/libEGL.dylib"
+     "${CMAKE_BINARY_DIR}/libEGL.dylib"
+     EXPECTED_MD5 e0ad1ee3ddc43a2c41964c2b61bcebdc
+   )
+   message(STATUS "Downloading http://uedmid-font.cn-hangzhou.oss.aliyun-inc.com/prebuilt/mac/ANGLE/libGLESv2.dylib")
+   file(DOWNLOAD
+     "http://uedmid-font.cn-hangzhou.oss.aliyun-inc.com/prebuilt/mac/ANGLE/libGLESv2.dylib"
+     "${CMAKE_BINARY_DIR}/libGLESv2.dylib"
+     EXPECTED_MD5 15ed2d3fd297a91ec385ed1d3a2866a1
+   )
+ endif()
+
+
+# include_directories("/Users/jiangweixing/Documents/github/GCanvas_jwx/core/src")
+# include_directories("/Users/jiangweixing/Documents/github/GCanvas_jwx/core/src/platform/Linux/")
+
  
  # CMake JS
 include_directories(${CMAKE_JS_INC})
+
+if (APPLE)
+  include_directories("./third_party/angle/include")
+endif()
 
 include_directories("./util")
 include_directories("./third_party")
 include_directories("./third_party/font/freetype2/")
 include_directories("./renderContext/")
 
+message(STATUS "  include path CORE_DIR:${CORE_DIR}")
+
+
 include_directories("${CORE_DIR}")
-include_directories("${CORE_DIR}src/")
-include_directories("${CORE_DIR}src/gcanvas")
-include_directories("${CORE_DIR}src/support")
-include_directories("${CORE_DIR}src/platform/Android")
-include_directories("${CORE_DIR}src/platform/Linux")
+include_directories("${CORE_DIR}/src")
+include_directories("${CORE_DIR}/src/gcanvas")
+include_directories("${CORE_DIR}/src/support")
+include_directories("${CORE_DIR}/src/platform/Android")
+include_directories("${CORE_DIR}/src/platform/Linux")
 
 set(SOURCE_FILES 
         ./binding/Export.cc
@@ -58,7 +147,8 @@ set(SOURCE_FILES
         ${CORE_DIR}src/gcanvas/GTreemap.cpp
  
         # # platform srcs
-      
+        ${CORE_DIR}src/platform/Linux/FontTool.hpp
+
         ${CORE_DIR}src/platform/Linux/GFontManager.cpp
         ${CORE_DIR}src/platform/Linux/GFont.cpp
         ${CORE_DIR}src/platform/Linux/GFontCache.cpp
@@ -81,16 +171,31 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
-target_link_libraries(${PROJECT_NAME} 
-                      ${CMAKE_JS_LIB}
-                      GLESv2
-                      EGL
-                      atomic
-                      glfw
-                      freetype
-                      boost_system
-                      jpeg
-                      curl)
+if( APPLE )
+  target_link_libraries(${PROJECT_NAME} 
+                        ${CMAKE_JS_LIB}
+                        ${OPENGL_LIBRARIES}
+                        ${CMAKE_BINARY_DIR}/libEGL.dylib        #External Download
+                        ${CMAKE_BINARY_DIR}/libGLESv2.dylib     #External Download
+                        ${FREETYPE_LIBRARIES}
+                        ${Boost_LIBRARIES}
+                        glfw
+                        ${JPEG_LIBRARIES}
+                        curl
+                        "-framework GLUT"
+                        "-framework OpenGL")
+else()
+  target_link_libraries(${PROJECT_NAME} 
+                        ${CMAKE_JS_LIB}
+                        GLESv2
+                        EGL
+                        atomic
+                        glfw
+                        freetype
+                        boost_system
+                        jpeg
+                        curl)
+endif()
 
 # Include N-API wrappers
 execute_process(COMMAND node -p "require('node-addon-api').include"

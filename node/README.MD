@@ -61,6 +61,9 @@ RUN apt-get install libcurl4-openssl-dev libjpeg-dev
    case=app.js npm run test-headless//如果没有diplay(系统视窗)环境，可以运行这行
  ```
 
+##### MacOS
+brew install boost curl freetype libpng libjpeg
+
 ### GCanvas-node 使用文档
 
   * quick start

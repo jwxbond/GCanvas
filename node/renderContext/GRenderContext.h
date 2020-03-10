@@ -3,6 +3,7 @@
 #define GBACKEND_H
 #include <iostream>
 #include <GCanvas.hpp>
+#include <GGL.h>
 #include "lodepng.h"
 #include <functional>
 #include <unordered_map>

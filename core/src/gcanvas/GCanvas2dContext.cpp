@@ -286,8 +286,13 @@ void GCanvasContext::InitFBO()
     if (mFboMap.find(DefaultFboName) == mFboMap.end())
     {
         std::vector<GCanvasLog> logVec;
+        #ifdef __APPLE__
         mIsFboSupported = mFboMap[DefaultFboName].InitFBO(mWidth, mHeight,
                                                           mClearColor, false, &logVec);
+        #else
+        mIsFboSupported = mFboMap[DefaultFboName].InitFBO(mWidth, mHeight,
+                                                          mClearColor, true, &logVec);
+        #endif
         LOG_EXCEPTION_VECTOR(mHooks, mContextId.c_str(), logVec);
     }
 }

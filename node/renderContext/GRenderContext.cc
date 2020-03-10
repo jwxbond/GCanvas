@@ -1,7 +1,6 @@
 #include "GRenderContext.h"
 #include <fstream>
 #include <cmath>
-#include "GFrameBufferObject.h"
 #include "GLUtil.h"
 #include "Util.h"
 #include <EGL/egl.h>
@@ -30,11 +29,84 @@ GRenderContext::GRenderContext(int width, int height, int ratio)
     mCanvasHeight = height * mRatio;
 }
 
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+CGLContextObj gContext;
 void GRenderContext::initRenderEnviroment() 
+{
+    //context
+    CGLPixelFormatAttribute attributes[] = {
+        kCGLPFADoubleBuffer,
+        (CGLPixelFormatAttribute)0
+    };
+    CGLPixelFormatObj pixFormat;
+    GLint npix;
+
+    CGLChoosePixelFormat(attributes, &pixFormat, &npix);
+    assert(NULL!=pixFormat);
+
+    CGLCreateContext(pixFormat, NULL, &gContext);
+    CGLReleasePixelFormat(pixFormat);
+    assert(NULL!=gContext);
+    CGLSetCurrentContext(gContext);
+
+    // glEnable(GL_MULTISAMPLE);
+    // glEnable(GL_BLEND);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // glHint(GL_POINT_SMOOTH, GL_NICEST);
+    // glEnable(GL_POINT_SMOOTH);
+
+    // glHint(GL_LINE_SMOOTH, GL_NICEST);
+    // glEnable(GL_LINE_SMOOTH);
+
+    // glHint(GL_POLYGON_SMOOTH, GL_NICEST);
+    // glEnable(GL_POLYGON_SMOOTH);
+
+    glViewport(0, 0, mWidth, mHeight);
+    printf("[VideoRenderOpenGL] glViewport(0,0,%d, %d)\n", mWidth, mHeight);
+
+    glGenFramebuffers(1, &mFboId);
+    glBindFramebuffer(GL_FRAMEBUFFER, mFboId);
+
+    glGenRenderbuffers(1, &mRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, mRenderBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB565, mCanvasWidth, mCanvasHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, mRenderBuffer);
+    glGenRenderbuffers(1, &mDepthRenderbuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, mDepthRenderbuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, mCanvasWidth, mCanvasHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderbuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderbuffer);
+
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+    {
+        printf("Problem with OpenGL framebuffer after specifying color render buffer: n%xn", status);
+    }
+    else
+    {
+        printf("FBO create success %p, fboId=%d, renderbufferId=%d depthbufferId=%d\n", this, mFboId, mRenderBuffer, mDepthRenderbuffer);
+        // printf("FBO creation succeddedn \n ");
+    }
+
+    GLint format = 0, type = 0;
+    glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT, &format);
+    glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &type);
+    this->initCanvas();
+
+    g_RenderContextVC.push_back(this);
+
+}
+
+#else
+
+void GRenderContext::initRenderEnviroment()
 {
 #ifdef CONTEXT_ES20
     EGLint ai32ContextAttribs[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
 #endif
+
 
     // Step 1 - Get the default display.
     if( !g_eglDisplay )
@@ -50,12 +122,27 @@ void GRenderContext::initRenderEnviroment()
     eglBindAPI(EGL_OPENGL_ES_API);
 
     // Step 4 - Specify the required configuration attributes.
-    EGLint pi32ConfigAttribs[5];
-    pi32ConfigAttribs[0] = EGL_SURFACE_TYPE;
-    pi32ConfigAttribs[1] = EGL_WINDOW_BIT;
-    pi32ConfigAttribs[2] = EGL_RENDERABLE_TYPE;
-    pi32ConfigAttribs[3] = EGL_OPENGL_ES2_BIT;
-    pi32ConfigAttribs[4] = EGL_NONE;
+    #ifdef __APPLE__
+        // EGLint pi32ConfigAttribs[] = { 
+        //     EGL_SURFACE_TYPE, EGL_PIXMAP_BIT,
+        // EGL_BLUE_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_RED_SIZE, 8, EGL_NONE,
+        // EGL_BIND_TO_TEXTURE_RGBA, EGL_TRUE };
+
+        EGLint pi32ConfigAttribs[] = {
+            EGL_BUFFER_SIZE,    8, EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER,
+            EGL_DEPTH_SIZE,     8, EGL_RENDERABLE_TYPE,   EGL_OPENGL_ES2_BIT,
+            EGL_SAMPLE_BUFFERS, 1, EGL_SAMPLES,           4,
+            EGL_STENCIL_SIZE,   8, EGL_SURFACE_TYPE,      EGL_PBUFFER_BIT,
+            EGL_NONE,
+        };
+    #else
+        EGLint pi32ConfigAttribs[5];
+        pi32ConfigAttribs[0] = EGL_SURFACE_TYPE;
+        pi32ConfigAttribs[1] = EGL_WINDOW_BIT;
+        pi32ConfigAttribs[2] = EGL_RENDERABLE_TYPE;
+        pi32ConfigAttribs[3] = EGL_OPENGL_ES2_BIT;
+        pi32ConfigAttribs[4] = EGL_NONE;
+    #endif
 #else
     EGLint pi32ConfigAttribs[3];
     pi32ConfigAttribs[0] = EGL_SURFACE_TYPE;
@@ -71,7 +158,7 @@ void GRenderContext::initRenderEnviroment()
 
     if (iConfigs != 1)
     {
-        printf("Error: eglChooseConfig(): config not found \n");
+        printf("Error: eglChooseConfig(): config not found, eglGetError()=%d \n", eglGetError());
         exit(-1);
     }
 
@@ -127,6 +214,8 @@ void GRenderContext::initRenderEnviroment()
     g_RenderContextVC.push_back(this);
 
 }
+
+#endif
 
 void GRenderContext::initCanvas()
 {

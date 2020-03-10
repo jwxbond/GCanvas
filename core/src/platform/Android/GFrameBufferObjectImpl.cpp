@@ -16,10 +16,11 @@
 
 #include <EGL/egl.h>
 
+#ifndef __APPLE__
 /* OpenGL ES extension functions. */
 PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMGPROC glFramebufferTexture2DMultisampleEXT = NULL;
 PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC glRenderbufferStorageMultisampleEXT = NULL;
-
+#endif
 
 #define OES_PACKED_DEPTH_STENCIL "GL_OES_packed_depth_stencil"
 
@@ -54,20 +55,30 @@ bool GFrameBufferObject::InitFBO(int width, int height, GColorRGBA color, bool e
         }
         // 默认samples为4，是否需要处理？
         support_render_texture_msaa = extension_available("GL_EXT_multisampled_render_to_texture");
+        #ifndef __APPLE__
         glFramebufferTexture2DMultisampleEXT = (PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMGPROC) eglGetProcAddress(
                 "glFramebufferTexture2DMultisampleEXT");
         if (!glFramebufferTexture2DMultisampleEXT) {
             LOG_E("Couldn't get function pointer to glFramebufferTexture2DMultisampleEXT()");
             support_render_texture_msaa = false;
         }
+        #else
+            support_render_texture_msaa = false;
+        #endif
 
+
+        #ifndef __APPLE__
         glRenderbufferStorageMultisampleEXT = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC) eglGetProcAddress(
                 "glRenderbufferStorageMultisampleEXT");
+        
         if (!glRenderbufferStorageMultisampleEXT) {
             LOG_E("Couldn't get function pointer to glRenderbufferStorageMultisampleEXT()");
             support_render_texture_msaa = false;
         }
-
+        #else
+            support_render_texture_msaa = false;
+        #endif
+        
         if (!support_render_texture_msaa)
         {
             AppendErrorLogInfo(errVec, "gl_render_to_texture_msaa_not_support", "<function:%s, glGetError:%x>", __FUNCTION__, glGetError());
