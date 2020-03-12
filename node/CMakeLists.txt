@@ -15,7 +15,9 @@ project(canvas)
 
 
  #Find system library
- find_package(OpenGL REQUIRED)
+if (APPLE)
+
+find_package(OpenGL REQUIRED)
  message(STATUS "OpenGL library status:" )
  message(STATUS "        version:" )
  message(STATUS "        include path:${OPENGL_INCLUDE_DIR}")
@@ -45,8 +47,6 @@ find_package(Boost)
   include_directories(${Boost_INCLUDE_DIRS})
  endif()
 
-
-if (APPLE)
  find_package(GLFW3 REQUIRED)
   if(GLFW3_FOUND)
     message(STATUS "GLFW3 library status:" )
@@ -90,10 +90,6 @@ endif()
    )
  endif()
 
-
-# include_directories("/Users/jiangweixing/Documents/github/GCanvas_jwx/core/src")
-# include_directories("/Users/jiangweixing/Documents/github/GCanvas_jwx/core/src/platform/Linux/")
-
  
  # CMake JS
 include_directories(${CMAKE_JS_INC})
@@ -105,6 +101,7 @@ endif()
 include_directories("./util")
 include_directories("./third_party")
 include_directories("./third_party/font/freetype2/")
+
 include_directories("./renderContext/")
 
 message(STATUS "  include path CORE_DIR:${CORE_DIR}")
@@ -154,6 +151,8 @@ set(SOURCE_FILES
         ${CORE_DIR}src/platform/Linux/GFontCache.cpp
         ${CORE_DIR}src/platform/Linux/GSystemFontInformation.cpp
         ${CORE_DIR}src/platform/Linux/GFontFamily.cpp
+        
+
         #linux can reuse the android GCanvas2DContextImpl/GFrameBufferObjectImpl
         ${CORE_DIR}src/platform/Android/GCanvas2DContextImpl.cpp
         ${CORE_DIR}src/platform/Android/GFrameBufferObjectImpl.cpp
