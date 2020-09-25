@@ -222,16 +222,17 @@ void Context2DImplGCanvas::translate(float tx, float ty)
 std::string Context2DImplGCanvas::GetFillColor()
 {
     GCanvasState *state = mGCanvasContext->GetCurrentState();
-    state->mFillColor;
+    std::string color = nullptr;
+     if ( state)
+    {
+            color =  gcanvas::ColorToString( state->mFillColor );
+    }
+    return color;
 }
+
 void Context2DImplGCanvas::SetFillColor(std::string v) 
 {
-    GCanvasState *state = mGCanvasContext->GetCurrentState();
-    if ( state)
-    {
-        // state->mFillColor = ;
-    }
-    
+    mGCanvasContext->SetFillStyle(v.c_str());
 }
 
 void* Context2DImplGCanvas::GetFillStyle()
@@ -254,29 +255,60 @@ void Context2DImplGCanvas::SetStrokeStyle(const void* v)
 
 float Context2DImplGCanvas::GetGlobalAlpha()
 {
-
+    return mGCanvasContext->GlobalAlpha();
 }
 void Context2DImplGCanvas::SetGlobalAlpha(float alpha)
 {
-
+    mGCanvasContext->SetGlobalAlpha(alpha);
 }
 
 std::string  Context2DImplGCanvas::GetGlobalCompositeOperation()
 {
+    GCompositeOperation op =  mGCanvasContext->GlobalCompositeOperation();
+    switch (op)
+    {
+    case COMPOSITE_OP_SOURCE_ATOP: return "source-atop";
+    case COMPOSITE_OP_SOURCE_OUT: return "source-out";
+    case COMPOSITE_OP_SOURCE_IN:  return "source-in";
+    case COMPOSITE_OP_DESTINATION_OVER: return "destination-over";
+    case COMPOSITE_OP_DESTINATION_ATOP: return "destination-atop";
+    case COMPOSITE_OP_DESTINATION_OUT: return "destination-out";
+    case COMPOSITE_OP_LIGHTER: return "lighter";
+    case COMPOSITE_OP_COPY: return "copy";
+    case COMPOSITE_OP_XOR: return "xor";
 
+    default:
+         return "source-over";
+    }
 }
 void Context2DImplGCanvas::SetGlobalCompositeOperation(std::string v)
 {
+    GCompositeOperation op =  COMPOSITE_OP_SOURCE_OVER;
 
+    if( v == "source-over" ) op = COMPOSITE_OP_SOURCE_OVER;
+    else if( v ==  "source-atop") op = COMPOSITE_OP_SOURCE_ATOP;
+    else if( v ==  "source-in") op =  COMPOSITE_OP_SOURCE_IN;
+    else if( v ==   "source-out") op = COMPOSITE_OP_SOURCE_OUT;
+    else if(  v == "destination-over") op = COMPOSITE_OP_DESTINATION_OVER;
+    else if( v == "destination-atop" ) op = COMPOSITE_OP_DESTINATION_ATOP;
+    else if( v == "destination-out" ) op = COMPOSITE_OP_DESTINATION_OUT;
+    else if( v == "lighter" ) op = COMPOSITE_OP_LIGHTER;
+    else if( v == "copy" ) op = COMPOSITE_OP_COPY;
+    else if( v == "xor" ) op = COMPOSITE_OP_XOR;
+
+    mGCanvasContext->SetGlobalCompositeOperation(op);
 }
     
 std::string Context2DImplGCanvas::GetLineCap()
 {
-
+    GLineCap cap =  mGCanvasContext->LineCap();
+    if( cap == LINE_CAP_ROUND) return "round";
+    else if( cap == LINE_CAP_SQUARE ) return "square";
+    else return "butter";
 }
 void Context2DImplGCanvas::SetLineCap(std::string  v)
 {
-
+    mGCanvasContext->SetLineCap(  v.c_str() );
 }
 
 void* Context2DImplGCanvas::GetLineDashOffset()
@@ -290,36 +322,47 @@ void Context2DImplGCanvas::SetLineDashOffset(const void* v)
 
  std::string Context2DImplGCanvas::GetLineJoin()
 {
-
+    GLineJoin join =  mGCanvasContext->LineJoin();
+    if( join == LINE_JOIN_BEVEL) return "bevel";
+    else if( join == LINE_JOIN_ROUND ) return "round";
+    else return "miter";
 }
+
 void Context2DImplGCanvas::SetLineJoin( std::string v)
 {
+    mGCanvasContext->SetLineJoin(  v.c_str() );
 
 }
 float Context2DImplGCanvas::GetlineWidth()
 {
-
+    return mGCanvasContext->LineWidth();
 }
 void Context2DImplGCanvas::SetLineWidth(float v)
 {
-
+    mGCanvasContext->SetLineWidth(v);
 }
 float Context2DImplGCanvas::GetMiterLimit()
 {
-
+        return mGCanvasContext->MiterLimit();
 }
 void Context2DImplGCanvas::SetMiterLimit(float v)
 {
-
+    mGCanvasContext->SetMiterLimit(v);
 }
 
 float Context2DImplGCanvas::GetShadowBlur()
 {
-
+     float v = 0.0;
+    GCanvasState* state = mGCanvasContext->GetCurrentState();
+    if (state)
+    {
+        v =  state->mShadowBlur;
+    }
+    return v;
 }
 void Context2DImplGCanvas::SetShadowBlur(float v)
 {
-
+    mGCanvasContext->SetShadowBlur(v);
 }
 std::string Context2DImplGCanvas::GetShadowColor()
 {
@@ -331,7 +374,13 @@ void Context2DImplGCanvas::SetShadowColor(std::string v)
 }
 float Context2DImplGCanvas::GetShadowOffsetX()
 {
-
+    float v = 0.0;
+    GCanvasState* state = mGCanvasContext->GetCurrentState();
+    if (state)
+    {
+        v =  state->mShadowOffsetX;
+    }
+    return v;
 }
 void Context2DImplGCanvas::SetShadowOffsetX(float v)
 {
@@ -339,7 +388,13 @@ void Context2DImplGCanvas::SetShadowOffsetX(float v)
 }
 float Context2DImplGCanvas::GetShadowOffsetY()
 {
-
+    float v = 0.0;
+    GCanvasState* state = mGCanvasContext->GetCurrentState();
+    if (state)
+    {
+        v =  state->mShadowOffsetY;
+    }
+    return v;
 }
 void Context2DImplGCanvas::SetShadowOffsetY(float v)
 {
