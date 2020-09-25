@@ -14,7 +14,6 @@
 #include "lodepng.h"
 #include <functional>
 #include <unordered_map>
-#include <unordered_map>
 #include "GConvert.h"
 #include "GWebGLRenderContext.hpp"
 #include "NodeBindingUtil.h"

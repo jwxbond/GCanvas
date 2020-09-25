@@ -16,10 +16,14 @@ project(canvas)
  # CMake JS
 include_directories(${CMAKE_JS_INC})
 
+
+include_directories("./binding")
 include_directories("./binding/util")
+include_directories("./binding/renderContext")
+include_directories("./binding/renderContext/gcanvas")
+include_directories("./binding/renderContext/cario")
 include_directories("./third_party")
 include_directories("./third_party/font/freetype2/")
-include_directories("./binding/renderContext/")
 include_directories("./image/")
 
 include_directories("${CORE_DIR}")
@@ -51,6 +55,7 @@ set(SOURCE_FILES
         ./binding/webgl/WebGLActiveInfo.cc
         ./binding/webgl/WebGLUniformLocation.cc
         ./binding/renderContext/GRenderContext.cc
+        ./binding/renderContext/gcanvas/Context2DImplGCanvas.cc
         ./binding/util/NodeBindingUtil.cc
         ./third_party/lodepng.cc
         ${CORE_DIR}src/GCanvas.cpp        
