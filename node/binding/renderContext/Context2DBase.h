@@ -13,6 +13,7 @@
 #include <iostream>
 #include <unordered_map>
 #include "ImageDataBase.h"
+#include "ImageBase.h"
 #include "PatternBase.h"
 #include "GradientBase.h"
 
@@ -36,17 +37,19 @@ class Context2DBase {
     virtual GradientBase* createLinearGradient() = 0;
     virtual PatternBase* createPattern() = 0;
     virtual GradientBase* createRadialGradient() = 0;
-    virtual void drawImage() = 0;
+    virtual void drawImage(ImageBase *image, float dx, float dy) = 0;
+    virtual void drawImage(ImageBase *image, float dx, float dy, float dw, float dh) = 0;
+    virtual void drawImage(ImageBase *image, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh) = 0;
     virtual void fill(std::string rule) = 0;
     virtual void fillRect(float x, float y, float w, float h);
     virtual void fillText(const char * text, float x, float y, float maxWidth) = 0;
     virtual ImageDataBase* GetImageData() = 0;
     virtual void* GetLineDash() = 0;
     virtual void lineTo(float x, float y) = 0;
-    virtual void* measureText(const char * text) = 0;
+    virtual float measureText(const char * text) = 0;
     virtual void moveTo(float x, float y) = 0;
     virtual void putImageData(ImageDataBase *data, int x,  int y, int w, int h, int dx, int dy, int dw, int dh ) = 0;
-    virtual void quadraticCurveTo() = 0;
+    virtual void quadraticCurveTo(float cpx, float cpy, float x, float y) = 0;
     virtual void rect(float x, float y, float w, float h) = 0;
     virtual void restore() = 0;
     virtual void rotate(float angle) = 0;
@@ -65,11 +68,14 @@ class Context2DBase {
     virtual std::string GetFillColor() = 0;
     virtual void SetFillColor(std::string v)  = 0;
 
+
+    virtual StyleType GetFillStyleType() = 0;
     virtual void* GetFillStyle() = 0;
-    virtual void SetFillStyle(const void* v)  = 0;
-    
+    virtual void SetFillStyle(const void* v, StyleType stype) = 0;
+
+    virtual StyleType GetStrokeStyleType() = 0;
     virtual void* GetStrokeStyle() = 0;
-    virtual void SetStrokeStyle(const void* v) = 0;
+    virtual void SetStrokeStyle(const void* v, StyleType stype) = 0;
 
     virtual float GetGlobalAlpha() = 0;
     virtual void SetGlobalAlpha(float alpha) = 0;
@@ -80,8 +86,8 @@ class Context2DBase {
     virtual std::string GetLineCap() = 0;
     virtual void SetLineCap(std::string  v);
 
-    virtual void* GetLineDashOffset() = 0;
-    virtual void SetLineDashOffset(const void* v ) = 0;
+    virtual float GetLineDashOffset() = 0;
+    virtual void SetLineDashOffset(float v ) = 0;
     virtual  std::string GetLineJoin() = 0;
     virtual void SetLineJoin( std::string v) = 0;
     virtual float GetlineWidth() = 0;
@@ -99,7 +105,7 @@ class Context2DBase {
     virtual void SetShadowOffsetY(float v) = 0;
 
     virtual std::string GetFont() = 0;
-    virtual void SetFont(const void* v)  = 0;
+    virtual void SetFont(const std::string &v)  = 0;
     virtual std::string GetTextAlign() = 0;
     virtual void SetTextAlign(std::string v) = 0;
     virtual std::string GetTextBaseline() = 0;

@@ -14,6 +14,15 @@
 
 namespace NodeBinding 
 {
+
+typedef enum {
+  PATTERN_NO_REPEAT,
+  PATTERN_REPEAT,
+  PATTERN_REPEAT_X,
+  PATTERN_REPEAT_Y
+} PatternRepeatType;
+
+
 class PatternBase {
     
 };

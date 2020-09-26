@@ -11,6 +11,8 @@
 #define CONTEXT2DIMPLGCANVAS_H
 
 #include "Context2DBase.h"
+#include "ImageDataBase.h"
+#include "ImageBase.h"
 
 #include <GCanvas.hpp>
 #include <gcanvas/GCanvas2dContext.h>
@@ -23,7 +25,16 @@
 
 namespace NodeBinding
 {
-     class Context2DImplGCanvas : public Context2DBase  
+
+    typedef enum {
+        STYLE_TYPE_COLOR,
+        STYLE_TYPE_PATTERN,
+        STYLE_TYPE_GRADIENT_LINEAR,
+        STYLE_TYPE_GRADIENT_RADIAL
+    } StyleType;
+
+
+    class Context2DImplGCanvas : public Context2DBase  
     {
     public:
         Context2DImplGCanvas();
@@ -48,17 +59,19 @@ namespace NodeBinding
         virtual GradientBase* createLinearGradient();
         virtual PatternBase* createPattern();
         virtual GradientBase* createRadialGradient();
-        virtual void drawImage();
+        virtual void drawImage(ImageBase *image, float dx, float dy);
+        virtual void drawImage(ImageBase *image, float dx, float dy, float dw, float dh);
+        virtual void drawImage(ImageBase *image, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh);
         virtual void fill(std::string rule);
         virtual void fillRect(float x, float y, float w, float h);
         virtual void fillText(const char * text, float x, float y, float maxWidth);
         virtual ImageDataBase* GetImageData();
         virtual void* GetLineDash();
         virtual void lineTo(float x, float y);
-        virtual void* measureText(const char * text);
+        virtual float measureText(const char * text);
         virtual void moveTo(float x, float y);
         virtual void putImageData(ImageDataBase *data, int x,  int y, int w, int h, int dx, int dy, int dw, int dh );
-        virtual void quadraticCurveTo();
+        virtual void quadraticCurveTo(float cpx, float cpy, float x, float y);
         virtual void rect(float x, float y, float w, float h);
         virtual void restore();
         virtual void rotate(float angle);
@@ -75,13 +88,15 @@ namespace NodeBinding
 
         // 2D property
         virtual std::string GetFillColor();
-        virtual void SetFillColor(std::string v) ;
+        virtual void SetFillColor(std::string v);
 
+        virtual StyleType GetFillStyleType();
         virtual void* GetFillStyle();
-        virtual void SetFillStyle(const void* v) ;
-        
+        virtual void SetFillStyle(const void* v, StyleType stype);
+
+        virtual StyleType GetStrokeStyleType();
         virtual void* GetStrokeStyle();
-        virtual void SetStrokeStyle(const void* v);
+        virtual void SetStrokeStyle(const void* v, StyleType stype);
 
         virtual float GetGlobalAlpha();
         virtual void SetGlobalAlpha(float alpha);
@@ -92,8 +107,8 @@ namespace NodeBinding
         virtual std::string GetLineCap();
         virtual void SetLineCap(std::string  v);
 
-        virtual void* GetLineDashOffset();
-        virtual void SetLineDashOffset(const void* v );
+        virtual float GetLineDashOffset();
+        virtual void SetLineDashOffset(float v);
         virtual  std::string GetLineJoin();
         virtual void SetLineJoin( std::string v);
         virtual float GetlineWidth();
@@ -111,7 +126,7 @@ namespace NodeBinding
         virtual void SetShadowOffsetY(float v);
 
         virtual std::string GetFont();
-        virtual void SetFont(const void* v) ;
+        virtual void SetFont(const std::string &v);
         virtual std::string GetTextAlign();
         virtual void SetTextAlign(std::string v);
         virtual std::string GetTextBaseline();
@@ -125,6 +140,9 @@ namespace NodeBinding
         int mWidth;
         int mHeight;
         float mRatio;
+
+        StyleType mFillStyleType;
+        StyleType mStrokeStyleType;
 
         // std::shared_ptr<gcanvas::GCanvas> mGCanvas;
         // std::shared_ptr<GCanvasContext> mGCanvasContext;
