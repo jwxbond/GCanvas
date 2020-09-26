@@ -54,7 +54,7 @@ private:
     void setOnErrorCallback(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getWidth(const Napi::CallbackInfo &info);
     Napi::Value getHeight(const Napi::CallbackInfo &info);
-    int textureId=-1;
+    int mTextureId=-1;
 };
 } // namespace NodeBinding
 
