@@ -17,21 +17,21 @@ Gradient::Gradient(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Gradient>(
 {
     if (info.Length() == 4)
     {
-        this->mLinearGradientInfo = std::make_shared<LinearGradientInfo>();
-        this->mLinearGradientInfo->startX = info[0].As<Napi::Number>().FloatValue();
-        this->mLinearGradientInfo->startY = info[1].As<Napi::Number>().FloatValue();
-        this->mLinearGradientInfo->endX = info[2].As<Napi::Number>().FloatValue();
-        this->mLinearGradientInfo->endY = info[3].As<Napi::Number>().FloatValue();
+        mLinearGradientInfo = std::make_shared<LinearGradientInfo>();
+        mLinearGradientInfo->startX = info[0].As<Napi::Number>().FloatValue();
+        mLinearGradientInfo->startY = info[1].As<Napi::Number>().FloatValue();
+        mLinearGradientInfo->endX = info[2].As<Napi::Number>().FloatValue();
+        mLinearGradientInfo->endY = info[3].As<Napi::Number>().FloatValue();
     }
     else if (info.Length() == 6)
     {
-        this->mRadialGradientInfo = std::make_shared<RadialGradientInfo>();
-        this->mRadialGradientInfo->startX = info[0].As<Napi::Number>().FloatValue();
-        this->mRadialGradientInfo->startY = info[1].As<Napi::Number>().FloatValue();
-        this->mRadialGradientInfo->startR = info[2].As<Napi::Number>().FloatValue();
-        this->mRadialGradientInfo->endX = info[3].As<Napi::Number>().FloatValue();
-        this->mRadialGradientInfo->endY = info[4].As<Napi::Number>().FloatValue();
-        this->mRadialGradientInfo->endR = info[5].As<Napi::Number>().FloatValue();
+        mRadialGradientInfo = std::make_shared<RadialGradientInfo>();
+        mRadialGradientInfo->startX = info[0].As<Napi::Number>().FloatValue();
+        mRadialGradientInfo->startY = info[1].As<Napi::Number>().FloatValue();
+        mRadialGradientInfo->startR = info[2].As<Napi::Number>().FloatValue();
+        mRadialGradientInfo->endX = info[3].As<Napi::Number>().FloatValue();
+        mRadialGradientInfo->endY = info[4].As<Napi::Number>().FloatValue();
+        mRadialGradientInfo->endR = info[5].As<Napi::Number>().FloatValue();
     }
     else
     {
@@ -97,6 +97,6 @@ void Gradient::addColorStop(const Napi::CallbackInfo &info)
 }
 
 const   std::vector<ColorStop> &  Gradient::getColorStops(){
-        return this->mColorStopSet;
+        return mColorStopSet;
 }
 } // namespace NodeBinding
