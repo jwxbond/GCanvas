@@ -23,8 +23,14 @@ typedef enum {
 } PatternRepeatType;
 
 
-class PatternBase {
-    
+class PatternBase 
+{
+public:
+  PatternBase(void * repeatInst, PatternRepeatType repeatType);
+  ~PatternBase();
+public:
+  void * mRepeatInstance;
+  PatternRepeatType mRepeatType;
 };
 
 }   

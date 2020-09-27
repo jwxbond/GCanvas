@@ -14,8 +14,24 @@
 
 namespace NodeBinding 
 {
-class GradientBase {
 
+typedef enum {
+    GRADIENT_TYPE_LINEAR,
+    GRADIENT_TYPE_RADIAL
+} GradientType;
+
+class GradientBase 
+{
+public:
+    GradientBase(double x0, double y0, double x1, double y1);
+    GradientBase(double x0, double y0, double r0, double x1, double y1, double r1);
+    virtual ~GradientBase() = default;
+    virtual void addColorStop(double pos, std::string color) = 0;
+
+public:
+    GradientType mGradientType;
+    double startX, startY, startR;
+    double endX, endY, endR;
 };
 
 }   

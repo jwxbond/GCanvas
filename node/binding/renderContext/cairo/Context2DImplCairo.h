@@ -7,31 +7,77 @@
  * the LICENSE file in the root directory of this source tree.
  */
 
-#ifndef CONTEXT2DIMPLGCANVAS_H
-#define CONTEXT2DIMPLGCANVAS_H
+#ifndef CONTEXT2DIMPLCAIRO_H
+#define CONTEXT2DIMPLCAIRO_H
 
 #include "Context2DBase.h"
 #include "ImageDataBase.h"
 #include "ImageBase.h"
 
-#include <GCanvas.hpp>
-#include <gcanvas/GCanvas2dContext.h>
+#include "cairo.h"
+// #include "Canvas.h"
+// #include "color.h"
+// #include "nan.h"
+#include <pango/pangocairo.h>
+
+typedef enum {
+  TEXT_DRAW_PATHS,
+  TEXT_DRAW_GLYPHS
+} canvas_draw_mode_t;
 
 #include <iostream>
 #include <memory>
 #include <functional>
 #include <unordered_map>
 
+#ifndef CANVAS_MAX_STATES
+#define CANVAS_MAX_STATES 64
+#endif
 
 namespace NodeBinding
 {
-    class Context2DImplGCanvas : public Context2DBase  
+    typedef enum {
+        TEXT_DRAW_PATHS,
+        TEXT_DRAW_GLYPHS
+    } canvas_draw_mode_t;
+
+    typedef struct {
+        rgba_t fill;
+        rgba_t stroke;
+        cairo_filter_t patternQuality;
+        cairo_pattern_t *fillPattern;
+        cairo_pattern_t *strokePattern;
+        cairo_pattern_t *fillGradient;
+        cairo_pattern_t *strokeGradient;
+        float globalAlpha;
+        short textAlignment;
+        short textBaseline;
+        rgba_t shadow;
+        int shadowBlur;
+        double shadowOffsetX;
+        double shadowOffsetY;
+        canvas_draw_mode_t textDrawingMode;
+        PangoFontDescription *fontDescription;
+        bool imageSmoothingEnabled;
+    } canvas_state_t;
+
+    void state_assign_fontFamily(canvas_state_t *state, const char *str);
+
+    typedef struct {
+        float x;
+        float y;
+        float width;
+        float height;
+    } float_rectangle;
+
+
+    class Context2DImplCairo : public Context2DBase  
     {
     public:
-        Context2DImplGCanvas();
-        Context2DImplGCanvas(int width, int height);
-        Context2DImplGCanvas(int width, int height, int ratio);
-        virtual ~Context2DImplGCanvas();
+        Context2DImplCairo();
+        Context2DImplCairo(int width, int height);
+        Context2DImplCairo(int width, int height, int ratio);
+        virtual ~Context2DImplCairo();
 
         void SetupContext2D();
 
@@ -128,18 +174,49 @@ namespace NodeBinding
         virtual void* GetCanvas();
 
     protected:
-        int mWidth;
-        int mHeight;
-        float mRatio;
+        inline void setContext(cairo_t *ctx) { _context = ctx; }
+        inline cairo_t *context(){ return _context; }
+        inline Canvas *canvas(){ return _canvas; }
+        inline bool hasShadow();
+        void inline setSourceRGBA(rgba_t color);
+        void inline setSourceRGBA(cairo_t *ctx, rgba_t color);
+        void setTextPath(double x, double y);
+        void blur(cairo_surface_t *surface, int radius);
+        void shadow(void (fn)(cairo_t *cr));
+        void shadowStart();
+        void shadowApply();
+        void savePath();
+        void restorePath();
+        void saveState();
+        void restoreState();
+        // void inline setFillRule(v8::Local<v8::Value> value);
+        void doFill(bool preserve = false);
+        void doStroke(bool preserve = false);
+        void save();
+        void restore();
+        void setFontFromState();
+        void resetState(bool init = false);
+        inline PangoLayout *layout(){ return _layout; }
 
-        StyleType mFillStyleType;
-        StyleType mStrokeStyleType;
 
-        // std::shared_ptr<gcanvas::GCanvas> mGCanvas;
-        // std::shared_ptr<GCanvasContext> mGCanvasContext;
+    public:
+        short stateno;
+        canvas_state_t *states[CANVAS_MAX_STATES];
+        canvas_state_t *state;
 
-        gcanvas::GCanvas *mGCanvas;
-        GCanvasContext *mGCanvasContext;
+    protected:
+        
+        void SetFillRule(std::string value);
+
+
+        cairo_t *_context;
+        cairo_path_t *_path;
+        PangoLayout *_layout;
+
+
+    private:
+        
+
     };
 } // namespace NodeBinding
 

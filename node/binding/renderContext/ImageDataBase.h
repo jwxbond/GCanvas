@@ -16,15 +16,17 @@ namespace NodeBinding
 {
 class ImageDataBase {
 public:
-    ImageDataBase(int w, int h);
+    ImageDataBase(uint8_t *data, int width, int height) : _width(width), _height(height), _data(data) {}
     virtual ~ImageDataBase();
-    virtual uint8_t *GetData() = 0;
-    int GetWidth() { return mWidth; }
-    int GetHeight() { return mHeight; }
+
+    inline short width() { return _width; }
+    inline short height() { return _height; }
+    inline uint8_t *data() { return _data; }
+
 protected:
-    int mWidth;
-    int mHeight;
-    uint8_t *mData;
+    short _width;
+    short _height;
+    uint8_t *_data;
 };
 
 }   

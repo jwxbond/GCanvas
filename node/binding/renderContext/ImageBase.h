@@ -16,11 +16,18 @@ namespace NodeBinding
 {
 class ImageBase {
 public:
+    ImageBase();
+    ~ImageBase();
 
     virtual int GetTextureId();
-    virtual short GetWidth();
-    virtual short GetHeight();
+    inline short width(){ return _width; }
+    inline short height(){ return _height;}
+    inline uint8_t* data(){ return _data; }
 
+protected:
+    short _width;
+    short _height;
+    uint8_t *_data;
 };
 
 }   

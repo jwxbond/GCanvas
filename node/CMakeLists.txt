@@ -56,6 +56,9 @@ set(SOURCE_FILES
         ./binding/webgl/WebGLUniformLocation.cc
         ./binding/renderContext/GRenderContext.cc
         ./binding/renderContext/gcanvas/Context2DImplGCanvas.cc
+        ./binding/renderContext/gcanvas/ImageDataImplGCanvas.cc
+        ./binding/renderContext/gcanvas/ImageImplGCanvas.cc
+        ./binding/renderContext/gcanvas/PatternImplGCanvas.cc
         ./binding/util/NodeBindingUtil.cc
         ./third_party/lodepng.cc
         ${CORE_DIR}src/GCanvas.cpp        

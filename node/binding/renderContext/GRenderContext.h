@@ -19,6 +19,7 @@
 #include "NodeBindingUtil.h"
 #include "Util.h"
 #include "GFrameBufferObject.h"
+#include "Context2DBase.h"
 
 namespace NodeBinding
 {
@@ -41,6 +42,7 @@ namespace NodeBinding
         void drawFrame();
         void setType(std::string type);
         GCanvasContext *getCtx2d() { return mCanvas2d->GetGCanvasContext(); }
+        Context2DBase *getContext2D();
         std::shared_ptr<gcanvas::WebGL::GWebGLRenderContext> getCtxWebGL()
         {
             return mCanvasWebGL;

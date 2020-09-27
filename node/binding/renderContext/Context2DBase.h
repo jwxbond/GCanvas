@@ -20,6 +20,13 @@
 
 namespace NodeBinding 
 {
+typedef enum {
+    STYLE_TYPE_COLOR,
+    STYLE_TYPE_PATTERN,
+    STYLE_TYPE_GRADIENT_LINEAR,
+    STYLE_TYPE_GRADIENT_RADIAL
+} StyleType;
+
 class Context2DBase {
 
     virtual void resize( int w, int h ) =  0;

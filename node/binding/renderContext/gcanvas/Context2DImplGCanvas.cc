@@ -363,7 +363,7 @@ std::string Context2DImplGCanvas::GetLineCap()
     GLineCap cap =  mGCanvasContext->LineCap();
     if( cap == LINE_CAP_ROUND) return "round";
     else if( cap == LINE_CAP_SQUARE ) return "square";
-    else return "butter";
+    else return "butt";
 }
 void Context2DImplGCanvas::SetLineCap(std::string  v)
 {
