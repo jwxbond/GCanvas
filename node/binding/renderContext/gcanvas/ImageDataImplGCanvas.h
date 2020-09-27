@@ -26,9 +26,8 @@ namespace NodeBinding
      class ImageDataImplGCanvas : public ImageDataBase  
     {
     public:
-        ImageDataImplGCanvas(int textureId, int w, int h)
         virtual ~ImageDataImplGCanvas();
-        virtual *GetData();
+        virtual void*GetData();
         
     protected:
         int mTextureId;

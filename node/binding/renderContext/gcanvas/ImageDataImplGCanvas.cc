@@ -12,17 +12,8 @@
 
 namespace NodeBinding
 {
-
-    ImageDataImplGCanvas::ImageDataImplGCanvas(int textureId, int w, int h)
-        :ImageDataBase::ImateDataBase(w, h)
-    {
-        
-    }
-
     ImageDataImplGCanvas::~ImageDataImplGCanvas()
     {
 
     }
-
-
 } // namespace NodeBinding

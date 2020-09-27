@@ -111,7 +111,7 @@ void Context2DImplGCanvas::closePath()
 }
 ImageDataBase* Context2DImplGCanvas::createImageData()
 {
-    ImageDataBase *imageData = 
+    // ImageDataBase *imageData = 
     return nullptr;
 }
 GradientBase* Context2DImplGCanvas::createLinearGradient()
@@ -134,7 +134,7 @@ void Context2DImplGCanvas::drawImage(ImageBase *image, float dx, float dy)
 {
     if (!image) { return; }
     float sx = 0, sy = 0;
-    float sw = image->GetWidth(), sh = image->GetHeight();
+    float sw = image->width(), sh = image->height();
     float dw = sw, dh = sh;
     Context2DImplGCanvas::drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
 }
@@ -142,13 +142,13 @@ void Context2DImplGCanvas::drawImage(ImageBase *image, float dx, float dy, float
 {
     if (!image) { return; }
     float sx = 0, sy = 0;
-    float sw = image->GetWidth(), sh = image->GetHeight();
+    float sw = image->width(), sh = image->height();
     Context2DImplGCanvas::drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
 }
 void Context2DImplGCanvas::drawImage(ImageBase *image, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh)
 {
     if (!image) { return; }
-    mGCanvasContext->DrawImage(image->GetTextureId, image->GetWidth(), image->GetHeight(), sx, sy, sw, sh, dx, dy, dw, dh);
+    mGCanvasContext->DrawImage(image->textureId(), image->width(), image->height(), sx, sy, sw, sh, dx, dy, dw, dh);
 }
 void Context2DImplGCanvas::fill(std::string rule)
 {
@@ -287,11 +287,11 @@ void* Context2DImplGCanvas::GetFillStyle()
 }
 void Context2DImplGCanvas::SetFillStyle(const void* v, StyleType stype)
 {
-    mFillStyleType = type;
+    mFillStyleType = stype;
     GCanvasState *state = mGCanvasContext->GetCurrentState();
     if ( state)
     {
-        state->mFillStyle = v;
+        state->mFillStyle = (GFillStyle*)v;
     }
 }
 StyleType Context2DImplGCanvas::GetStrokeStyleType()
@@ -309,11 +309,11 @@ void* Context2DImplGCanvas::GetStrokeStyle()
 }
 void Context2DImplGCanvas::SetStrokeStyle(const void* v, StyleType stype)
 {
-     mStrokeStyleType = type;
+     mStrokeStyleType = stype;
     GCanvasState *state = mGCanvasContext->GetCurrentState();
     if ( state)
     {
-        state->mStrokeStyle = v;
+        state->mStrokeStyle = (GFillStyle*)v;
     }
 }
 float Context2DImplGCanvas::GetGlobalAlpha()
@@ -496,7 +496,7 @@ std::string Context2DImplGCanvas::GetFont()
 }
 void Context2DImplGCanvas::SetFont(const std::string &v)
 {
-    if (v)
+    if (!v.empty())
     {
         mGCanvasContext->SetFont(v.c_str());
     }
@@ -504,7 +504,7 @@ void Context2DImplGCanvas::SetFont(const std::string &v)
 
 std::string Context2DImplGCanvas::GetTextAlign()
 {
-    GTextAlign align = mGCanvasContext->TextAlign;
+    GTextAlign align = mGCanvasContext->TextAlign();
     switch (align) 
     {
         case TEXT_ALIGN_START: return "start";
@@ -518,7 +518,7 @@ std::string Context2DImplGCanvas::GetTextAlign()
 
 void Context2DImplGCanvas::SetTextAlign(std::string v)
 {
-    GTextAlign align = mGCanvasContext->TextAlign;
+    GTextAlign align = mGCanvasContext->TextAlign();
     if (v == "start") align = TEXT_ALIGN_START;
     else if (v == "end") align = TEXT_ALIGN_END;
     else if (v == "left") align = TEXT_ALIGN_LEFT;

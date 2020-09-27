@@ -155,7 +155,7 @@ namespace NodeBinding
     }
     int Image::getTextureId()
     {
-        return textureId;
+        return mTextureId;
     }
 
 }; // namespace NodeBinding

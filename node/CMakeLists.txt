@@ -57,10 +57,8 @@ set(SOURCE_FILES
         ./binding/renderContext/GRenderContext.cc
         ./binding/renderContext/gcanvas/Context2DImplGCanvas.cc
         ./binding/renderContext/gcanvas/ImageDataImplGCanvas.cc
-        ./binding/renderContext/gcanvas/ImageImplGCanvas.cc
-        ./binding/renderContext/gcanvas/PatternImplGCanvas.cc
-        ./binding/util/NodeBindingUtil.cc
-        ./third_party/lodepng.cc
+        # ./binding/renderContext/gcanvas/ImageImplGCanvas.cc
+        # ./binding/renderContext/gcanvas/PtextureId
         ${CORE_DIR}src/GCanvas.cpp        
         ${CORE_DIR}src/GCanvasManager.cpp
 

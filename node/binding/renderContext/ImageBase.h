@@ -19,7 +19,7 @@ public:
     ImageBase();
     ~ImageBase();
 
-    virtual int GetTextureId();
+    virtual int textureId();
     inline short width(){ return _width; }
     inline short height(){ return _height;}
     inline uint8_t* data(){ return _data; }

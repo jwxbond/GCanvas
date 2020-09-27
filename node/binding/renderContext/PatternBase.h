@@ -8,8 +8,8 @@
  * the LICENSE file in the root directory of this source tree.
  */
 
-#ifndef PATTERN_H
-#define PATTERN_H
+#ifndef PATTERNBASE_H
+#define PATTERNBASE_H
 #include <iostream>
 
 namespace NodeBinding 
