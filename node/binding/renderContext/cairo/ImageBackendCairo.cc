@@ -43,6 +43,21 @@ cairo_surface_t *ImageBackendCairo::createSurface()
   return surface;
 }
 
+  cairo_surface_t* ImageBackendCairo::recreateSurface()
+  {
+    destroySurface();
+    return createSurface();
+  }
+
+  cairo_surface_t* ImageBackendCairo::getSurface()
+  {
+    if( !surface )
+    {
+      createSurface();
+    }
+    return surface;
+  }
+
 void ImageBackendCairo::destroySurface()
 {
   if (surface)
@@ -53,11 +68,28 @@ void ImageBackendCairo::destroySurface()
   }
 }
 
+int ImageBackendCairo::getWidth()
+{
+  return this->width;
+}
+void ImageBackendCairo::setWidth(int width_)
+{
+  this->width = width_;
+  this->recreateSurface();
+}
+int ImageBackendCairo::getHeight()
+{
+  return this->height;
+}
+void ImageBackendCairo::setHeight(int height_)
+{
+  this->height = height_;
+  this->recreateSurface();
+}
 cairo_format_t ImageBackendCairo::getFormat()
 {
   return format;
 }
-
 void ImageBackendCairo::setFormat(cairo_format_t _format)
 {
   this->format = _format;

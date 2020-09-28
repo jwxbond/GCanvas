@@ -8,16 +8,17 @@
  */
 
 
-#include "ImageDataBase.h"
+#include "PatternBase.h"
 
 namespace NodeBinding
 {
-    ImageDataBase::~ImageDataBase()
+    PatternBase::PatternBase(void * repeatInst, PatternRepeatType repeatType)
     {
-        if( _data )
-        {
-            delete [] _data;
-            _data = nullptr;
-        }
+        
+    }
+
+    PatternBase::~PatternBase()
+    {
+
     }
 } // namespace NodeBinding

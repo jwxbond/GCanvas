@@ -16,7 +16,8 @@ namespace NodeBinding
 {
 class ImageDataBase {
 public:
-    ImageDataBase(uint8_t *data, int width, int height) : _width(width), _height(height), _data(data) {}
+    ImageDataBase() = default;
+    ImageDataBase(uint8_t *data, short width, short height) : _width(width), _height(height), _data(data) {}
     virtual ~ImageDataBase();
 
     inline short width() { return _width; }

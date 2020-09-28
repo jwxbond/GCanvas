@@ -16,10 +16,11 @@ public:
   cairo_surface_t* getSurface();
   void destroySurface();
 
-  inline std::string getName() {return name; }
-  inline  int getWidth(){ return width; }
+  // inline std::string getName();
+  inline  int getWidth();
   void setWidth(int w);
-  inline int getHeight() { return height; }
+  inline int getHeight();
+  void setHeight(int w);
 
   cairo_format_t getFormat();
   void setFormat(cairo_format_t format);

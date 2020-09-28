@@ -42,13 +42,13 @@ namespace NodeBinding
     };
 
     Context2DImplCairo::Context2DImplCairo(int width, int height)
-        : mWidth(width), mHeight(height), mRatio(1.0)
+        :  /*Context2DBase(width, height),*/  mWidth(width), mHeight(height), mRatio(1.0)
     {
         SetupContext2D();
     }
 
     Context2DImplCairo::Context2DImplCairo(int width, int height, int ratio)
-        : mWidth(width), mHeight(height), mRatio(ratio)
+        : /*Context2DBase(width, height), */mWidth(width), mHeight(height), mRatio(ratio)
     {
         SetupContext2D();
     }
@@ -234,11 +234,154 @@ namespace NodeBinding
 
     void Context2DImplCairo::blur(cairo_surface_t *surface, int radius)
     {
-        //TODO
+        // Steve Hanov, 2009
+        // Released into the public domain.
+        radius = radius * 0.57735f + 0.5f;
+        // get width, height
+        int width = cairo_image_surface_get_width( surface );
+        int height = cairo_image_surface_get_height( surface );
+        unsigned* precalc =
+            (unsigned*)malloc(width*height*sizeof(unsigned));
+        cairo_surface_flush( surface );
+        unsigned char* src = cairo_image_surface_get_data( surface );
+        double mul=1.f/((radius*2)*(radius*2));
+        int channel;
+
+        // The number of times to perform the averaging. According to wikipedia,
+        // three iterations is good enough to pass for a gaussian.
+        const int MAX_ITERATIONS = 3;
+        int iteration;
+
+        for ( iteration = 0; iteration < MAX_ITERATIONS; iteration++ ) {
+            for( channel = 0; channel < 4; channel++ ) {
+                int x,y;
+
+                // precomputation step.
+                unsigned char* pix = src;
+                unsigned* pre = precalc;
+
+                pix += channel;
+                for (y=0;y<height;y++) {
+                    for (x=0;x<width;x++) {
+                        int tot=pix[0];
+                        if (x>0) tot+=pre[-1];
+                        if (y>0) tot+=pre[-width];
+                        if (x>0 && y>0) tot-=pre[-width-1];
+                        *pre++=tot;
+                        pix += 4;
+                    }
+                }
+
+                // blur step.
+                pix = src + (int)radius * width * 4 + (int)radius * 4 + channel;
+                for (y=radius;y<height-radius;y++) {
+                    for (x=radius;x<width-radius;x++) {
+                        int l = x < radius ? 0 : x - radius;
+                        int t = y < radius ? 0 : y - radius;
+                        int r = x + radius >= width ? width - 1 : x + radius;
+                        int b = y + radius >= height ? height - 1 : y + radius;
+                        int tot = precalc[r+b*width] + precalc[l+t*width] -
+                            precalc[l+b*width] - precalc[r+t*width];
+                        *pix=(unsigned char)(tot*mul);
+                        pix += 4;
+                    }
+                    pix += (int)radius * 2 * 4;
+                }
+            }
+        }
+
+        cairo_surface_mark_dirty(surface);
+        free(precalc);
     }
     void Context2DImplCairo::shadow(void(fn)(cairo_t *cr))
     {
-        //TODO
+        cairo_path_t *path = cairo_copy_path_flat(_context);
+        cairo_save(_context);
+
+        // shadowOffset is unaffected by current transform
+        cairo_matrix_t path_matrix;
+        cairo_get_matrix(_context, &path_matrix);
+        cairo_identity_matrix(_context);
+
+        // Apply shadow
+        cairo_push_group(_context);
+
+        // No need to invoke blur if shadowBlur is 0
+        if (state->shadowBlur) {
+            // find out extent of path
+            double x1, y1, x2, y2;
+            if (fn == cairo_fill || fn == cairo_fill_preserve) {
+            cairo_fill_extents(_context, &x1, &y1, &x2, &y2);
+            } else {
+            cairo_stroke_extents(_context, &x1, &y1, &x2, &y2);
+            }
+
+            // create new image surface that size + padding for blurring
+            double dx = x2-x1, dy = y2-y1;
+            cairo_user_to_device_distance(_context, &dx, &dy);
+            int pad = state->shadowBlur * 2;
+            cairo_surface_t *shadow_surface = cairo_image_surface_create(
+            CAIRO_FORMAT_ARGB32,
+            dx + 2 * pad,
+            dy + 2 * pad);
+            cairo_t *shadow_context = cairo_create(shadow_surface);
+
+            // transform path to the right place
+            cairo_translate(shadow_context, pad-x1, pad-y1);
+            cairo_transform(shadow_context, &path_matrix);
+
+            // set lineCap lineJoin lineDash
+            cairo_set_line_cap(shadow_context, cairo_get_line_cap(_context));
+            cairo_set_line_join(shadow_context, cairo_get_line_join(_context));
+
+            double offset;
+            int dashes = cairo_get_dash_count(_context);
+            std::vector<double> a(dashes);
+            cairo_get_dash(_context, a.data(), &offset);
+            cairo_set_dash(shadow_context, a.data(), dashes, offset);
+
+            // draw the path and blur
+            cairo_set_line_width(shadow_context, cairo_get_line_width(_context));
+            cairo_new_path(shadow_context);
+            cairo_append_path(shadow_context, path);
+            setSourceRGBA(shadow_context, state->shadow);
+            fn(shadow_context);
+            blur(shadow_surface, state->shadowBlur);
+
+            // paint to original context
+            cairo_set_source_surface(_context, shadow_surface,
+            x1 - pad + state->shadowOffsetX + 1,
+            y1 - pad + state->shadowOffsetY + 1);
+            cairo_paint(_context);
+            cairo_destroy(shadow_context);
+            cairo_surface_destroy(shadow_surface);
+        } else {
+            // Offset first, then apply path's transform
+            cairo_translate(
+                _context
+            , state->shadowOffsetX
+            , state->shadowOffsetY);
+            cairo_transform(_context, &path_matrix);
+
+            // Apply shadow
+            cairo_new_path(_context);
+            cairo_append_path(_context, path);
+            setSourceRGBA(state->shadow);
+
+            fn(_context);
+        }
+
+        // Paint the shadow
+        cairo_pop_group_to_source(_context);
+        cairo_paint(_context);
+
+        // Restore state
+        cairo_restore(_context);
+        cairo_new_path(_context);
+        cairo_append_path(_context, path);
+        fn(_context);
+
+        cairo_path_destroy(path);
     }
     void Context2DImplCairo::shadowStart()
     {

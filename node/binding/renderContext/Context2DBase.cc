@@ -8,16 +8,24 @@
  */
 
 
-#include "ImageDataBase.h"
+#include "Context2DBase.h"
 
 namespace NodeBinding
 {
-    ImageDataBase::~ImageDataBase()
+
+
+    Context2DBase::Context2DBase()
     {
-        if( _data )
-        {
-            delete [] _data;
-            _data = nullptr;
-        }
+        
+    }
+
+    Context2DBase::Context2DBase(short w, short h)
+    {
+        
+    }
+
+    Context2DBase::~Context2DBase()
+    {
+
     }
 } // namespace NodeBinding

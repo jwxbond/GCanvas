@@ -26,6 +26,7 @@ typedef enum {
 class PatternBase 
 {
 public:
+  PatternBase() = default;
   PatternBase(void * repeatInst, PatternRepeatType repeatType);
   ~PatternBase();
 public:

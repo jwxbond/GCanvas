@@ -20,6 +20,7 @@
 
 namespace NodeBinding 
 {
+
 typedef enum {
     STYLE_TYPE_COLOR,
     STYLE_TYPE_PATTERN,
@@ -28,6 +29,11 @@ typedef enum {
 } StyleType;
 
 class Context2DBase {
+
+public:
+    Context2DBase();
+    Context2DBase(short w, short h);
+    ~Context2DBase();
 
     virtual void resize( int w, int h ) =  0;
 
@@ -65,8 +71,7 @@ class Context2DBase {
     virtual void SetLineDash() = 0;
     virtual void SetTransform(float a, float b, float c, float d, float tx, float ty) = 0;
     virtual void stroke() = 0;
-    virtual void strokeRect(float x, float y, float w, float h) = 0;
-    virtual void strokeText(const char * text, float x, float y, float maxWidth) = 0;
+    virtual void strokeText(char * text, float x, float y, float maxWidth) = 0;
     virtual void transform(float a, float b, float c, float d, float tx, float ty) = 0;
     virtual void resetTransform() = 0;
     virtual void translate(float tx, float ty) = 0;

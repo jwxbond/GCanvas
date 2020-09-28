@@ -72,9 +72,10 @@ namespace NodeBinding
     } float_rectangle;
 
 
-    class Context2DImplCairo : public Context2DBase  
+    class Context2DImplCairo /*: public Context2DBase */ 
     {
     public:
+        Context2DImplCairo() = default;
         Context2DImplCairo(int width, int height);
         Context2DImplCairo(int width, int height, int ratio);
         virtual ~Context2DImplCairo();

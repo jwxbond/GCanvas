@@ -8,16 +8,17 @@
  */
 
 
-#include "ImageDataBase.h"
+#include "GradientBase.h"
 
 namespace NodeBinding
 {
-    ImageDataBase::~ImageDataBase()
+
+    GradientBase::GradientBase(double x0, double y0, double x1, double y1)
     {
-        if( _data )
-        {
-            delete [] _data;
-            _data = nullptr;
-        }
+
+    }
+    GradientBase::GradientBase(double x0, double y0, double r0, double x1, double y1, double r1)
+    {
+
     }
 } // namespace NodeBinding

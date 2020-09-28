@@ -23,6 +23,7 @@ typedef enum {
 class GradientBase 
 {
 public:
+    GradientBase() = default;
     GradientBase(double x0, double y0, double x1, double y1);
     GradientBase(double x0, double y0, double r0, double x1, double y1, double r1);
     virtual ~GradientBase() = default;

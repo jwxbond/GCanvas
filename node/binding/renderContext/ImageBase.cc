@@ -8,11 +8,18 @@
  */
 
 
-#include "ImageDataBase.h"
+#include "ImageBase.h"
 
 namespace NodeBinding
 {
-    ImageDataBase::~ImageDataBase()
+
+    ImageBase::ImageBase(short w, short h)
+        : _width(w), _height(h)
+    {
+        
+    }
+
+    ImageBase::~ImageBase()
     {
         if( _data )
         {

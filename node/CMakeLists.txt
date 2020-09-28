@@ -68,10 +68,13 @@ set(SOURCE_FILES
         ./binding/webgl/WebGLActiveInfo.cc
         ./binding/webgl/WebGLUniformLocation.cc
         ./binding/renderContext/GRenderContext.cc
+        ./binding/renderContext/Context2DBase.cc
+        ./binding/renderContext/ImageBase.cc
+        ./binding/renderContext/ImageDataBase.cc
+        ./binding/renderContext/PatternBase.cc
+        ./binding/renderContext/GradientBase.cc
         ./binding/renderContext/gcanvas/Context2DImplGCanvas.cc
         ./binding/renderContext/gcanvas/ImageDataImplGCanvas.cc
-        # ./binding/renderContext/gcanvas/ImageImplGCanvas.cc
-        # ./binding/renderContext/gcanvas/PtextureId
         ./binding/renderContext/cairo/Context2DImplCairo.cc
         ./binding/renderContext/cairo/PatternImplCairo.cc
         ./binding/renderContext/cairo/color.cc

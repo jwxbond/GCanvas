@@ -27,7 +27,7 @@ namespace NodeBinding
     {
     public:
         virtual ~ImageDataImplGCanvas();
-        virtual void*GetData();
+        // virtual void*GetData();
         
     protected:
         int mTextureId;

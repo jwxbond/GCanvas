@@ -193,7 +193,7 @@ namespace NodeBinding
     {
         //TODO Cairo Context or GCanvas Context 
 
-        bool useGCanvas = false;
+        bool useGCanvas = true;
 
         if (useGCanvas)
         {
@@ -209,12 +209,13 @@ namespace NodeBinding
             mCanvas2d->GetGCanvasContext()->SetDevicePixelRatio(mDpi);
             mCanvas2d->OnSurfaceChanged(0, 0, mCanvasWidth, mCanvasHeight);
             */
-            mContext2D = std::make_shared<Context2DImplGCanvas>(mCanvasWidth, mCanvasHeight, mDpi);
+            // mContext2D = std::make_shared<Context2DImplGCanvas>(mCanvasWidth, mCanvasHeight, mDpi);
         }
         else
         {
+            std::cout << " Canvas Context Cairo !!!" << std::endl;
             mContext2DType = CONTEXT2D_CAIRO;
-            mContext2D = std::make_shared<Context2DImplCairo>(mCanvasWidth, mCanvasHeight, mDpi);
+            // mContext2D = std::make_shared<Context2DImplCairo>(mCanvasWidth, mCanvasHeight, mDpi);
         }
     }
     void GRenderContext::drawFrame()
