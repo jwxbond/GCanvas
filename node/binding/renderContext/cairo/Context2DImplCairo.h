@@ -17,6 +17,7 @@
 #include <cairo.h>
 // #include "Canvas.h"
 #include "color.h"
+#include "ImageBackendCairo.h"
 // #include "nan.h"
 #include <pango/pangocairo.h>
 
@@ -74,7 +75,6 @@ namespace NodeBinding
     class Context2DImplCairo : public Context2DBase  
     {
     public:
-        Context2DImplCairo();
         Context2DImplCairo(int width, int height);
         Context2DImplCairo(int width, int height, int ratio);
         virtual ~Context2DImplCairo();
@@ -210,6 +210,8 @@ namespace NodeBinding
         int mHeight;
         float mRatio;
 
+
+        ImageBackendCairo* _imageBackend;
         cairo_t *_context;
         cairo_path_t *_path;
         PangoLayout *_layout;

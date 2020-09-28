@@ -75,6 +75,7 @@ set(SOURCE_FILES
         ./binding/renderContext/cairo/Context2DImplCairo.cc
         ./binding/renderContext/cairo/PatternImplCairo.cc
         ./binding/renderContext/cairo/color.cc
+        ./binding/renderContext/cairo/ImageBackendCairo.cc
         ${CORE_DIR}src/GCanvas.cpp        
         ${CORE_DIR}src/GCanvasManager.cpp
 

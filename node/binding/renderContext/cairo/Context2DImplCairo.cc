@@ -9,7 +9,6 @@
 
 #include "Context2DImplCairo.h"
 #include <algorithm>
-// #include "backend/ImageBackend.h"
 #include <cairo-pdf.h>
 // #include "Canvas.h"
 // #include "CanvasGradient.h"
@@ -42,12 +41,6 @@ namespace NodeBinding
         TEXT_BASELINE_HANGING
     };
 
-    Context2DImplCairo::Context2DImplCairo()
-        : mWidth(100), mHeight(100), mRatio(1.0)
-    {
-        SetupContext2D();
-    }
-
     Context2DImplCairo::Context2DImplCairo(int width, int height)
         : mWidth(width), mHeight(height), mRatio(1.0)
     {
@@ -62,39 +55,34 @@ namespace NodeBinding
 
     Context2DImplCairo::~Context2DImplCairo()
     {
-        // if( mGCanvasContext ) {
-        //     delete mGCanvasContext;
-        //     mGCanvasContext = nullptr;
-        // }Pattern
+        if (_imageBackend)
+        {
+            _imageBackend->destroySurface();
+        }
 
-        // if( mGCanvas ){
-        //     delete mGCanvas;
-        //     mGCanvas = nullptr;
-        // }
+        while (stateno >= 0)
+        {
+            pango_font_description_free(states[stateno]->fontDescription);
+            free(states[stateno--]);
+        }
+        g_object_unref(_layout);
+        cairo_destroy(_context);
     }
 
     void Context2DImplCairo::SetupContext2D()
     {
-        // GCanvasConfig config = {true, false};
-        // // mGCanvas = std::make_shared<gcanvas::GCanvas>( "context2d-gcanvas", config, nullptr );
-        // mGCanvas = new gcanvas::GCanvas( "context2d-gcanvas", config, nullptr );
-        // if( !mGCanvas ) {
-        //     return;
-        // }
+        //create surface use cairo imgae backend
+        _imageBackend = ImageBackendCairo::createImageBackendCairo(mWidth, mHeight);
+        cairo_surface_t *surface = _imageBackend->getSurface();
 
-        // mGCanvas->CreateContext();
-        // mGCanvasContext = mGCanvas->GetGCanvasContext();
-        // if (!mGCanvasContext ){
-        //     return;
-        // }
+        //create cairo context
+        _context = cairo_create(surface);
+        cairo_set_line_width(_context, 1); // Cairo defaults to 2
 
-        // mGCanvasContext->SetClearColor(gcanvas::StrValueToColorRGBA("transparent"));
-        // mGCanvasContext->ClearScreen();
-        // mGCanvasContext->SetDevicePixelRatio(mRatio);
-        // mGCanvas->OnSurfaceChanged(0, 0, mWidth, mHeight);
+        //create pango layout
+        _layout = pango_cairo_create_layout(_context);
     }
-
-    //implement Context2DBase API
+    //TODO resizentext2DBase API
     void Context2DImplCairo::resize(int w, int h)
     {
         //TODO resize
@@ -278,8 +266,7 @@ namespace NodeBinding
 
     void Context2DImplCairo::setFillRule(std::string value)
     {
-        // if( value.empty() ) return;
-
+        //TODO resize
         cairo_fill_rule_t rule = CAIRO_FILL_RULE_WINDING;
         if (value == "evenodd")
         {
@@ -943,191 +930,196 @@ namespace NodeBinding
             cairo_set_operator(_context, op->second);
         }
     }
-std::string Context2DImplCairo::GetLineCap()
-{
-    cairo_line_cap_t cap = cairo_get_line_cap(_context);
-    if( cap == CAIRO_LINE_CAP_ROUND) return "round";
-    else if( cap == CAIRO_LINE_CAP_SQUARE ) return "square";
-    else return "butt";
-}
-void Context2DImplCairo::SetLineCap(std::string  v)
-{
-    cairo_line_cap_t cap = CAIRO_LINE_CAP_BUTT;
-    if ( v == "round" ) cap = CAIRO_LINE_CAP_ROUND;
-    else if( v == "square" ) cap = CAIRO_LINE_CAP_SQUARE;
-    else cap = CAIRO_LINE_CAP_BUTT;
-    cairo_set_line_cap(_context, cap);
-}
-float Context2DImplCairo::GetLineDashOffset()
-{
-    double offset;
-    cairo_get_dash(_context, NULL, &offset);
-    return offset;
-}
-void Context2DImplCairo::SetLineDashOffset(float v)
-{
-    int dashes = cairo_get_dash_count(_context);
-    std::vector<double> a(dashes);
-    cairo_get_dash(_context, a.data(), NULL);
-    cairo_set_dash(_context, a.data(), dashes, v);
-}
-std::string Context2DImplCairo::GetLineJoin()
-{
-    cairo_line_join_t join =  cairo_get_line_join(_context);
-    switch (join)
+    std::string Context2DImplCairo::GetLineCap()
     {
-        case CAIRO_LINE_JOIN_BEVEL: return "bevel";
-        case CAIRO_LINE_JOIN_ROUND: return "round";
-        default: return "miter";
+        cairo_line_cap_t cap = cairo_get_line_cap(_context);
+        if (cap == CAIRO_LINE_CAP_ROUND)
+            return "round";
+        else if (cap == CAIRO_LINE_CAP_SQUARE)
+            return "square";
+        else
+            return "butt";
     }
-}
-void Context2DImplCairo::SetLineJoin( std::string v)
-{
-    cairo_line_join_t join = CAIRO_LINE_JOIN_MITER;
-    if ( v == "round" ) join = CAIRO_LINE_JOIN_ROUND;
-    else if( v == "bevel" ) join = CAIRO_LINE_JOIN_BEVEL;
-    else join = CAIRO_LINE_JOIN_MITER;
-    cairo_set_line_join(_context, join);
-}
-float Context2DImplCairo::GetLineWidth()
-{
-    return cairo_get_line_width(_context);
-}
-void Context2DImplCairo::SetLineWidth(float v)
-{
-    cairo_set_line_width(_context, v);
-}
-float Context2DImplCairo::GetMiterLimit()
-{
-    return cairo_get_miter_limit(_context);
-}
-void Context2DImplCairo::SetMiterLimit(float v)
-{
-    cairo_set_miter_limit(_context, v);
-}
-float Context2DImplCairo::GetShadowBlur()
-{
-    float v = 0.0;
-    if (state)
+    void Context2DImplCairo::SetLineCap(std::string v)
     {
-        v =  state->shadowBlur;
+        cairo_line_cap_t cap = CAIRO_LINE_CAP_BUTT;
+        if (v == "round")
+            cap = CAIRO_LINE_CAP_ROUND;
+        else if (v == "square")
+            cap = CAIRO_LINE_CAP_SQUARE;
+        else
+            cap = CAIRO_LINE_CAP_BUTT;
+        cairo_set_line_cap(_context, cap);
     }
-    return v;
-}
-void Context2DImplCairo::SetShadowBlur(float v)
-{
-    if( state )
+    float Context2DImplCairo::GetLineDashOffset()
     {
-        state->shadowBlur = v;
+        double offset;
+        cairo_get_dash(_context, NULL, &offset);
+        return offset;
     }
-}
-std::string Context2DImplCairo::GetShadowColor()
-{
-    std::string color = nullptr;
-    // GCanvasState *state = mGCanvasContext->GetCurrentState();
-    // if (state)
-    // {
-    //     color = gcanvas::ColorToString(state->mShadowColor);
-    // }
-    return color;
-}
-void Context2DImplCairo::SetShadowColor(std::string v)
-{
-    // GCanvasState *state = mGCanvasContext->GetCurrentState();
-    // if (state)
-    // {
-    //     state->mShadowColor = gcanvas::StrValueToColorRGBA(v.c_str());
-    // }
-}
-float Context2DImplCairo::GetShadowOffsetX()
-{
-    float v = 0.0;
-    if (state)
+    void Context2DImplCairo::SetLineDashOffset(float v)
     {
-        v =  state->shadowOffsetX;
+        int dashes = cairo_get_dash_count(_context);
+        std::vector<double> a(dashes);
+        cairo_get_dash(_context, a.data(), NULL);
+        cairo_set_dash(_context, a.data(), dashes, v);
     }
-    return v;
-}
-void Context2DImplCairo::SetShadowOffsetX(float v)
-{
-    if( state )
+    std::string Context2DImplCairo::GetLineJoin()
     {
-        state->shadowOffsetX = v;
+        cairo_line_join_t join = cairo_get_line_join(_context);
+        switch (join)
+        {
+        case CAIRO_LINE_JOIN_BEVEL:
+            return "bevel";
+        case CAIRO_LINE_JOIN_ROUND:
+            return "round";
+        default:
+            return "miter";
+        }
     }
-}
-float Context2DImplCairo::GetShadowOffsetY()
-{
-    float v = 0.0;
-    if (state)
+    void Context2DImplCairo::SetLineJoin(std::string v)
     {
-        v =  state->shadowOffsetY;
+        cairo_line_join_t join = CAIRO_LINE_JOIN_MITER;
+        if (v == "round")
+            join = CAIRO_LINE_JOIN_ROUND;
+        else if (v == "bevel")
+            join = CAIRO_LINE_JOIN_BEVEL;
+        else
+            join = CAIRO_LINE_JOIN_MITER;
+        cairo_set_line_join(_context, join);
     }
-    return v;
-}
-void Context2DImplCairo::SetShadowOffsetY(float v)
-{
-    if( state )
+    float Context2DImplCairo::GetLineWidth()
     {
-        state->shadowOffsetY = v;
+        return cairo_get_line_width(_context);
     }
-}
-std::string Context2DImplCairo::GetFont()
-{
-    //TOOD
-}
-void Context2DImplCairo::SetFont(const std::string &v)
-{
-    //TODO
-}
+    void Context2DImplCairo::SetLineWidth(float v)
+    {
+        cairo_set_line_width(_context, v);
+    }
+    float Context2DImplCairo::GetMiterLimit()
+    {
+        return cairo_get_miter_limit(_context);
+    }
+    void Context2DImplCairo::SetMiterLimit(float v)
+    {
+        cairo_set_miter_limit(_context, v);
+    }
+    float Context2DImplCairo::GetShadowBlur()
+    {
+        float v = 0.0;
+        if (state)
+        {
+            v = state->shadowBlur;
+        }
+        return v;
+    }
+    void Context2DImplCairo::SetShadowBlur(float v)
+    {
+        if (state)
+        {
+            state->shadowBlur = v;
+        }
+    }
+    std::string Context2DImplCairo::GetShadowColor()
+    {
+        //TODO
+        return "";
+    }
+    void Context2DImplCairo::SetShadowColor(std::string v)
+    {
+        //TODO
+    }
+    float Context2DImplCairo::GetShadowOffsetX()
+    {
+        float v = 0.0;
+        if (state)
+        {
+            v = state->shadowOffsetX;
+        }
+        return v;
+    }
+    void Context2DImplCairo::SetShadowOffsetX(float v)
+    {
+        if (state)
+        {
+            state->shadowOffsetX = v;
+        }
+    }
+    float Context2DImplCairo::GetShadowOffsetY()
+    {
+        float v = 0.0;
+        if (state)
+        {
+            v = state->shadowOffsetY;
+        }
+        return v;
+    }
+    void Context2DImplCairo::SetShadowOffsetY(float v)
+    {
+        if (state)
+        {
+            state->shadowOffsetY = v;
+        }
+    }
+    std::string Context2DImplCairo::GetFont()
+    {
+        //TOOD
+    }
+    void Context2DImplCairo::SetFont(const std::string &v)
+    {
+        //TODO
+    }
 
-std::string Context2DImplCairo::GetTextAlign()
-{
-    //TODO
-}
+    std::string Context2DImplCairo::GetTextAlign()
+    {
+        //TODO
+    }
 
-void Context2DImplCairo::SetTextAlign(std::string v)
-{
-    // GTextAlign align = mGCanvasContext->TextAlign;
-    // if (v == "start") align = TEXT_ALIGN_START;
-    // else if (v == "end") align = TEXT_ALIGN_END;
-    // else if (v == "left") align = TEXT_ALIGN_LEFT;
-    // else if (v == "center") align = TEXT_ALIGN_CENTER;
-    // else if (  v == "right" ) align = TEXT_ALIGN_RIGHT;
-    // mGCanvasContext->SetTextAlign(align);
-}
-std::string Context2DImplCairo::GetTextBaseline()
-{
-    // short mode = state->textBaseline;
-    // switch (mode) {
-    //     case 0: return "alphabetic";
-    //     case 1: return "top";
-    //     case 2: return "bottom";
-    //     case 3: return "middle";
-    //     case 5: return "hanging";
-    //     case 4: return "ideographic";
-    //     default: return "alphabetic";
-    // }
-}
-void Context2DImplCairo::SetTextBaseline(std::string v)
-{
-    const std::map<std::string, int32_t> modes = {
-        {"alphabetic", 0},
-        {"top", 1},
-        {"bottom", 2},
-        {"middle", 3},
-        {"ideographic", 4},
-        {"hanging", 5}
-    };
+    void Context2DImplCairo::SetTextAlign(std::string v)
+    {
+        //TODO
+        // GTextAlign align = mGCanvasContext->TextAlign;
+        // if (v == "start") align = TEXT_ALIGN_START;
+        // else if (v == "end") align = TEXT_ALIGN_END;
+        // else if (v == "left") align = TEXT_ALIGN_LEFT;
+        // else if (v == "center") align = TEXT_ALIGN_CENTER;
+        // else if (  v == "right" ) align = TEXT_ALIGN_RIGHT;
+        // mGCanvasContext->SetTextAlign(align);
+    }
+    std::string Context2DImplCairo::GetTextBaseline()
+    {
+        //TODO
+        // short mode = state->textBaseline;
+        // switch (mode) {
+        //     case 0: return "alphabetic";
+        //     case 1: return "top";
+        //     case 2: return "bottom";
+        //     case 3: return "middle";
+        //     case 5: return "hanging";
+        //     case 4: return "ideographic";
+        //     default: return "alphabetic";
+        // }
+    }
+    void Context2DImplCairo::SetTextBaseline(std::string v)
+    {
+        const std::map<std::string, int32_t> modes = {
+            {"alphabetic", 0},
+            {"top", 1},
+            {"bottom", 2},
+            {"middle", 3},
+            {"ideographic", 4},
+            {"hanging", 5}};
 
-    auto iter = modes.find(v);
-    if( iter == modes.end() ) return;
+        auto iter = modes.find(v);
+        if (iter == modes.end())
+            return;
 
-    state->textBaseline = iter->second;
-}
+        state->textBaseline = iter->second;
+    }
 
-void* Context2DImplCairo::GetCanvas()
-{
-
-}
+    void *Context2DImplCairo::GetCanvas()
+    {
+        //TODO
+    }
 
 } // namespace NodeBinding
