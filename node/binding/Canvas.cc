@@ -86,7 +86,7 @@ namespace NodeBinding
             {
                 Napi::Object obj = Context2D::NewInstance(env);
                 Context2D *ctx = Napi::ObjectWrap<Context2D>::Unwrap(obj);
-                mRenderContext->setType(type);
+                mRenderContext->setContextType(type);
                 ctx->setRenderContext(mRenderContext);
                 ctx->setCanvasRef(this);
 
@@ -106,7 +106,7 @@ namespace NodeBinding
                 Napi::Object obj = ContextWebGL::NewInstance(env);
                 ContextWebGL *ctx = Napi::ObjectWrap<ContextWebGL>::Unwrap(obj);
                 ctx->setRenderContext(mRenderContext);
-                mRenderContext->setType(type);
+                mRenderContext->setContextType(type);
                 obj.Set("canvas",  this->Value());
 
                  // save reference

@@ -16,12 +16,25 @@ project(canvas)
  # CMake JS
 include_directories(${CMAKE_JS_INC})
 
+# find_package(cairo REQUIRED)
+# if(CAIRO_FOUND)
+#         message("Cairo found")
+#         include_directories(${Cairo_INCLUDE_DIRS})
+# else()
+#         message("Cairo not found")
+# endif()
+
+include_directories("/usr/include/cairo")
+include_directories("/usr/include/pango-1.0 ")
+include_directories("/usr/lib/x86_64-linux-gnu/glib-2.0/include")
+include_directories("/usr/include/glib-2.0 ")
+
 
 include_directories("./binding")
 include_directories("./binding/util")
 include_directories("./binding/renderContext")
 include_directories("./binding/renderContext/gcanvas")
-include_directories("./binding/renderContext/cario")
+include_directories("./binding/renderContext/cairo")
 include_directories("./third_party")
 include_directories("./third_party/font/freetype2/")
 include_directories("./image/")
@@ -59,6 +72,9 @@ set(SOURCE_FILES
         ./binding/renderContext/gcanvas/ImageDataImplGCanvas.cc
         # ./binding/renderContext/gcanvas/ImageImplGCanvas.cc
         # ./binding/renderContext/gcanvas/PtextureId
+        ./binding/renderContext/cairo/Context2DImplCairo.cc
+        ./binding/renderContext/cairo/PatternImplCairo.cc
+        ./binding/renderContext/cairo/color.cc
         ${CORE_DIR}src/GCanvas.cpp        
         ${CORE_DIR}src/GCanvasManager.cpp
 
@@ -99,6 +115,8 @@ set(SOURCE_FILES
         ${CORE_DIR}src/support/Value.cpp
 )
 
+
+
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
@@ -113,7 +131,11 @@ target_link_libraries(${PROJECT_NAME}
                       freetype
                       boost_system
                       jpeg
-                      curl)
+                      curl
+                      glib-2.0)
+
+
+                #       ${Cairo_LIBRARIES}
 
 # Include N-API wrappers
 execute_process(COMMAND node -p "require('node-addon-api').include"

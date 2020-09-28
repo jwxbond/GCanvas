@@ -102,7 +102,7 @@ namespace NodeBinding
         virtual void SetLineDashOffset(float v);
         virtual  std::string GetLineJoin();
         virtual void SetLineJoin( std::string v);
-        virtual float GetlineWidth();
+        virtual float GetLineWidth();
         virtual void SetLineWidth(float v);
         virtual float GetMiterLimit();
         virtual void SetMiterLimit(float v);

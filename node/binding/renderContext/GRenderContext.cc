@@ -9,6 +9,8 @@
 #include <GL/gl.h>
 // #include <GL/glut.h>
 #include <vector>
+#include "Context2DImplGCanvas.h"
+#include "Context2DImplCairo.h"
 
 namespace NodeBinding
 {
@@ -112,7 +114,7 @@ namespace NodeBinding
         glBindFramebuffer(GL_FRAMEBUFFER, mFboIdSrc);
     }
 
-    void GRenderContext::setType(std::string type)
+    void GRenderContext::setContextType(std::string type)
     {
         if (type == "2d")
         {
@@ -189,13 +191,31 @@ namespace NodeBinding
 
     void GRenderContext::initCanvas2d()
     {
-        GCanvasConfig config = {true, false};
-        mCanvas2d = std::make_shared<gcanvas::GCanvas>("node-gcanvas", config, nullptr);
-        mCanvas2d->CreateContext();
-        mCanvas2d->GetGCanvasContext()->SetClearColor(gcanvas::StrValueToColorRGBA("transparent"));
-        mCanvas2d->GetGCanvasContext()->ClearScreen();
-        mCanvas2d->GetGCanvasContext()->SetDevicePixelRatio(mDpi);
-        mCanvas2d->OnSurfaceChanged(0, 0, mCanvasWidth, mCanvasHeight);
+        //TODO Cairo Context or GCanvas Context 
+
+        bool useGCanvas = false;
+
+        if (useGCanvas)
+        {
+            mContext2DType = CONTEXT2D_GCANVAS;
+            
+            //老初始化代码
+            /*
+            GCanvasConfig config = {true, false};
+            mCanvas2d = std::make_shared<gcanvas::GCanvas>("node-gcanvas", config, nullptr);
+            mCanvas2d->CreateContext();
+            mCanvas2d->GetGCanvasContext()->SetClearColor(gcanvas::StrValueToColorRGBA("transparent"));
+            mCanvas2d->GetGCanvasContext()->ClearScreen();
+            mCanvas2d->GetGCanvasContext()->SetDevicePixelRatio(mDpi);
+            mCanvas2d->OnSurfaceChanged(0, 0, mCanvasWidth, mCanvasHeight);
+            */
+            mContext2D = std::make_shared<Context2DImplGCanvas>(mCanvasWidth, mCanvasHeight, mDpi);
+        }
+        else
+        {
+            mContext2DType = CONTEXT2D_CAIRO;
+            mContext2D = std::make_shared<Context2DImplCairo>(mCanvasWidth, mCanvasHeight, mDpi);
+        }
     }
     void GRenderContext::drawFrame()
     {

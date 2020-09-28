@@ -7,8 +7,8 @@
  * the LICENSE file in the root directory of this source tree.
  */
 #define CONTEXT_ES20
-#ifndef GBACKEND_H
-#define GBACKEND_H
+#ifndef GRENDERCONTEXT_H
+#define GRENDERCONTEXT_H
 #include <iostream>
 #include <GCanvas.hpp>
 #include "lodepng.h"
@@ -23,6 +23,11 @@
 
 namespace NodeBinding
 {
+    typedef enum {
+        CONTEXT2D_GCANVAS,
+        CONTEXT2D_CAIRO
+    } Context2DType;
+
     extern void encodePixelsToPNGFile(std::string filename, uint8_t *buffer, int width, int height);
     extern void decodeFile2Pixels(std::string filename, std::vector<unsigned char> &image);
     extern void encodePixelsToJPEGFile(std::string filename, uint8_t *buffer, int width, int height);
@@ -31,24 +36,20 @@ namespace NodeBinding
     class GRenderContext
     {
     public:
-        GRenderContext() : mWidth(0), mHeight(0), mCanvas2d(nullptr)
-        {
-        }
         GRenderContext(int width, int height);
         GRenderContext(int width, int height, int ratio);
         virtual ~GRenderContext();
         void initRenderEnviroment();
         void render2file(std::string caseName, PIC_FORMAT format);
         void drawFrame();
-        void setType(std::string type);
-        GCanvasContext *getCtx2d() { return mCanvas2d->GetGCanvasContext(); }
-        Context2DBase *getContext2D();
-        std::shared_ptr<gcanvas::WebGL::GWebGLRenderContext> getCtxWebGL()
-        {
-            return mCanvasWebGL;
-        }
-        int inline getWdith() { return mWidth; }
-        int inline getHeight() { return mHeight; }
+        void setContextType(std::string type);
+        inline GCanvasContext *getCtx2d() { return mCanvas2d->GetGCanvasContext(); }
+        inline std::shared_ptr<Context2DBase> getContext2D(){ return  mContext2D;}
+        inline std::shared_ptr<gcanvas::WebGL::GWebGLRenderContext> getCtxWebGL(){ return mCanvasWebGL; }
+
+
+        inline int  getWdith() { return mWidth; }
+        inline int  getHeight() { return mHeight; }
         void destoryRenderEnviroment();
         void recordTextures(int textureId);
         void recordImageTexture(std::string url, int textureId);
@@ -59,10 +60,15 @@ namespace NodeBinding
         int getImagePixelJPG(unsigned char **data, unsigned long &size);
         int readPixelAndSampleFromCurrentCtx(unsigned char *data);
         int getDpi();
+
     private:
         std::shared_ptr<gcanvas::GCanvas> mCanvas2d;
         std::shared_ptr<gcanvas::WebGL::GWebGLRenderContext> mCanvasWebGL;
+        std::shared_ptr<Context2DBase>mContext2D;
         void initCanvas2d();
+        void initCanvasWebGL();
+        Context2DType mContext2DType;
+        
         int mHeight;
         int mWidth;
         int mCanvasHeight;
@@ -82,7 +88,6 @@ namespace NodeBinding
         GLuint mFboIdDes = 0;
         GLuint mRenderBufferIdDes = 0;
         GLuint mDepthRenderbufferIdDes = 0;
-        void initCanvasWebGL();
     };
 } // namespace NodeBinding
 

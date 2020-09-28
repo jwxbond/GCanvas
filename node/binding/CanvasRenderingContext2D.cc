@@ -32,7 +32,6 @@
 #endif
 
 #define DEFINE_VOID_METHOD(methodName)              \
-    \ 
      void                                                 \
     Context2D::methodName(const Napi::CallbackInfo &info) \
     {                                                     \
@@ -43,7 +42,6 @@
 
 
 #define DEFINE_RETURN_VALUE_METHOD(methodName)            \
-    \ 
      Napi::Value                                          \
     Context2D::methodName(const Napi::CallbackInfo &info) \
     {                                                     \
@@ -54,11 +52,9 @@
 
 
 #define DEFINE_SETTER_METHOD(methodName)                                            \
-    \ 
      void                                                                           \
     Context2D::methodName(const Napi::CallbackInfo &info, const Napi::Value &value) \
     {                                                                               \
-        \ 
           RECORD_TIME_BEGIN                                                         \
             NodeBinding::checkArgs(info, 1);                                        \
         mRenderContext->makeCurrent();                                              \
@@ -70,7 +66,6 @@
                 \ 
 
 #define DEFINE_GETTER_METHOD(methodName)                  \
-    \ 
      Napi::Value                                          \
     Context2D::methodName(const Napi::CallbackInfo &info) \
     {                                                     \

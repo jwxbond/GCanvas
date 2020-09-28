@@ -14,9 +14,9 @@
 #include "ImageDataBase.h"
 #include "ImageBase.h"
 
-#include "cairo.h"
+#include <cairo.h>
 // #include "Canvas.h"
-// #include "color.h"
+#include "color.h"
 // #include "nan.h"
 #include <pango/pangocairo.h>
 
@@ -148,7 +148,7 @@ namespace NodeBinding
         virtual void SetLineDashOffset(float v);
         virtual  std::string GetLineJoin();
         virtual void SetLineJoin( std::string v);
-        virtual float GetlineWidth();
+        virtual float GetLineWidth();
         virtual void SetLineWidth(float v);
         virtual float GetMiterLimit();
         virtual void SetMiterLimit(float v);
@@ -176,7 +176,7 @@ namespace NodeBinding
     protected:
         inline void setContext(cairo_t *ctx) { _context = ctx; }
         inline cairo_t *context(){ return _context; }
-        inline Canvas *canvas(){ return _canvas; }
+        // inline Canvas *canvas(){ return _canvas; }
         inline bool hasShadow();
         void inline setSourceRGBA(rgba_t color);
         void inline setSourceRGBA(cairo_t *ctx, rgba_t color);
@@ -190,10 +190,11 @@ namespace NodeBinding
         void saveState();
         void restoreState();
         // void inline setFillRule(v8::Local<v8::Value> value);
+        void setFillRule(std::string value);
         void doFill(bool preserve = false);
         void doStroke(bool preserve = false);
-        void save();
-        void restore();
+        // void save();
+        // void restore();
         void setFontFromState();
         void resetState(bool init = false);
         inline PangoLayout *layout(){ return _layout; }
@@ -205,18 +206,14 @@ namespace NodeBinding
         canvas_state_t *state;
 
     protected:
-        
-        void SetFillRule(std::string value);
-
+        int mWidth;
+        int mHeight;
+        float mRatio;
 
         cairo_t *_context;
         cairo_path_t *_path;
         PangoLayout *_layout;
-
-
-    private:
         
-
     };
 } // namespace NodeBinding
 

@@ -91,13 +91,13 @@ class Context2DBase {
     virtual void SetGlobalCompositeOperation(std::string v) = 0;
     
     virtual std::string GetLineCap() = 0;
-    virtual void SetLineCap(std::string  v);
+    virtual void SetLineCap(std::string  v)=0;
 
     virtual float GetLineDashOffset() = 0;
     virtual void SetLineDashOffset(float v ) = 0;
     virtual  std::string GetLineJoin() = 0;
     virtual void SetLineJoin( std::string v) = 0;
-    virtual float GetlineWidth() = 0;
+    virtual float GetLineWidth() = 0;
     virtual void SetLineWidth(float v) = 0;
     virtual float GetMiterLimit() = 0;
     virtual void SetMiterLimit(float v) = 0;

@@ -398,7 +398,7 @@ void Context2DImplGCanvas::SetLineJoin( std::string v)
 {
     mGCanvasContext->SetLineJoin(  v.c_str() );
 }
-float Context2DImplGCanvas::GetlineWidth()
+float Context2DImplGCanvas::GetLineWidth()
 {
     return mGCanvasContext->LineWidth();
 }
