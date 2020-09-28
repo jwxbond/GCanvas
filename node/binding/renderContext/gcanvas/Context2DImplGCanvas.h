@@ -25,7 +25,7 @@
 
 namespace NodeBinding
 {
-    class Context2DImplGCanvas /*: public Context2DBase */ 
+    class Context2DImplGCanvas : public Context2DBase
     {
     public:
         Context2DImplGCanvas();

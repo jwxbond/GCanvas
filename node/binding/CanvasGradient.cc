@@ -75,7 +75,7 @@ Napi::Object Gradient::NewInstance(Napi::Env env, const Napi::CallbackInfo &info
 
 void Gradient::addColorStop(const Napi::CallbackInfo &info)
 {
-    checkArgs(info, 2);
+    NodeBinding::checkArgs(info, 2);
     float offset = 0.0;
     if (info[0].IsNumber())
     {

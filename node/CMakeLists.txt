@@ -68,7 +68,6 @@ set(SOURCE_FILES
         ./binding/webgl/WebGLActiveInfo.cc
         ./binding/webgl/WebGLUniformLocation.cc
         ./binding/renderContext/GRenderContext.cc
-        ./binding/renderContext/Context2DBase.cc
         ./binding/renderContext/ImageBase.cc
         ./binding/renderContext/ImageDataBase.cc
         ./binding/renderContext/PatternBase.cc
@@ -136,7 +135,8 @@ target_link_libraries(${PROJECT_NAME}
                       boost_system
                       jpeg
                       curl
-                      glib-2.0)
+                      glib-2.0
+                      cairo)
 
 
                 #       ${Cairo_LIBRARIES}

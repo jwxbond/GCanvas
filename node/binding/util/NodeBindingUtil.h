@@ -34,6 +34,7 @@ void decodeImageJPEG(std::vector<unsigned char> &pixels, unsigned int &width, un
 void decodeImagePNG(std::vector<unsigned char> &pixels, unsigned int &width, unsigned int &height, const unsigned char *content, int len);
 int readImageFromLocalFile(const std::string &path, ImageContent *content);
 bool checkArgs(const Napi::CallbackInfo &info, int exectedN);
+// bool checkArgs(const Napi::CallbackInfo &info, double*args, int exectedN, int offset=0);
 unsigned int downloadImage(const std::string &src, ImageContent *content);
 void throwError(const Napi::CallbackInfo &info, const std::string &exception);
 void throwError(const Napi::Env &env, const std::string &exception);

@@ -36,7 +36,7 @@ writeMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
     mem->memory[mem->size] = 0;
     return realsize;
 }
-bool checkArgs(const Napi::CallbackInfo &info, int exectedNumber)
+bool checkArgs(const Napi::CallbackInfo &info,  int exectedNumber)
 {
     if (info.Length() < exectedNumber)
     {
@@ -45,6 +45,32 @@ bool checkArgs(const Napi::CallbackInfo &info, int exectedNumber)
     }
     return true;
 }
+
+// bool checkArgs(const Napi::CallbackInfo &info, double*args, int exectedN, int offset)
+// {
+//     if (info.Length() < exectedN)
+//     {
+//         throwError(info, "wrong argument number");
+//         return false;
+//     }
+
+//     int end = offset + exectedN;
+//     bool valid = true;
+
+//     for (int i = offset; i < end; i++) 
+//     {
+//         info[i].IsNumber();
+//         if ( valid && ! (info[i].IsNumber()) )
+//         {
+//             valid = false;
+//             continue;
+//         }
+//         double val =  info[i].As<Napi::Number>().DoubleValue();
+//         args[i - offset] = val;
+//     }
+//     return valid;
+// }
+
 
 void throwError(const Napi::CallbackInfo &info, const std::string &exception)
 {

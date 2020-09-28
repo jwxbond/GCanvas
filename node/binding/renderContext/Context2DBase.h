@@ -31,12 +31,11 @@ typedef enum {
 class Context2DBase {
 
 public:
-    Context2DBase();
-    Context2DBase(short w, short h);
-    ~Context2DBase();
+    Context2DBase(){};
+    Context2DBase(const Context2DBase&){};
+    virtual ~Context2DBase() {}
 
-    virtual void resize( int w, int h ) =  0;
-
+    virtual void resize( int w, int h ) = 0;
 
     // 2D method
     virtual void arc(float x, float y, float r, float startAngle, float endAngle, int anticlosewise=0 ) = 0;
@@ -54,7 +53,7 @@ public:
     virtual void drawImage(ImageBase *image, float dx, float dy, float dw, float dh) = 0;
     virtual void drawImage(ImageBase *image, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh) = 0;
     virtual void fill(std::string rule) = 0;
-    virtual void fillRect(float x, float y, float w, float h);
+    virtual void fillRect(float x, float y, float w, float h) = 0;
     virtual void fillText(const char * text, float x, float y, float maxWidth) = 0;
     virtual ImageDataBase* GetImageData() = 0;
     virtual void* GetLineDash() = 0;
@@ -75,38 +74,29 @@ public:
     virtual void transform(float a, float b, float c, float d, float tx, float ty) = 0;
     virtual void resetTransform() = 0;
     virtual void translate(float tx, float ty) = 0;
-
     // 2D property
     virtual std::string GetFillColor() = 0;
     virtual void SetFillColor(std::string v)  = 0;
-
-
     virtual StyleType GetFillStyleType() = 0;
     virtual void* GetFillStyle() = 0;
     virtual void SetFillStyle(const void* v, StyleType stype) = 0;
-
     virtual StyleType GetStrokeStyleType() = 0;
     virtual void* GetStrokeStyle() = 0;
     virtual void SetStrokeStyle(const void* v, StyleType stype) = 0;
-
     virtual float GetGlobalAlpha() = 0;
     virtual void SetGlobalAlpha(float alpha) = 0;
-
     virtual std::string  GetGlobalCompositeOperation() = 0;
     virtual void SetGlobalCompositeOperation(std::string v) = 0;
-    
     virtual std::string GetLineCap() = 0;
-    virtual void SetLineCap(std::string  v)=0;
-
+    virtual void SetLineCap(std::string  v) = 0;
     virtual float GetLineDashOffset() = 0;
     virtual void SetLineDashOffset(float v ) = 0;
-    virtual  std::string GetLineJoin() = 0;
+    virtual std::string GetLineJoin() = 0;
     virtual void SetLineJoin( std::string v) = 0;
     virtual float GetLineWidth() = 0;
     virtual void SetLineWidth(float v) = 0;
     virtual float GetMiterLimit() = 0;
     virtual void SetMiterLimit(float v) = 0;
-
     virtual float GetShadowBlur() = 0;
     virtual void SetShadowBlur(float v) = 0;
     virtual std::string GetShadowColor() = 0;
@@ -115,14 +105,12 @@ public:
     virtual void SetShadowOffsetX(float v) = 0;
     virtual float GetShadowOffsetY() = 0;
     virtual void SetShadowOffsetY(float v) = 0;
-
     virtual std::string GetFont() = 0;
     virtual void SetFont(const std::string &v)  = 0;
     virtual std::string GetTextAlign() = 0;
     virtual void SetTextAlign(std::string v) = 0;
     virtual std::string GetTextBaseline() = 0;
     virtual void SetTextBaseline(std::string v) = 0;
-
     virtual void* GetCanvas() = 0;
 };
 

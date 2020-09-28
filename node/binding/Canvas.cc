@@ -17,7 +17,7 @@ namespace NodeBinding
         Napi::Env env = info.Env();
         Napi::HandleScope scope(env);
 
-        checkArgs(info, 2);
+        NodeBinding::checkArgs(info, 2);
         mWidth = info[0].As<Napi::Number>().Int32Value();
         mHeight = info[1].As<Napi::Number>().Int32Value();
         mRenderContext = std::make_shared<GRenderContext>(mWidth, mHeight, 2.0);
@@ -78,7 +78,7 @@ namespace NodeBinding
     Napi::Value Canvas::getContext(const Napi::CallbackInfo &info)
     {
         Napi::Env env = info.Env();
-        checkArgs(info, 1);
+        NodeBinding::checkArgs(info, 1);
         std::string type = info[0].As<Napi::String>().Utf8Value();
         if (type == "2d")
         {

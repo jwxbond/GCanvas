@@ -66,7 +66,7 @@ namespace NodeBinding
 
     void Image::setSrc(const Napi::CallbackInfo &info, const Napi::Value &value)
      {
-        checkArgs(info, 1);
+        NodeBinding::checkArgs(info, 1);
         src = value.As<Napi::String>().Utf8Value();
         mImageMemCached=std::make_shared<ImageCached>();
         if (!mDownloadImageWorker)
@@ -94,13 +94,13 @@ namespace NodeBinding
 
     void Image::setOnLoadCallback(const Napi::CallbackInfo &info, const Napi::Value &value)
     {
-        checkArgs(info, 1);
+        NodeBinding::checkArgs(info, 1);
         mCallbackSet->mOnLoadCallback = Napi::Persistent(value.As<Napi::Function>());
     }
 
     void Image::setOnErrorCallback(const Napi::CallbackInfo &info, const Napi::Value &value)
     {
-        checkArgs(info, 1);
+        NodeBinding::checkArgs(info, 1);
         mCallbackSet->mOnErrorCallback = Napi::Persistent(value.As<Napi::Function>());
     }
 
