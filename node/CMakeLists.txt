@@ -32,6 +32,7 @@ include_directories("/usr/include/glib-2.0 ")
 
 include_directories("./binding")
 include_directories("./binding/util")
+include_directories("./binding/cairo")
 include_directories("./binding/renderContext")
 include_directories("./binding/renderContext/gcanvas")
 include_directories("./binding/renderContext/cairo")
@@ -80,6 +81,19 @@ set(SOURCE_FILES
         ./binding/renderContext/cairo/ImageBackendCairo.cc
         ./binding/util/NodeBindingUtil.cc
         ./third_party/lodepng.cc
+
+        ./binding/cairo/backend/Backend.cc
+        ./binding/cairo/backend/ImageBackend.cc
+        # ./binding/cairo/Backends.cc
+        # ./binding/cairo/Backends.cc
+        # ./binding/cairo/Canvas.cc
+        # ./binding/cairo/CanvasGradient.cc
+        # ./binding/cairo/CanvasPattern.cc
+        # ./binding/cairo/CanvasRenderingContext2d.cc
+        # ./binding/cairo/Image.cc
+        # ./binding/cairo/ImageData.cc
+
+
         ${CORE_DIR}src/GCanvas.cpp        
         ${CORE_DIR}src/GCanvasManager.cpp
 
