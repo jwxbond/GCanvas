@@ -103,7 +103,7 @@ void Context2DImplGCanvas::Clip(std::string rule)
     {
         fillRule = FILL_RULE_EVENODD;
     }
-    mGCanvasContext->Clip(FillRule);
+    mGCanvasContext->Clip(fillRule);
 }
 void Context2DImplGCanvas::ClosePath()
 {

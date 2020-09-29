@@ -746,7 +746,7 @@ namespace NodeBinding
             return;
         savePath();
         cairo_rectangle(_context, x, y, w, h);
-        fill("nonzero"); //TODO
+        Fill("nonzero"); //TODO
         restorePath();
     }
 
@@ -846,7 +846,7 @@ namespace NodeBinding
     void Context2DImplCairo::SetTransform(float a, float b, float c, float d, float tx, float ty)
     {
         cairo_identity_matrix(_context);
-        transform(a, b, c, d, tx, ty);
+        Transform(a, b, c, d, tx, ty);
     }
     void Context2DImplCairo::Stroke()
     {
@@ -858,7 +858,7 @@ namespace NodeBinding
             return;
         savePath();
         cairo_rectangle(_context, x, y, w, h);
-        stroke();
+        Stroke();
         restorePath();
     }
     void Context2DImplCairo::StrokeText(const char *text, float x, float y, float maxWidth)
