@@ -192,15 +192,12 @@ namespace NodeBinding
     void GRenderContext::initCanvas2d()
     {
         //TODO Cairo Context or GCanvas Context 
-
         bool useGCanvas = true;
-
         if (useGCanvas)
         {
             mContext2DType = CONTEXT2D_GCANVAS;
             
             //老初始化代码
-            /*
             GCanvasConfig config = {true, false};
             mCanvas2d = std::make_shared<gcanvas::GCanvas>("node-gcanvas", config, nullptr);
             mCanvas2d->CreateContext();
@@ -208,8 +205,6 @@ namespace NodeBinding
             mCanvas2d->GetGCanvasContext()->ClearScreen();
             mCanvas2d->GetGCanvasContext()->SetDevicePixelRatio(mDpi);
             mCanvas2d->OnSurfaceChanged(0, 0, mCanvasWidth, mCanvasHeight);
-            */
-            // mContext2D = std::make_shared<Context2DImplGCanvas>(mCanvasWidth, mCanvasHeight, mDpi);
         }
         else
         {
