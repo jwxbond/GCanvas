@@ -76,81 +76,81 @@ void Context2DImplGCanvas::resize( int w, int h )
 //==========================================================
 //  2D method
 //==========================================================
-void Context2DImplGCanvas::arc(float x, float y, float r, float startAngle, float endAngle, int anticlosewise)
+void Context2DImplGCanvas::Arc(float x, float y, float r, float startAngle, float endAngle, int anticlosewise)
 {
     mGCanvasContext->Arc(x, y, r, startAngle, endAngle, anticlosewise);
 }
-void Context2DImplGCanvas::arcTo(float x1, float y1, float x2, float y2, float radius)
+void Context2DImplGCanvas::ArcTo(float x1, float y1, float x2, float y2, float radius)
 {
     mGCanvasContext->ArcTo(x1, y1, x2, y2, radius);
 }
-void Context2DImplGCanvas::beginPath()
+void Context2DImplGCanvas::BeginPath()
 {
     mGCanvasContext->BeginPath();
 }
-void Context2DImplGCanvas::bezierCurveTo(float x1, float y1, float x2, float y2, float x, float y)
+void Context2DImplGCanvas::BezierCurveTo(float x1, float y1, float x2, float y2, float x, float y)
 {
     mGCanvasContext->BezierCurveTo(x1, y1, x2, y2, x, y);
 }
-void Context2DImplGCanvas::clearRect(float x, float y, float w, float h)
+void Context2DImplGCanvas::ClearRect(float x, float y, float w, float h)
 {
     mGCanvasContext->ClearRect(x, y, w, h);
 }
-void Context2DImplGCanvas::clip(std::string rule)
+void Context2DImplGCanvas::Clip(std::string rule)
 {
     GFillRule fillRule = FILL_RULE_NONZERO;
     if (rule == "evenodd")
     {
         fillRule = FILL_RULE_EVENODD;
     }
-    mGCanvasContext->Clip(fillRule);
+    mGCanvasContext->Clip(FillRule);
 }
-void Context2DImplGCanvas::closePath()
+void Context2DImplGCanvas::ClosePath()
 {
     mGCanvasContext->ClosePath();
 }
-ImageDataBase* Context2DImplGCanvas::createImageData()
+ImageDataBase* Context2DImplGCanvas::CreateImageData()
 {
     // ImageDataBase *imageData = 
     return nullptr;
 }
-GradientBase* Context2DImplGCanvas::createLinearGradient()
+GradientBase* Context2DImplGCanvas::CreateLinearGradient()
 {
     //TODO
     return nullptr;
 }
-PatternBase* Context2DImplGCanvas::createPattern()
+PatternBase* Context2DImplGCanvas::CreatePattern()
 {
     //TODO
     return nullptr;
 }
-GradientBase* Context2DImplGCanvas::createRadialGradient()
+GradientBase* Context2DImplGCanvas::CreateRadialGradient()
 {
     //TODO
     return nullptr;
 }
 
-void Context2DImplGCanvas::drawImage(ImageBase *image, float dx, float dy)
+void Context2DImplGCanvas::DrawImage(ImageBase *image, float dx, float dy)
 {
     if (!image) { return; }
     float sx = 0, sy = 0;
     float sw = image->width(), sh = image->height();
     float dw = sw, dh = sh;
-    Context2DImplGCanvas::drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+    Context2DImplGCanvas::DrawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
 }
-void Context2DImplGCanvas::drawImage(ImageBase *image, float dx, float dy, float dw, float dh)
+void Context2DImplGCanvas::DrawImage(ImageBase *image, float dx, float dy, float dw, float dh)
 {
     if (!image) { return; }
     float sx = 0, sy = 0;
     float sw = image->width(), sh = image->height();
-    Context2DImplGCanvas::drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+    Context2DImplGCanvas::DrawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
 }
-void Context2DImplGCanvas::drawImage(ImageBase *image, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh)
+void Context2DImplGCanvas::DrawImage(ImageBase *image, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh)
 {
     if (!image) { return; }
     mGCanvasContext->DrawImage(image->textureId(), image->width(), image->height(), sx, sy, sw, sh, dx, dy, dw, dh);
 }
-void Context2DImplGCanvas::fill(std::string rule)
+void Context2DImplGCanvas::Fill(std::string rule)
 {
     GFillRule fillRule = FILL_RULE_NONZERO;
     if (rule == "evenodd")
@@ -159,12 +159,12 @@ void Context2DImplGCanvas::fill(std::string rule)
     }
     mGCanvasContext->Fill(fillRule);
 }
-void Context2DImplGCanvas::fillRect(float x, float y, float w, float h)
+void Context2DImplGCanvas::FillRect(float x, float y, float w, float h)
 {
     mGCanvasContext->FillRect(x, y, w, h);
 
 }
-void Context2DImplGCanvas::fillText(const char * text, float x, float y, float maxWidth)
+void Context2DImplGCanvas::FillText(const char * text, float x, float y, float maxWidth)
 {
     mGCanvasContext->DrawText(text, x, y, maxWidth);
 }
@@ -176,45 +176,45 @@ void* Context2DImplGCanvas::GetLineDash()
 {
     //TODO
 }
-void Context2DImplGCanvas::lineTo(float x, float y)
+void Context2DImplGCanvas::LineTo(float x, float y)
 {
     mGCanvasContext->LineTo(x, y);
 }
-float Context2DImplGCanvas::measureText(const char * text)
+float Context2DImplGCanvas::MeasureText(const char * text)
 {
     float width = mGCanvasContext->MeasureTextWidth(text);
     return width;
 }
-void Context2DImplGCanvas::moveTo(float x, float y)
+void Context2DImplGCanvas::MoveTo(float x, float y)
 {
     mGCanvasContext->MoveTo(x, y);
 }
-void Context2DImplGCanvas::putImageData(ImageDataBase *imageData, int x,  int y, int w, int h, int dx, int dy, int dw, int dh )
+void Context2DImplGCanvas::PutImageData(ImageDataBase *imageData, int x,  int y, int w, int h, int dx, int dy, int dw, int dh )
 {
     //TOOD
     // mGCanvasContext->PutImageData( (const unsigned char *)imageData->GetData(), imageData->GetWidth(), imageData->GetHeight(), x, y, dx);
 }
-void Context2DImplGCanvas::quadraticCurveTo(float cpx, float cpy, float x, float y)
+void Context2DImplGCanvas::QuadraticCurveTo(float cpx, float cpy, float x, float y)
 {
     mGCanvasContext->QuadraticCurveTo(cpx, cpy, x, y );
 }
-void Context2DImplGCanvas::rect(float x, float y, float w, float h)
+void Context2DImplGCanvas::Rect(float x, float y, float w, float h)
 {
     mGCanvasContext->Rect(x, y, w, h);
 }
-void Context2DImplGCanvas::restore()
+void Context2DImplGCanvas::Restore()
 {
     mGCanvasContext->Restore();
 }
-void Context2DImplGCanvas::rotate(float angle)
+void Context2DImplGCanvas::Rotate(float angle)
 {
     mGCanvasContext->Rotate(angle);
 }
-void Context2DImplGCanvas::save()
+void Context2DImplGCanvas::Save()
 {
     mGCanvasContext->Save();
 }
-void Context2DImplGCanvas::scale(float sx, float sy)
+void Context2DImplGCanvas::Scale(float sx, float sy)
 {
     mGCanvasContext->Scale(sx, sy);
 }
@@ -227,27 +227,27 @@ void Context2DImplGCanvas::SetTransform(float a, float b, float c, float d, floa
 {
     mGCanvasContext->SetTransform(a, b, c, d, tx, ty);
 }
-void Context2DImplGCanvas::stroke()
+void Context2DImplGCanvas::Stroke()
 {
     mGCanvasContext->Stroke();
 }
-void Context2DImplGCanvas::strokeRect(float x, float y, float w, float h)
+void Context2DImplGCanvas::StrokeRect(float x, float y, float w, float h)
 {
     mGCanvasContext->StrokeRect(x, y, w, h);
 }
-void Context2DImplGCanvas::strokeText(const char * text, float x, float y, float maxWidth)
+void Context2DImplGCanvas::StrokeText(const char * text, float x, float y, float maxWidth)
 {
     mGCanvasContext->StrokeText(text, x, y, maxWidth);
 }
-void Context2DImplGCanvas::transform(float a, float b, float c, float d, float tx, float ty)
+void Context2DImplGCanvas::Transform(float a, float b, float c, float d, float tx, float ty)
 {
     mGCanvasContext->Transfrom(a, b, c, d, tx, ty); //TODO rename
 }
-void Context2DImplGCanvas::resetTransform()
+void Context2DImplGCanvas::ResetTransform()
 {
     mGCanvasContext->ResetTransform();
 }
-void Context2DImplGCanvas::translate(float tx, float ty)
+void Context2DImplGCanvas::Translate(float tx, float ty)
 {
     mGCanvasContext->Translate(tx, ty);
 }

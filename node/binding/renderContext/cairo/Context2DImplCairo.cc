@@ -559,7 +559,7 @@ namespace NodeBinding
     //==========================================================
     //  2D method
     //==========================================================
-    void Context2DImplCairo::arc(float x, float y, float r, float startAngle, float endAngle, int anticlosewise)
+    void Context2DImplCairo::Arc(float x, float y, float r, float startAngle, float endAngle, int anticlosewise)
     {
         if (anticlosewise && M_PI * 2 != endAngle)
         {
@@ -570,7 +570,7 @@ namespace NodeBinding
             cairo_arc(_context, x, y, r, startAngle, endAngle);
         }
     }
-    void Context2DImplCairo::arcTo(float x1, float y1, float x2, float y2, float radius)
+    void Context2DImplCairo::ArcTo(float x1, float y1, float x2, float y2, float radius)
     {
         // Current path point
         double x, y;
@@ -657,15 +657,15 @@ namespace NodeBinding
             cairo_arc(_context, p.x, p.y, radius, sa, ea);
         }
     }
-    void Context2DImplCairo::beginPath()
+    void Context2DImplCairo::BeginPath()
     {
         cairo_new_path(_context);
     }
-    void Context2DImplCairo::bezierCurveTo(float x1, float y1, float x2, float y2, float x, float y)
+    void Context2DImplCairo::BezierCurveTo(float x1, float y1, float x2, float y2, float x, float y)
     {
         cairo_curve_to(_context, x1, y1, x2, y2, x, y);
     }
-    void Context2DImplCairo::clearRect(float x, float y, float w, float h)
+    void Context2DImplCairo::ClearRect(float x, float y, float w, float h)
     {
         if (0 == w || 0 == h)
             return;
@@ -678,37 +678,37 @@ namespace NodeBinding
         restorePath();
         cairo_restore(_context);
     }
-    void Context2DImplCairo::clip(std::string rule)
+    void Context2DImplCairo::Clip(std::string rule)
     {
         setFillRule(rule);
         cairo_clip_preserve(_context);
     }
-    void Context2DImplCairo::closePath()
+    void Context2DImplCairo::ClosePath()
     {
         cairo_close_path(_context);
     }
-    ImageDataBase *Context2DImplCairo::createImageData()
+    ImageDataBase *Context2DImplCairo::CreateImageData()
     {
         //TODO
         return nullptr;
     }
-    GradientBase *Context2DImplCairo::createLinearGradient()
+    GradientBase *Context2DImplCairo::CreateLinearGradient()
     {
         // GradientBase *gradient = new GradientBase();
         return nullptr;
     }
-    PatternBase *Context2DImplCairo::createPattern()
+    PatternBase *Context2DImplCairo::CreatePattern()
     {
         //TODO
         return nullptr;
     }
-    GradientBase *Context2DImplCairo::createRadialGradient()
+    GradientBase *Context2DImplCairo::CreateRadialGradient()
     {
         //TODO
         return nullptr;
     }
 
-    void Context2DImplCairo::drawImage(ImageBase *image, float dx, float dy)
+    void Context2DImplCairo::DrawImage(ImageBase *image, float dx, float dy)
     {
         if (!image)
         {
@@ -717,9 +717,9 @@ namespace NodeBinding
         float sx = 0, sy = 0;
         float sw = image->width(), sh = image->height();
         float dw = sw, dh = sh;
-        Context2DImplCairo::drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+        Context2DImplCairo::DrawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
     }
-    void Context2DImplCairo::drawImage(ImageBase *image, float dx, float dy, float dw, float dh)
+    void Context2DImplCairo::DrawImage(ImageBase *image, float dx, float dy, float dw, float dh)
     {
         if (!image)
         {
@@ -727,20 +727,20 @@ namespace NodeBinding
         }
         float sx = 0, sy = 0;
         float sw = image->width(), sh = image->height();
-        Context2DImplCairo::drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+        Context2DImplCairo::DrawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
     }
-    void Context2DImplCairo::drawImage(ImageBase *image, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh)
+    void Context2DImplCairo::DrawImage(ImageBase *image, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh)
     {
         if (!image)
         {
             return;
         }
     }
-    void Context2DImplCairo::fill(std::string rule)
+    void Context2DImplCairo::Fill(std::string rule)
     {
         setFillRule(rule);
     }
-    void Context2DImplCairo::fillRect(float x, float y, float w, float h)
+    void Context2DImplCairo::FillRect(float x, float y, float w, float h)
     {
         if (w == 0 || h == 0)
             return;
@@ -750,7 +750,7 @@ namespace NodeBinding
         restorePath();
     }
 
-    void Context2DImplCairo::fillText(const char *text, float x, float y, float maxWidth)
+    void Context2DImplCairo::FillText(const char *text, float x, float y, float maxWidth)
     {
         //TODO
     }
@@ -762,24 +762,24 @@ namespace NodeBinding
     {
         //TODO
     }
-    void Context2DImplCairo::lineTo(float x, float y)
+    void Context2DImplCairo::LineTo(float x, float y)
     {
         cairo_line_to(_context, x, y);
     }
-    float Context2DImplCairo::measureText(const char *text)
+    float Context2DImplCairo::MeasureText(const char *text)
     {
         //TODO
     }
-    void Context2DImplCairo::moveTo(float x, float y)
+    void Context2DImplCairo::MoveTo(float x, float y)
     {
         cairo_move_to(_context, x, y);
     }
-    void Context2DImplCairo::putImageData(ImageDataBase *imageData, int x, int y, int w, int h, int dx, int dy, int dw, int dh)
+    void Context2DImplCairo::PutImageData(ImageDataBase *imageData, int x, int y, int w, int h, int dx, int dy, int dw, int dh)
     {
         //TOOD
         // mGCanvasContext->PutImageData( (const unsigned char *)imageData->GetData(), imageData->GetWidth(), imageData->GetHeight(), x, y, dx);
     }
-    void Context2DImplCairo::quadraticCurveTo(float x1, float y1, float x2, float y2)
+    void Context2DImplCairo::QuadraticCurveTo(float x1, float y1, float x2, float y2)
     {
         double x, y;
         cairo_get_current_point(_context, &x, &y);
@@ -791,7 +791,7 @@ namespace NodeBinding
         }
         cairo_curve_to(_context, x + 2.0 / 3.0 * (x1 - x), y + 2.0 / 3.0 * (y1 - y), x2 + 2.0 / 3.0 * (x1 - x2), y2 + 2.0 / 3.0 * (y1 - y2), x2, y2);
     }
-    void Context2DImplCairo::rect(float x, float y, float w, float h)
+    void Context2DImplCairo::Rect(float x, float y, float w, float h)
     {
         if (w == 0)
         {
@@ -808,7 +808,7 @@ namespace NodeBinding
             cairo_rectangle(_context, x, y, w, h);
         }
     }
-    void Context2DImplCairo::restore()
+    void Context2DImplCairo::Restore()
     {
         if (stateno > 0)
         {
@@ -820,11 +820,11 @@ namespace NodeBinding
             pango_layout_set_font_description(_layout, state->fontDescription);
         }
     }
-    void Context2DImplCairo::rotate(float angle)
+    void Context2DImplCairo::Rotate(float angle)
     {
         cairo_rotate(_context, angle);
     }
-    void Context2DImplCairo::save()
+    void Context2DImplCairo::Save()
     {
         if (stateno < CANVAS_MAX_STATES)
         {
@@ -835,7 +835,7 @@ namespace NodeBinding
             state = states[stateno];
         }
     }
-    void Context2DImplCairo::scale(float sx, float sy)
+    void Context2DImplCairo::Scale(float sx, float sy)
     {
         cairo_scale(_context, sx, sy);
     }
@@ -848,11 +848,11 @@ namespace NodeBinding
         cairo_identity_matrix(_context);
         transform(a, b, c, d, tx, ty);
     }
-    void Context2DImplCairo::stroke()
+    void Context2DImplCairo::Stroke()
     {
         doStroke();
     }
-    void Context2DImplCairo::strokeRect(float x, float y, float w, float h)
+    void Context2DImplCairo::StrokeRect(float x, float y, float w, float h)
     {
         if (0 == w && 0 == h)
             return;
@@ -861,21 +861,21 @@ namespace NodeBinding
         stroke();
         restorePath();
     }
-    void Context2DImplCairo::strokeText(const char *text, float x, float y, float maxWidth)
+    void Context2DImplCairo::StrokeText(const char *text, float x, float y, float maxWidth)
     {
         // mGCanvasContext->StrokeText(text, x, y, maxWidth);
     }
-    void Context2DImplCairo::transform(float a, float b, float c, float d, float tx, float ty)
+    void Context2DImplCairo::Transform(float a, float b, float c, float d, float tx, float ty)
     {
         cairo_matrix_t matrix;
         cairo_matrix_init(&matrix, a, b, c, d, tx, ty);
         cairo_transform(_context, &matrix);
     }
-    void Context2DImplCairo::resetTransform()
+    void Context2DImplCairo::ResetTransform()
     {
         cairo_identity_matrix(_context);
     }
-    void Context2DImplCairo::translate(float tx, float ty)
+    void Context2DImplCairo::Translate(float tx, float ty)
     {
         cairo_translate(_context, tx, ty);
     }
