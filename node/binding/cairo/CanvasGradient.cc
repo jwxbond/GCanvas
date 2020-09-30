@@ -5,97 +5,132 @@
 #include "Canvas.h"
 #include "color.h"
 
-using namespace v8;
+
 
 Nan::Persistent<FunctionTemplate> Gradient::constructor;
 
-/*
- * Initialize CanvasGradient.
- */
 
-void
-Gradient::Initialize(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE target) {
-  Nan::HandleScope scope;
+ void Gradient::init(Napi::Env env)
+ {
+   Napi::HandleScope scope(env);
 
-  // Constructor
-  Local<FunctionTemplate> ctor = Nan::New<FunctionTemplate>(Gradient::New);
-  constructor.Reset(ctor);
-  ctor->InstanceTemplate()->SetInternalFieldCount(1);
-  ctor->SetClassName(Nan::New("CanvasGradient").ToLocalChecked());
+    Napi::Function func =
+        DefineClass(env,
+                    "CanvasGradient",
+                    {
+                        InstanceMethod("addColorStop", &Gradient::addColorStop),
+                    });
+    constructor = Napi::Persistent(func);
+    constructor.SuppressDestruct();
+ }
 
-  // Prototype
-  Nan::SetPrototypeMethod(ctor, "addColorStop", AddColorStop);
-  Local<Context> ctx = Nan::GetCurrentContext();
-  Nan::Set(target,
-           Nan::New("CanvasGradient").ToLocalChecked(),
-           ctor->GetFunction(ctx).ToLocalChecked());
+Napi::Object Gradient::NewInstance(Napi::Env env, int width, int height)
+{ 
+     Napi::Object obj = constructor.New({ 
+        Napi::String::New(env,  "backend"),
+        Napi::Number::New(env, width),
+        Napi::Number::New(env, height) });
+  obj.Set("name",  Napi::String::New(env, "backend"));
+  return obj;
 }
 
+Napi::Object Gradient::NewInstance(Napi::Env env, const Napi::CallbackInfo &info)
+{
+  
+}
+  
+Napi::Object Gradient::NewInstance(Napi::Env env, double x0, double y0, double x1, double y1)
+{
+
+}
+
+Napi::Object Gradient::NewInstance(Napi::Env env, double x0, double y0, double r0, double x1, double y1, double r1)
+{
+
+}
 /*
  * Initialize a new CanvasGradient.
  */
 
-NAN_METHOD(Gradient::New) {
-  if (!info.IsConstructCall()) {
-    return Nan::ThrowTypeError("Class constructors cannot be invoked without 'new'");
-  }
+// NAN_METHOD(Gradient::New) {
+//   if (!info.IsConstructCall()) {
+//     return Nan::ThrowTypeError("Class constructors cannot be invoked without 'new'");
+//   }
 
-  // Linear
-  if (4 == info.Length()) {
-    Gradient *grad = new Gradient(
-        Nan::To<double>(info[0]).FromMaybe(0)
-      , Nan::To<double>(info[1]).FromMaybe(0)
-      , Nan::To<double>(info[2]).FromMaybe(0)
-      , Nan::To<double>(info[3]).FromMaybe(0));
-    grad->Wrap(info.This());
-    info.GetReturnValue().Set(info.This());
-    return;
-  }
+//   // Linear
+//   if (4 == info.Length()) {
+//     Gradient *grad = new Gradient(
+//         Nan::To<double>(info[0]).FromMaybe(0)
+//       , Nan::To<double>(info[1]).FromMaybe(0)
+//       , Nan::To<double>(info[2]).FromMaybe(0)
+//       , Nan::To<double>(info[3]).FromMaybe(0));
+//     grad->Wrap(info.This());
+//     info.GetReturnValue().Set(info.This());
+//     return;
+//   }
 
-  // Radial
-  if (6 == info.Length()) {
-    Gradient *grad = new Gradient(
-        Nan::To<double>(info[0]).FromMaybe(0)
-      , Nan::To<double>(info[1]).FromMaybe(0)
-      , Nan::To<double>(info[2]).FromMaybe(0)
-      , Nan::To<double>(info[3]).FromMaybe(0)
-      , Nan::To<double>(info[4]).FromMaybe(0)
-      , Nan::To<double>(info[5]).FromMaybe(0));
-    grad->Wrap(info.This());
-    info.GetReturnValue().Set(info.This());
-    return;
-  }
+//   // Radial
+//   if (6 == info.Length()) {
+//     Gradient *grad = new Gradient(
+//         Nan::To<double>(info[0]).FromMaybe(0)
+//       , Nan::To<double>(info[1]).FromMaybe(0)
+//       , Nan::To<double>(info[2]).FromMaybe(0)
+//       , Nan::To<double>(info[3]).FromMaybe(0)
+//       , Nan::To<double>(info[4]).FromMaybe(0)
+//       , Nan::To<double>(info[5]).FromMaybe(0));
+//     grad->Wrap(info.This());
+//     info.GetReturnValue().Set(info.This());
+//     return;
+//   }
 
-  return Nan::ThrowTypeError("invalid arguments");
-}
+//   return Nan::ThrowTypeError("invalid arguments");
+// }
 
 /*
  * Add color stop.
  */
 
-NAN_METHOD(Gradient::AddColorStop) {
-  if (!info[0]->IsNumber())
-    return Nan::ThrowTypeError("offset required");
+
+void Gradient::addColorStop(const Napi::CallbackInfo &info)
+{
+    NodeBinding::checkArgs(info, 2);
+    float offset = 0.0;
+    if (info[0].IsNumber())
+    {
+        offset = info[0].As<Napi::Number>().FloatValue();
+    }
+    else if (info[0].IsString())
+    {
+        std::string tmp = info[0].As<Napi::String>().Utf8Value();
+        offset = std::stof(tmp);
+    }
+    else
+    {
+        throwError(info, "offset is invalid");
+    }
+
+
   if (!info[1]->IsString())
-    return Nan::ThrowTypeError("color string required");
-
-  Gradient *grad = Nan::ObjectWrap::Unwrap<Gradient>(info.This());
-  short ok;
-  Nan::Utf8String str(info[1]);
-  uint32_t rgba = rgba_from_string(*str, &ok);
-
-  if (ok) {
-    rgba_t color = rgba_create(rgba);
-    cairo_pattern_add_color_stop_rgba(
-        grad->pattern()
-      , Nan::To<double>(info[0]).FromMaybe(0)
-      , color.r
-      , color.g
-      , color.b
-      , color.a);
-  } else {
-    return Nan::ThrowTypeError("parse color failed");
+  {
+    throwError(info, "color string is invalid");
   }
+
+    short ok;
+    Nan::Utf8String str(info[1]);
+    uint32_t rgba = rgba_from_string(*str, &ok);
+
+     if (ok) {
+      rgba_t color = rgba_create(rgba);
+      cairo_pattern_add_color_stop_rgba(
+          grad->pattern()
+        , Nan::To<double>(info[0]).FromMaybe(0)
+        , color.r
+        , color.g
+        , color.b
+        , color.a);
+    } else {
+      return Nan::ThrowTypeError("parse color failed");
+    }
 }
 
 /*

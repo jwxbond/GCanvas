@@ -35,7 +35,7 @@
   "with at least a family (string) and optionally weight (string/number) " \
   "and style (string)."
 
-using namespace v8;
+
 using namespace std;
 
 Nan::Persistent<FunctionTemplate> Canvas::constructor;
@@ -116,7 +116,7 @@ NAN_METHOD(Canvas::New) {
     if (Nan::New(ImageBackend::constructor)->HasInstance(info[0]) ||
         Nan::New(PdfBackend::constructor)->HasInstance(info[0]) ||
         Nan::New(SvgBackend::constructor)->HasInstance(info[0])) {
-      backend = Nan::ObjectWrap::Unwrap<Backend>(Nan::To<Object>(info[0]).ToLocalChecked());
+      backend = Napi::ObjectWrap::Unwrap<Backend>(Nan::To<Object>(info[0]).ToLocalChecked());
     }else{
       return Nan::ThrowTypeError("Invalid arguments");
     }
@@ -143,7 +143,7 @@ NAN_METHOD(Canvas::New) {
  */
 
 NAN_GETTER(Canvas::GetType) {
-  Canvas *canvas = Nan::ObjectWrap::Unwrap<Canvas>(info.This());
+  Canvas *canvas = Napi::ObjectWrap::Unwrap<Canvas>(info.This());
   info.GetReturnValue().Set(Nan::New<String>(canvas->backend()->getName()).ToLocalChecked());
 }
 
@@ -151,7 +151,7 @@ NAN_GETTER(Canvas::GetType) {
  * Get stride.
  */
 NAN_GETTER(Canvas::GetStride) {
-  Canvas *canvas = Nan::ObjectWrap::Unwrap<Canvas>(info.This());
+  Canvas *canvas = Napi::ObjectWrap::Unwrap<Canvas>(info.This());
   info.GetReturnValue().Set(Nan::New<Number>(canvas->stride()));
 }
 
@@ -160,7 +160,7 @@ NAN_GETTER(Canvas::GetStride) {
  */
 
 NAN_GETTER(Canvas::GetWidth) {
-  Canvas *canvas = Nan::ObjectWrap::Unwrap<Canvas>(info.This());
+  Canvas *canvas = Napi::ObjectWrap::Unwrap<Canvas>(info.This());
   info.GetReturnValue().Set(Nan::New<Number>(canvas->getWidth()));
 }
 
@@ -170,7 +170,7 @@ NAN_GETTER(Canvas::GetWidth) {
 
 NAN_SETTER(Canvas::SetWidth) {
   if (value->IsNumber()) {
-    Canvas *canvas = Nan::ObjectWrap::Unwrap<Canvas>(info.This());
+    Canvas *canvas = Napi::ObjectWrap::Unwrap<Canvas>(info.This());
     canvas->backend()->setWidth(Nan::To<uint32_t>(value).FromMaybe(0));
     canvas->resurface(info.This());
   }
@@ -181,7 +181,7 @@ NAN_SETTER(Canvas::SetWidth) {
  */
 
 NAN_GETTER(Canvas::GetHeight) {
-  Canvas *canvas = Nan::ObjectWrap::Unwrap<Canvas>(info.This());
+  Canvas *canvas = Napi::ObjectWrap::Unwrap<Canvas>(info.This());
   info.GetReturnValue().Set(Nan::New<Number>(canvas->getHeight()));
 }
 
@@ -191,7 +191,7 @@ NAN_GETTER(Canvas::GetHeight) {
 
 NAN_SETTER(Canvas::SetHeight) {
   if (value->IsNumber()) {
-    Canvas *canvas = Nan::ObjectWrap::Unwrap<Canvas>(info.This());
+    Canvas *canvas = Napi::ObjectWrap::Unwrap<Canvas>(info.This());
     canvas->backend()->setHeight(Nan::To<uint32_t>(value).FromMaybe(0));
     canvas->resurface(info.This());
   }
@@ -380,7 +380,7 @@ static void setPdfMetadata(Canvas* canvas, Local<Object> opts) {
 
 NAN_METHOD(Canvas::ToBuffer) {
   cairo_status_t status;
-  Canvas *canvas = Nan::ObjectWrap::Unwrap<Canvas>(info.This());
+  Canvas *canvas = Napi::ObjectWrap::Unwrap<Canvas>(info.This());
 
   // Vector canvases, sync only
   const std::string name = canvas->backend()->getName();
@@ -547,7 +547,7 @@ NAN_METHOD(Canvas::StreamPNGSync) {
   if (!info[0]->IsFunction())
     return Nan::ThrowTypeError("callback function required");
 
-  Canvas *canvas = Nan::ObjectWrap::Unwrap<Canvas>(info.This());
+  Canvas *canvas = Napi::ObjectWrap::Unwrap<Canvas>(info.This());
 
   PngClosure closure(canvas);
   parsePNGArgs(info[1], closure);
@@ -630,7 +630,7 @@ NAN_METHOD(Canvas::StreamPDFSync) {
   if (!info[0]->IsFunction())
     return Nan::ThrowTypeError("callback function required");
 
-  Canvas *canvas = Nan::ObjectWrap::Unwrap<Canvas>(info.Holder());
+  Canvas *canvas = Napi::ObjectWrap::Unwrap<Canvas>(info.Holder());
 
   if (canvas->backend()->getName() != "pdf")
     return Nan::ThrowTypeError("wrong canvas type");
@@ -683,7 +683,7 @@ NAN_METHOD(Canvas::StreamJPEGSync) {
   if (!info[1]->IsFunction())
     return Nan::ThrowTypeError("callback function required");
 
-  Canvas *canvas = Nan::ObjectWrap::Unwrap<Canvas>(info.This());
+  Canvas *canvas = Napi::ObjectWrap::Unwrap<Canvas>(info.This());
   JpegClosure closure(canvas);
   parseJPEGArgs(info[0], closure);
   closure.cb.Reset(Local<Function>::Cast(info[1]));
