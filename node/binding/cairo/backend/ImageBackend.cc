@@ -2,6 +2,9 @@
 #include <exception>
 #include <assert.h>
 
+namespace cairocanvas
+{
+
 Napi::FunctionReference ImageBackend::constructor;
 
 void ImageBackend::init(Napi::Env env)
@@ -74,4 +77,5 @@ cairo_format_t ImageBackend::getFormat() {
 
 void ImageBackend::setFormat(cairo_format_t _format) {
 	this->format = _format;
+}
 }

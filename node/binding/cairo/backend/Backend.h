@@ -4,7 +4,10 @@
 #include <exception>
 #include <napi.h>
 #include <string>
+#include "Canvas.h"
 
+namespace cairocanvas
+{
 class Canvas;
 
 class Backend : public Napi::ObjectWrap<Backend>
@@ -68,3 +71,5 @@ class BackendOperationNotAvailable: public std::exception
 
     const char* what() const throw();
 };
+
+}

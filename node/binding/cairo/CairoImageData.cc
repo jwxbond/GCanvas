@@ -1,8 +1,10 @@
 // Copyright (c) 2010 LearnBoost <tj@learnboost.com>
 
-#include "ImageData.h"
+#include "CairoImageData.h"
 #include "Util.h"
 
+namespace cairocanvas
+{
 Napi::FunctionReference ImageData::constructor;
 
 void ImageData::init(Napi::Env env)
@@ -16,11 +18,7 @@ void ImageData::init(Napi::Env env)
                         InstanceAccessor("width", &ImageData::getWidth, nullptr),
                         InstanceAccessor("height", &ImageData::getHeight, nullptr),
                     });
-    constructor = Napi::Persistent(func);
-    constructor.SuppressDestruct();
-}
-
-Napi::Object ImageData::NewInstance(Napi::Env env, const Napi::Value width, const Napi::Value height)
+    constructor = Napi::Persistent(func);CairoCanvasRenderingContext2dNapi::Env env, const Napi::Value width, const Napi::Value height)
 {
     Napi::Object obj = constructor.New({width, height});
     obj.Set("name", Napi::String::New(env, "imageData"));
@@ -79,4 +77,6 @@ std::vector<u_int8_t> &ImageData::getPixles()
         hasImageDataWrite = false;
     }
     return pixels;
+}
+
 }

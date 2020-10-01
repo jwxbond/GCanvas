@@ -1,22 +1,14 @@
 // Copyright (c) 2010 LearnBoost <tj@learnboost.com>
 
-#include "Image.h"
+#include "CairoImage.h"
 
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
-// #include <node_buffer.h>
-// #include "Util.h"
 
-/*
- * Read closure used by loadFromBuffer.
- */
 
-// typedef struct {
-//   unsigned len;
-//   uint8_t *buf;
-// } read_closure_t;
-
+namespace cairocanvas
+{
 
 Napi::FunctionReference Image::constructor;
 
@@ -205,4 +197,6 @@ void Image::clearData()
   _data = nullptr;
 
   width = height = 0;
+}
+
 }

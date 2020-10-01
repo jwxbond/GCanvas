@@ -15,26 +15,8 @@
 #include "ImageCahced.h"
 #include "ImageWorker.h"
 
-// #ifdef HAVE_GIF
-// #include <gif_lib.h>
-
-//   #if GIFLIB_MAJOR > 5 || GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1
-//     #define GIF_CLOSE_FILE(gif) DGifCloseFile(gif, NULL)
-//   #else
-//     #define GIF_CLOSE_FILE(gif) DGifCloseFile(gif)
-//   #endif
-// #endif
-
-// #ifdef HAVE_RSVG
-// #include <librsvg/rsvg.h>
-//   // librsvg <= 2.36.1, identified by undefined macro, needs an extra include
-//   #ifndef LIBRSVG_CHECK_VERSION
-//   #include <librsvg/rsvg-cairo.h>
-//   #endif
-// #endif
-
-// using JPEGDecodeL = std::function<uint32_t (uint8_t* const src)>;
-
+namespace cairocanvas
+{
 
 struct ImageCallbackSet{
     Napi::FunctionReference mOnErrorCallback;
@@ -88,3 +70,5 @@ class Image: public Napi::ObjectWrap<Image> {
     Napi::Value getHeight(const Napi::CallbackInfo &info);
     int mTextureId=-1;
 };
+
+}

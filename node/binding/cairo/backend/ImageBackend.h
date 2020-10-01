@@ -3,6 +3,9 @@
 #include "Backend.h"
 #include <napi.h>
 
+namespace cairocanvas
+{
+
 class ImageBackend : public Backend
 {
   private:
@@ -22,3 +25,4 @@ class ImageBackend : public Backend
     int32_t approxBytesPerPixel();
     const static cairo_format_t DEFAULT_FORMAT = CAIRO_FORMAT_ARGB32;
 };
+}

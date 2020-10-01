@@ -5,6 +5,10 @@
 #include <napi.h>
 #include <cairo.h>
 
+
+namespace cairocanvas
+{
+
 class Gradient: public Napi::ObjectWrap<Gradient> {
   public:
     // static Nan::Persistent<v8::FunctionTemplate> constructor;
@@ -25,3 +29,4 @@ class Gradient: public Napi::ObjectWrap<Gradient> {
     ~Gradient();
     cairo_pattern_t *_pattern;
 };
+}

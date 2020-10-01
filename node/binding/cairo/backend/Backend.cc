@@ -1,6 +1,8 @@
 #include "Backend.h"
 #include <string>
 
+namespace cairocanvas
+{
 Napi::FunctionReference Backend::constructor;
 
 void Backend::init(Napi::Env env)
@@ -136,3 +138,5 @@ const char* BackendOperationNotAvailable::what() const throw()
 
   return msg.c_str();
 };
+
+}

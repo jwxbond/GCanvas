@@ -3,6 +3,10 @@
 #pragma once
 
 #include <napi.h>
+#include <vector>
+
+namespace cairocanvas
+{
 
 class ImageData: public Napi::ObjectWrap<ImageData> {
   public:
@@ -39,4 +43,6 @@ class ImageData: public Napi::ObjectWrap<ImageData> {
     Napi::Value getWidth(const Napi::CallbackInfo &info);
     Napi::Value getHeight(const Napi::CallbackInfo &info);
     bool hasImageDataWrite = false;
-};
+}
+;
+}

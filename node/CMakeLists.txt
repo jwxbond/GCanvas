@@ -85,12 +85,12 @@ set(SOURCE_FILES
         ./binding/cairo/backend/Backend.cc
         ./binding/cairo/backend/ImageBackend.cc
         ./binding/cairo/Backends.cc
-        # ./binding/cairo/Canvas.cc
+        ./binding/cairo/CairoCanvas.cc
         # ./binding/cairo/CanvasGradient.cc
         # ./binding/cairo/CanvasPattern.cc
-        # ./binding/cairo/CanvasRenderingContext2d.cc
-        ./binding/cairo/Image.cc
-        ./binding/cairo/ImageData.cc
+        ./binding/cairo/CairoCanvasRenderingContext2d.cc
+        ./binding/cairo/CairoImage.cc
+        ./binding/cairo/CairoImageData.cc
 
 
         ${CORE_DIR}src/GCanvas.cpp        
