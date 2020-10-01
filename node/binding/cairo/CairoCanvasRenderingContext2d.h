@@ -3,7 +3,7 @@
 #pragma once
 
 #include "cairo.h"
-#include "Canvas.h"
+#include "CairoCanvas.h"
 #include "color.h"
 #include "napi.h"
 #include <pango/pangocairo.h>

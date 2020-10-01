@@ -2,7 +2,7 @@
 
 #include "CanvasGradient.h"
 
-#include "Canvas.h"
+#include "CairoCanvas.h"
 #include "color.h"
 
 

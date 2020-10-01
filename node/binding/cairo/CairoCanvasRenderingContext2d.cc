@@ -4,18 +4,17 @@
 
 #include <algorithm>
 #include "backend/ImageBackend.h"
-#include "Canvas.h"
+#include "CairoCanvas.h"
 // #include "CanvasGradient.h"
 // #include "CanvasPattern.h"
 #include <cmath>
 #include <cstdlib>
-#include "Image.h"
-#include "ImageData.h"
+#include "CairoImage.h"
+#include "CairoImageData.h"
 #include <limits>
 #include <map>
 #include "Point.h"
 #include <string>
-#include "Util.h"
 #include <vector>
 
 //测量耗时的调试开关
