@@ -18,15 +18,17 @@
 namespace cairocanvas
 {
 
-struct ImageCallbackSet{
-    Napi::FunctionReference mOnErrorCallback;
-    Napi::FunctionReference mOnLoadCallback;
+struct ImageCallbackSet
+{
+  Napi::FunctionReference mOnErrorCallback;
+  Napi::FunctionReference mOnLoadCallback;
 };
 extern std::shared_ptr<ImageCached> findCacheByUrl(const std::string &url);
 
-class Image: public Napi::ObjectWrap<Image> {
+class Image: public Napi::ObjectWrap<Image> 
+{
   public:
-    void init(Napi::Env env, Napi::Object exports);
+    static void init(Napi::Env env, Napi::Object exports);
     static Napi::Object NewInstance(const Napi::CallbackInfo &info);
 
     Image(const Napi::CallbackInfo &info);
@@ -35,8 +37,6 @@ class Image: public Napi::ObjectWrap<Image> {
     int getWidth();
     int getHeight();
     std::vector<unsigned char> &getPixels();
-    void setTextureId(int textureId);
-    int getTextureId();
     std::string getUrl(){
         return this->src;
     }
@@ -60,6 +60,7 @@ class Image: public Napi::ObjectWrap<Image> {
     NodeBinding::ImageWorker *mDownloadImageWorker = nullptr;
     std::vector<unsigned char> emptyPixels;
     std::shared_ptr<ImageCached> mImageMemCached;
+
     Napi::Value getSrc(const Napi::CallbackInfo &info);
     void setSrc(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getOnLoadCallback(const Napi::CallbackInfo &info);
@@ -68,7 +69,6 @@ class Image: public Napi::ObjectWrap<Image> {
     void setOnErrorCallback(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getWidth(const Napi::CallbackInfo &info);
     Napi::Value getHeight(const Napi::CallbackInfo &info);
-    int mTextureId=-1;
 };
 
 }

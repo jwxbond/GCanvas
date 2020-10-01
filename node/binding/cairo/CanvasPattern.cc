@@ -9,13 +9,11 @@
 namespace cairocanvas
 {
 const cairo_user_data_key_t *pattern_repeat_key;
-
 Nan::Persistent<FunctionTemplate> Pattern::constructor;
-
 
 void Pattern::init(Napi::Env env)
 {
-  Napi::Function func = DefineClass(env, "Pattern", {});
+  Napi::Function func = DefineClass(env, "Cairo.Pattern", {});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -39,11 +37,12 @@ Pattern::Pattern(const Napi::CallbackInfo &info)
     return;
   }
   
-  //TODO image or canvas check
+  //TODO image or canvas type check
   cairo_surface_t *surface;
   Napi::Object object = info[0].As<Napi::Object>();
   Napi::Value name = object.Get("name");
-  if (!name.IsString()){
+  if (!name.IsString())
+  {
     return;
   }
 
@@ -53,21 +52,16 @@ Pattern::Pattern(const Napi::CallbackInfo &info)
   if (namePropetry == "image")
   {
     Image *img = Napi::ObjectWrap<Image>::Unwrap(object);
-    if( !img->isComplete() )
-    {
-      napi_throw_error(env, "", "Image given has not completed loading");
-      return;
-    }
+    // if( !img->isComplete() )
+    // {
+    //   napi_throw_error(env, "", "Image given has not completed loading");
+    //   return;
+    // }
     surface = img->surface();
   }
   else if( namePropetry == "canvas" )
   {
     Canvas *canvas = Napi::ObjectWrap<Canvas>::Unwrap(object);
-    if( !img->isComplete() )
-    {
-      napi_throw_error(env, "", "Image given has not completed loading");
-      return;
-    }
     surface = canvas->surface();
   }
   else
@@ -85,7 +79,7 @@ Pattern::Pattern(const Napi::CallbackInfo &info)
   } else if (0 == strcmp("repeat-y", repeatStr.c_str())) {
     repeat = REPEAT_Y;
   }
-  setupPattern(surface, repeat)
+  setupPattern(surface, repeat);
 }
 
 void Pattern::setupPattern(cairo_surface_t *surface, repeat_type_t repeat) 
@@ -103,8 +97,8 @@ repeat_type_t Pattern::get_repeat_type_for_cairo_pattern(cairo_pattern_t *patter
 /*
  * Destroy the pattern.
  */
-
-Pattern::~Pattern() {
+Pattern::~Pattern() 
+{
   cairo_pattern_destroy(_pattern);
 }
 

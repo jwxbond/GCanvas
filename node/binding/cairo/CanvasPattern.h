@@ -29,11 +29,12 @@ class Pattern: public Napi::ObjectWrap<Pattern> {
     Pattern(const Napi::CallbackInfo &info);
     inline cairo_pattern_t *pattern(){ return _pattern; }
   private:
-    ~Pattern();
-    setupPattern(cairo_surface_t *surface, repeat_type_t repeat);
-    static Napi::FunctionReference constructor;
-    cairo_pattern_t *_pattern;
-    repeat_type_t _repeat;
+   static Napi::FunctionReference constructor;
+
+   ~Pattern();
+   void setupPattern(cairo_surface_t *surface, repeat_type_t repeat);
+   cairo_pattern_t *_pattern;
+   repeat_type_t _repeat;
 };
 
 }

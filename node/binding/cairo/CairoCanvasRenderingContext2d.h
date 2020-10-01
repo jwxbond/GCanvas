@@ -63,14 +63,19 @@ class Context2d: public Napi::ObjectWrap<Context2d> {
     short stateno;
     canvas_state_t *states[CANVAS_MAX_STATES];
     canvas_state_t *state;
-    Context2d(Canvas *canvas);
+
+
 
     static void Init(Napi::Env env, Napi::Object exports);
-    static Napi::Object NewInstance(Napi::Env env, Napi::Value arg, Napi::Value arg2);
+    static Napi::Object NewInstance(const Napi::CallbackInfo &info);
+
+    Context2d(const Napi::CallbackInfo &info);
+    void setupContext2d(Canvas *canvas);
 
     inline void setContext(cairo_t *ctx) { _context = ctx; }
     inline cairo_t *context(){ return _context; }
     inline Canvas *canvas(){ return _canvas; }
+
     inline bool hasShadow();
     void inline setSourceRGBA(rgba_t color);
     void inline setSourceRGBA(cairo_t *ctx, rgba_t color);
@@ -95,6 +100,7 @@ class Context2d: public Napi::ObjectWrap<Context2d> {
   private:
     ~Context2d();
     void _resetPersistentHandles();
+
     Napi::Value _getFillColor(const Napi::CallbackInfo &info);
     Napi::Value _getStrokeColor(const Napi::CallbackInfo &info);
     void _setFillColor(const Napi::CallbackInfo &info, const Napi::Value &value);
@@ -123,7 +129,6 @@ class Context2d: public Napi::ObjectWrap<Context2d> {
     unsigned char *mDataRaw;
 
   private:
-    static Napi::FunctionReference constructor;
     void fillRect(const Napi::CallbackInfo &info);
     void arc(const Napi::CallbackInfo &info);
     void arcTo(const Napi::CallbackInfo &info);

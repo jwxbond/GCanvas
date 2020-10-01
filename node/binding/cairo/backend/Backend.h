@@ -4,7 +4,7 @@
 #include <exception>
 #include <napi.h>
 #include <string>
-#include "Canvas.h"
+#include "CairoCanvas.h"
 
 namespace cairocanvas
 {

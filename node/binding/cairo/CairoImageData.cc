@@ -5,22 +5,25 @@
 
 namespace cairocanvas
 {
+    
 Napi::FunctionReference ImageData::constructor;
-
 void ImageData::init(Napi::Env env)
 {
    Napi::HandleScope scope(env);
-    Napi::Function func =
-        DefineClass(env,
-                    "ImageData",
-                    {
-                        InstanceAccessor("data", &ImageData::getData, nullptr),
-                        InstanceAccessor("width", &ImageData::getWidth, nullptr),
-                        InstanceAccessor("height", &ImageData::getHeight, nullptr),
-                    });
-    constructor = Napi::Persistent(func);CairoCanvasRenderingContext2dNapi::Env env, const Napi::Value width, const Napi::Value height)
+    Napi::Function func = DefineClass(env, "ImageData", {
+        InstanceAccessor("data", &ImageData::getData, nullptr),
+        InstanceAccessor("width", &ImageData::getWidth, nullptr),
+        InstanceAccessor("height", &ImageData::getHeight, nullptr),
+    });
+
+  constructor = Napi::Persistent(func);
+  constructor.SuppressDestruct();
+}
+
+
+sNapi::Object ImageData::NewInstance(const Napi::CallbackInfo &info)
 {
-    Napi::Object obj = constructor.New({width, height});
+    Napi::Object obj = constructor.New(info);
     obj.Set("name", Napi::String::New(env, "imageData"));
     return obj;
 }

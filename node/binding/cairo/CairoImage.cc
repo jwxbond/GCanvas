@@ -14,16 +14,13 @@ Napi::FunctionReference Image::constructor;
 
 void Image::init(Napi::Env env, Napi::Object exports)
 {
-     Napi::Function func =
-            DefineClass(env,
-                        "Image",
-                        {
-                            InstanceAccessor("src", &Image::getSrc, &Image::setSrc),
-                            InstanceAccessor("width", &Image::getWidth, nullptr),
-                            InstanceAccessor("height", &Image::getHeight, nullptr),
-                            InstanceAccessor("onload", &Image::getOnLoadCallback, &Image::setOnLoadCallback),
-                            InstanceAccessor("onerror", &Image::getOnErrorCallback, &Image::setOnErrorCallback),
-                        });
+    Napi::Function func = DefineClass(env, "Image", {
+        InstanceAccessor("src", &Image::getSrc, &Image::setSrc),
+        InstanceAccessor("width", &Image::getWidth, nullptr),
+        InstanceAccessor("height", &Image::getHeight, nullptr),
+        InstanceAccessor("onload", &Image::getOnLoadCallback, &Image::setOnLoadCallback),
+        InstanceAccessor("onerror", &Image::getOnErrorCallback, &Image::setOnErrorCallback),
+    });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -46,6 +43,8 @@ Image::Image(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Image>(info)
 
 Image::~Image()
 {
+    clearData();
+    
     if(mDownloadImageWorker) {
         delete mDownloadImageWorker;
         mDownloadImageWorker = nullptr;
@@ -149,54 +148,45 @@ std::vector<unsigned char> &Image::getPixels()
     }
 }
 
-void Image::setTextureId(int textureId)
-{
-    mTextureId = textureId;
-}
-int Image::getTextureId()
-{
-    return mTextureId;
-}
-
-
  cairo_surface_t* Image::getSurface()
  {
-  if( !_surface ) {
-    ImageCached *imageCached = mImageMemCached.get();
-    if (imageCached) 
+    if( !_surface ) 
     {
-      int width = imageCached->width;
-      int height = imageCached->height;
-      int stride = cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, width);
+        ImageCached *imageCached = mImageMemCached.get();
+        if (imageCached) 
+        {
+            int width = imageCached->width;
+            int height = imageCached->height;
+            int stride = cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, width);
 
-      _surface =  cairo_image_surface_create_for_data( imageCached->getPixels().data(),
-          CAIRO_FORMAT_ARGB32,
-          width, 
-          height, 
-          stride);
-      }
+            _surface = cairo_image_surface_create_for_data( 
+            imageCached->getPixels().data(),
+            CAIRO_FORMAT_ARGB32,
+            width, 
+            height, 
+            stride);
+        }
     }
     return _surface;
 }
 
 void Image::setSurface(cairo_surface_t* surface)
 {
-  _surface = surface;
+    _surface = surface;
 }
 
 void Image::clearData()
 {
-  if (_surface) {
-    cairo_surface_destroy(_surface);
-    // Nan::AdjustExternalMemory(-_data_len);
-    _data_len = 0;
-    _surface = NULL;
-  }
+    if (_surface) {
+        cairo_surface_destroy(_surface);
+        // Nan::AdjustExternalMemory(-_data_len);
+        _data_len = 0;
+        _surface = NULL;
+    }
 
-  delete[] _data;
-  _data = nullptr;
-
-  width = height = 0;
+    delete[] _data;
+    _data = nullptr;
+    width = height = 0;
 }
 
 }
