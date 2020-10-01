@@ -1,140 +1,82 @@
 // Copyright (c) 2010 LearnBoost <tj@learnboost.com>
 
 #include "ImageData.h"
-
 #include "Util.h"
 
-using namespace v8;
+Napi::FunctionReference ImageData::constructor;
 
-Nan::Persistent<FunctionTemplate> ImageData::constructor;
-
-/*
- * Initialize ImageData.
- */
-
-void
-ImageData::Initialize(Nan::ADDON_REGISTER_FUNCTION_ARGS_TYPE target) {
-  Nan::HandleScope scope;
-
-  // Constructor
-  Local<FunctionTemplate> ctor = Nan::New<FunctionTemplate>(ImageData::New);
-  constructor.Reset(ctor);
-  ctor->InstanceTemplate()->SetInternalFieldCount(1);
-  ctor->SetClassName(Nan::New("ImageData").ToLocalChecked());
-
-  // Prototype
-  Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
-  SetProtoAccessor(proto, Nan::New("width").ToLocalChecked(), GetWidth, NULL, ctor);
-  SetProtoAccessor(proto, Nan::New("height").ToLocalChecked(), GetHeight, NULL, ctor);
-  Local<Context> ctx = Nan::GetCurrentContext();
-  Nan::Set(target, Nan::New("ImageData").ToLocalChecked(), ctor->GetFunction(ctx).ToLocalChecked());
+void ImageData::init(Napi::Env env)
+{
+   Napi::HandleScope scope(env);
+    Napi::Function func =
+        DefineClass(env,
+                    "ImageData",
+                    {
+                        InstanceAccessor("data", &ImageData::getData, nullptr),
+                        InstanceAccessor("width", &ImageData::getWidth, nullptr),
+                        InstanceAccessor("height", &ImageData::getHeight, nullptr),
+                    });
+    constructor = Napi::Persistent(func);
+    constructor.SuppressDestruct();
 }
 
-/*
- * Initialize a new ImageData object.
- */
-
-NAN_METHOD(ImageData::New) {
-  if (!info.IsConstructCall()) {
-    return Nan::ThrowTypeError("Class constructors cannot be invoked without 'new'");
-  }
-
-  Local<TypedArray> dataArray;
-  uint32_t width;
-  uint32_t height;
-  int length;
-
-  if (info[0]->IsUint32() && info[1]->IsUint32()) {
-    width = Nan::To<uint32_t>(info[0]).FromMaybe(0);
-    if (width == 0) {
-      Nan::ThrowRangeError("The source width is zero.");
-      return;
-    }
-    height = Nan::To<uint32_t>(info[1]).FromMaybe(0);
-    if (height == 0) {
-      Nan::ThrowRangeError("The source height is zero.");
-      return;
-    }
-    length = width * height * 4; // ImageData(w, h) constructor assumes 4 BPP; documented.
-
-    dataArray = Uint8ClampedArray::New(ArrayBuffer::New(Isolate::GetCurrent(), length), 0, length);
-
-  } else if (info[0]->IsUint8ClampedArray() && info[1]->IsUint32()) {
-    dataArray = info[0].As<Uint8ClampedArray>();
-
-    length = dataArray->Length();
-    if (length == 0) {
-      Nan::ThrowRangeError("The input data has a zero byte length.");
-      return;
-    }
-
-    // Don't assert that the ImageData length is a multiple of four because some
-    // data formats are not 4 BPP.
-
-    width = Nan::To<uint32_t>(info[1]).FromMaybe(0);
-    if (width == 0) {
-      Nan::ThrowRangeError("The source width is zero.");
-      return;
-    }
-
-    // Don't assert that the byte length is a multiple of 4 * width, ditto.
-
-    if (info[2]->IsUint32()) { // Explicit height given
-      height = Nan::To<uint32_t>(info[2]).FromMaybe(0);
-    } else { // Calculate height assuming 4 BPP
-      int size = length / 4;
-      height = size / width;
-    }
-
-  } else if (info[0]->IsUint16Array() && info[1]->IsUint32()) { // Intended for RGB16_565 format
-  dataArray = info[0].As<Uint16Array>();
-
-  length = dataArray->Length();
-  if (length == 0) {
-    Nan::ThrowRangeError("The input data has a zero byte length.");
-    return;
-  }
-
-  width = Nan::To<uint32_t>(info[1]).FromMaybe(0);
-  if (width == 0) {
-    Nan::ThrowRangeError("The source width is zero.");
-    return;
-  }
-
-  if (info[2]->IsUint32()) { // Explicit height given
-    height = Nan::To<uint32_t>(info[2]).FromMaybe(0);
-  } else { // Calculate height assuming 2 BPP
-    int size = length / 2;
-    height = size / width;
-  }
-
-  } else {
-    Nan::ThrowTypeError("Expected (Uint8ClampedArray, width[, height]), (Uint16Array, width[, height]) or (width, height)");
-    return;
-  }
-
-  Nan::TypedArrayContents<uint8_t> dataPtr(dataArray);
-
-  ImageData *imageData = new ImageData(reinterpret_cast<uint8_t*>(*dataPtr), width, height);
-  imageData->Wrap(info.This());
-  Nan::Set(info.This(), Nan::New("data").ToLocalChecked(), dataArray).Check();
-  info.GetReturnValue().Set(info.This());
+Napi::Object ImageData::NewInstance(Napi::Env env, const Napi::Value width, const Napi::Value height)
+{
+    Napi::Object obj = constructor.New({width, height});
+    obj.Set("name", Napi::String::New(env, "imageData"));
+    return obj;
 }
 
-/*
- * Get width.
- */
-
-NAN_GETTER(ImageData::GetWidth) {
-  ImageData *imageData = Nan::ObjectWrap::Unwrap<ImageData>(info.This());
-  info.GetReturnValue().Set(Nan::New<Number>(imageData->width()));
+ImageData::ImageData(const Napi::CallbackInfo &info) : Napi::ObjectWrap<ImageData>(info)
+{
+    _width = info[0].As<Napi::Number>().Int32Value();
+    _height = info[1].As<Napi::Number>().Int32Value();
+    pixels.resize(4 * _width * _height);
 }
 
-/*
- * Get height.
- */
+Napi::Value ImageData::getData(const Napi::CallbackInfo &info)
+{
+    hasImageDataWrite = true;
+    if (mImageDataRef.IsEmpty())
+    {
+        Napi::Array ret = Napi::Array::New(info.Env(), pixels.size());
 
-NAN_GETTER(ImageData::GetHeight) {
-  ImageData *imageData = Nan::ObjectWrap::Unwrap<ImageData>(info.This());
-  info.GetReturnValue().Set(Nan::New<Number>(imageData->height()));
+        if (!pixels.empty())
+        {
+            for (int i = 0; i < pixels.size(); i++)
+            {
+                ret.Set(i, Napi::Number::New(info.Env(), pixels[i]));
+            }
+        }
+        mImageDataRef = Napi::ObjectReference::New(ret);
+        return ret;
+    }
+    else
+    {
+        return mImageDataRef.Value();
+    }
+}
+
+Napi::Value ImageData::getWidth(const Napi::CallbackInfo &info)
+{
+    return Napi::Number::New(info.Env(), _width);
+}
+
+Napi::Value ImageData::getHeight(const Napi::CallbackInfo &info)
+{
+    return Napi::Number::New(info.Env(),_height);
+}
+
+std::vector<u_int8_t> &ImageData::getPixles()
+{
+    if (!mImageDataRef.IsEmpty() && hasImageDataWrite)
+    {
+        Napi::Array ret = mImageDataRef.Value().As<Napi::Array>();
+        for (int i = 0; i < pixels.size(); i++)
+        {
+            pixels[i] = ret.Get(i).As<Napi::Number>().Int32Value();
+        }
+        hasImageDataWrite = false;
+    }
+    return pixels;
 }
