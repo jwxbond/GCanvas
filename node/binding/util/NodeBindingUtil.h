@@ -32,6 +32,8 @@ void cachedImage(const std::string url,std::shared_ptr<ImageCached> imageCached)
 PIC_FORMAT parseFormat(char *content, int len);
 void decodeImageJPEG(std::vector<unsigned char> &pixels, unsigned int &width, unsigned int &height, const unsigned char *content, int len);
 void decodeImagePNG(std::vector<unsigned char> &pixels, unsigned int &width, unsigned int &height, const unsigned char *content, int len);
+void encodeJPEGInBuffer(unsigned char **out,unsigned long &size ,unsigned char *data,int width,int height);
+void encodePNGInBuffer(std::vector<unsigned char> &in,unsigned char *data,int width,int height);
 int readImageFromLocalFile(const std::string &path, ImageContent *content);
 bool checkArgs(const Napi::CallbackInfo &info, int exectedN);
 // bool checkArgs(const Napi::CallbackInfo &info, double*args, int exectedN, int offset=0);

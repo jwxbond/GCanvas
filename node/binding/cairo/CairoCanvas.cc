@@ -21,7 +21,6 @@
 
 namespace cairocanvas
 {
-
 Napi::FunctionReference Canvas::constructor;
 
 std::vector<FontFace> font_face_list;
@@ -194,22 +193,22 @@ Napi::Value Canvas::createPNGStreamSync(const Napi::CallbackInfo &info)
 }
 Napi::Buffer<unsigned char> Canvas::getPNGBuffer(const Napi::CallbackInfo &info, unsigned long &size)
 {
-  // if (mRenderContext)
-  // {
-  //     mRenderContext->makeCurrent();
-  //     mRenderContext->drawFrame();
-  // }
-  // std::vector<unsigned char> dataPNGFormat;
-  // int ret = mRenderContext->getImagePixelPNG(dataPNGFormat);
-  // if (ret == 0)
-  // {
-  //     size = dataPNGFormat.size();
-  //     return Napi::Buffer<unsigned char>::Copy(info.Env(), &dataPNGFormat[0], dataPNGFormat.size());
-  // }
-  // else
-  // {
-  //     return Napi::Buffer<unsigned char>::New(info.Env(), nullptr, 0);
-  // }
+  cairo_surface_t *s = surface();
+  cairo_surface_flush(s);
+  const unsigned char *data = cairo_image_surface_get_data(s);
+  std::vector<unsigned char> dataVec;
+  NodeBinding::encodePNGInBuffer(dataVec, (unsigned char*)data, getWidth(), getHeight());
+
+  size = dataVec.size();
+
+  if( !dataVec .empty())
+  {
+    return Napi::Buffer<unsigned char>::Copy(info.Env(), &dataVec[0], dataVec.size());
+  }
+  else
+  {
+    return Napi::Buffer<unsigned char>::New(info.Env(), nullptr, 0);
+  }
 }
 Napi::Buffer<unsigned char> Canvas::getJPGBuffer(const Napi::CallbackInfo &info, unsigned long &size)
 {
