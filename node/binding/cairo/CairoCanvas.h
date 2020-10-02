@@ -2,7 +2,9 @@
 
 #pragma once
 
-#include "backend/Backend.h"
+// #include "backend/Backend.h"
+#include "backend/CairoImageBackend.h"
+
 #include <cairo.h>
 #include <napi.h>
 #include <pango/pangocairo.h>
@@ -40,7 +42,7 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
     virtual ~Canvas();
 
 
-    inline Backend* backend() { return _backend; }
+    inline CairoImageBackend* backend() { return _backend; }
     inline cairo_surface_t* surface(){ return backend()->getSurface(); }
     cairo_t* createCairoContext();
 
@@ -51,7 +53,7 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
     inline int getWidth() { return backend()->getWidth(); }
     inline int getHeight() { return backend()->getHeight(); }
 
-    Canvas(Backend* backend);
+    Canvas(CairoImageBackend* backend);
 
  private:
     static Napi::FunctionReference constructor;
@@ -78,7 +80,7 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
     unsigned char *mDataRaw;
 
   private:
-    Backend* _backend;
+    CairoImageBackend* _backend;
 };
 
 }

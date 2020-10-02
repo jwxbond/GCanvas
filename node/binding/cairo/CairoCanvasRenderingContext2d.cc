@@ -3,7 +3,8 @@
 #include "CairoCanvasRenderingContext2d.h"
 
 #include <algorithm>
-#include "backend/ImageBackend.h"
+// #include "backend/ImageBackend.h"
+#include "backend/CairoImageBackend.h"
 #include "CairoCanvas.h"
 #include "CairoCanvasGradient.h"
 #include "CairoCanvasPattern.h"

@@ -25,8 +25,8 @@
 #include "CairoCanvasRenderingContext2d.h"
 #include "CairoImage.h"
 #include "CairoImageData.h"
-#include "backend/Backend.h"
-#include "backend/ImageBackend.h"
+// #include "backend/Backend.h"
+// #include "backend/ImageBackend.h"
 
 
 Napi::Object createCanvas(const Napi::CallbackInfo &info)
@@ -78,8 +78,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   cairocanvas::Gradient::Init(env);
   cairocanvas::Image::Init(env, exports);
   cairocanvas::ImageData::Init(env);
-  cairocanvas::Backend::Init(env);
-  cairocanvas::ImageBackend::Init(env);
+  // cairocanvas::Backend::Init(env);
+  // cairocanvas::ImageBackend::Init(env);
 
   //webl reousce binding
   NodeBinding::WebGLShader::Init(env);

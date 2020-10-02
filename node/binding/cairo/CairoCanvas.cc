@@ -14,7 +14,8 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include "backend/ImageBackend.h"
+// #include "backend/ImageBackend.h"
+#include "backend/CairoImageBackend.h"
 #include "NodeBindingUtil.h"
 
 
@@ -51,8 +52,7 @@ std::vector<FontFace> font_face_list;
 
 Napi::Object Canvas::NewInstance(Napi::Env env, Napi::Value arg, Napi::Value arg2)
 {
-    std::cout << "[JWX]New Canvas 1" << std::endl;
-
+    std::cout << "Canvas::NewInstance" << std::endl;
     Napi::Object obj = constructor.New({arg, arg2});
     obj.Set("name", Napi::String::New(env, "cairocanvas"));
     // Canvas *canvas = Napi::ObjectWrap<Canvas>::Unwrap(obj);
@@ -63,7 +63,6 @@ Napi::Object Canvas::NewInstance(Napi::Env env, Napi::Value arg, Napi::Value arg
 
 Canvas::Canvas(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Canvas>(info), mDataRaw(nullptr)
 {
-  std::cout << "[JWX]New Canvas 2" << std::endl;
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
@@ -71,20 +70,16 @@ Canvas::Canvas(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Canvas>(info),
   mWidth = info[0].As<Napi::Number>().Int32Value();
   mHeight = info[1].As<Napi::Number>().Int32Value();
 
-  std::cout << "width:" << mWidth << ", height:" << mHeight << std::endl;
-
-
-  // _backend = new ImageBackend(info, mWidth, mHeight);
-  // _backend = ImageBackend::NewInstance(env, mWidth, mHeight);
-  std::cout << "[JWX]New Canvas 3" << std::endl;
-
+_backend = new CairoImageBackend(mWidth, mHeight);
 
   if( !_backend->isSurfaceValid() )
   {
     delete _backend;
     return;
   }
-  // backend->setCanvas(this);
+
+    std::cout << "create CairoImageBackend Success width:" << mWidth << ", height:" << mHeight << std::endl;
+  _backend->setCanvas(this);
 }
 
 Napi::Value Canvas::getWidth(const Napi::CallbackInfo &info)
