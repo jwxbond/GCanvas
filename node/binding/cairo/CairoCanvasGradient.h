@@ -10,7 +10,7 @@ namespace cairocanvas
 class Gradient: public Napi::ObjectWrap<Gradient> 
 {
   public:
-    static void init(Napi::Env env);
+    static void Init(Napi::Env env);
     static Napi::Object NewInstance(const Napi::CallbackInfo &info);
 
     Gradient(const Napi::CallbackInfo &info);

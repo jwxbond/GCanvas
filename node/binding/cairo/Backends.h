@@ -8,7 +8,7 @@ namespace cairocanvas
 
 class Backends : public Napi::ObjectWrap<Backends> {
   public:
-    static void init(Napi::Env env);
+    static void Init(Napi::Env env);
 };
 
 }

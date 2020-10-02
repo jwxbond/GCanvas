@@ -6,7 +6,7 @@ namespace cairocanvas
 {
 Napi::FunctionReference Backend::constructor;
 
-void Backend::init(Napi::Env env)
+void Backend::Init(Napi::Env env)
 {
   Napi::HandleScope scope(env);
   Napi::Function func = DefineClass(env, "Backend", {});
@@ -24,13 +24,21 @@ Napi::Object Backend::NewInstance(Napi::Env env, int width, int height)
   return obj;
 }
 
-Backend::Backend(const Napi::CallbackInfo &info)
-  : Napi::ObjectWrap<Backend>(info)
+Backend::Backend(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Backend>(info)
 {
   this->name = info[0].As<Napi::String>().Utf8Value();
   this->width = info[1].As<Napi::Number>().Int32Value(); 
   this->height = info[2].As<Napi::Number>().Int32Value(); 
 }
+
+Backend::Backend(const Napi::CallbackInfo &info, std::string name,  int width, int height) :Napi::ObjectWrap<Backend>(info)
+{
+  std::cout << "Backend::Backend constructor"  << std::endl;
+  this->name = name;
+  this->width = width;
+  this->height = height;
+}
+
 
 Backend::~Backend()
 {

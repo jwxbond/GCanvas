@@ -28,8 +28,8 @@ extern std::shared_ptr<ImageCached> findCacheByUrl(const std::string &url);
 class Image: public Napi::ObjectWrap<Image> 
 {
   public:
-    static void init(Napi::Env env, Napi::Object exports);
-    static Napi::Object NewInstance(const Napi::CallbackInfo &info);
+    static void Init(Napi::Env env, Napi::Object exports);
+    static Napi::Object NewInstance(Napi::Env env);
 
     Image(const Napi::CallbackInfo &info);
     virtual ~Image();

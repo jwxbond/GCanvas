@@ -4,6 +4,7 @@
 #include <exception>
 #include <napi.h>
 #include <string>
+#include <iostream>
 
 namespace cairocanvas
 {
@@ -26,10 +27,11 @@ class Backend : public Napi::ObjectWrap<Backend>
     // static Backend *construct(int width, int height){ return nullptr; }
   
   public:
-    Backend(const Napi::CallbackInfo &info);
-    static void init(Napi::Env env);
+    static void Init(Napi::Env env);
     static Napi::Object NewInstance(Napi::Env env, int width, int height);
 
+    Backend(const Napi::CallbackInfo &info);
+    Backend(const Napi::CallbackInfo &info, std::string name, int width, int height);
     virtual ~Backend();
 
     void setCanvas(Canvas* canvas);

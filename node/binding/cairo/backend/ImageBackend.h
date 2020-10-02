@@ -15,11 +15,12 @@ class ImageBackend : public Backend
     cairo_format_t format = DEFAULT_FORMAT;
 
   public:
-    static void init(Napi::Env env);
-    static Napi::Object NewInstance(const Napi::CallbackInfo &info);
+    static void Init(Napi::Env env);
     static Napi::Object NewInstance(Napi::Env env, int width, int height);
 
     ImageBackend(const Napi::CallbackInfo &info);
+    ImageBackend(const Napi::CallbackInfo &info, int width, int height);
+
     cairo_format_t getFormat();
     void setFormat(cairo_format_t format);
 

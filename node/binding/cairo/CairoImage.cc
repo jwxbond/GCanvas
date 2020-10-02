@@ -12,7 +12,7 @@ namespace cairocanvas
 
 Napi::FunctionReference Image::constructor;
 
-void Image::init(Napi::Env env, Napi::Object exports)
+void Image::Init(Napi::Env env, Napi::Object exports)
 {
     Napi::Function func = DefineClass(env, "Image", {
         InstanceAccessor("src", &Image::getSrc, &Image::setSrc),
@@ -28,11 +28,11 @@ void Image::init(Napi::Env env, Napi::Object exports)
   exports.Set("Image", func);
 }
 
-Napi::Object Image::NewInstance(const Napi::CallbackInfo &info)
+
+Napi::Object Image::NewInstance(Napi::Env env)
 {
-  Napi::Env env = info.Env();
   Napi::Object obj = constructor.New({});
-  obj.Set("name", Napi::String::New(env, "image"));
+  obj.Set("name", Napi::String::New(env, "cairoimage"));
   return obj;
 }
 

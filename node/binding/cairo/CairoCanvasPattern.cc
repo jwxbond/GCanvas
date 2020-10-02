@@ -11,7 +11,7 @@ namespace cairocanvas
 const cairo_user_data_key_t *pattern_repeat_key;
 Napi::FunctionReference Pattern::constructor;
 
-void Pattern::init(Napi::Env env)
+void Pattern::Init(Napi::Env env)
 {
   Napi::Function func = DefineClass(env, "Cairo.Pattern", {});
 

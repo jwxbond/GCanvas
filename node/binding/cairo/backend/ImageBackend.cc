@@ -7,17 +7,12 @@ namespace cairocanvas
 
 Napi::FunctionReference ImageBackend::constructor;
 
-void ImageBackend::init(Napi::Env env)
+void ImageBackend::Init(Napi::Env env)
 {
   Napi::HandleScope scope(env);
   Napi::Function func = DefineClass(env, "ImageBackend", {});
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
-}
-
-Napi::Object ImageBackend::NewInstance(const Napi::CallbackInfo &info)
-{
-  
 }
 
 Napi::Object ImageBackend::NewInstance(Napi::Env env, int width, int height)
@@ -34,7 +29,15 @@ Napi::Object ImageBackend::NewInstance(Napi::Env env, int width, int height)
 ImageBackend::ImageBackend(const Napi::CallbackInfo &info)
   : Backend(info)
 {
+  std::cout << "ImageBackend::ImageBackend()" <<std::endl;
 }
+
+ImageBackend::ImageBackend(const Napi::CallbackInfo &info, int width, int height)
+  : Backend(info, "ImageBackend", width, height)
+{
+    std::cout << "ImageBackend::ImageBackend(name, width, height)" <<std::endl;
+}
+
 
 // This returns an approximate value only, suitable for Nan::AdjustExternalMemory.
 // The formats that don't map to intrinsic types (RGB30, A1) round up.

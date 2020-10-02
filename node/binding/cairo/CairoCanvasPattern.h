@@ -22,7 +22,7 @@ extern const cairo_user_data_key_t *pattern_repeat_key;
 
 class Pattern: public Napi::ObjectWrap<Pattern> {
   public:
-    static void init(Napi::Env env);
+    static void Init(Napi::Env env);
     static Napi::Object NewInstance(const Napi::CallbackInfo &info);
     static repeat_type_t get_repeat_type_for_cairo_pattern(cairo_pattern_t *pattern);
 

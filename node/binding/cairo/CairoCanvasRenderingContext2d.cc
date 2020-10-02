@@ -208,6 +208,12 @@ void Context2d::setupContext2d(Canvas *canvas)
   resetState(true);
 }
 
+Napi::Value Context2d::getCanvas(const Napi::CallbackInfo &info)
+{
+  return _canvas->mRef.Value();
+}
+
+
 /*
  * Destroy cairo context.
  */
@@ -1875,7 +1881,7 @@ Napi::Value Context2d::getfont(const Napi::CallbackInfo &info)
  */
 
 //TODO setFont
-void setfont(const Napi::CallbackInfo &info, const Napi::Value &value)
+void Context2d::setfont(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
   //TODO
   if (!value.IsString())

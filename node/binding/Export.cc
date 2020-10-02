@@ -19,6 +19,15 @@
 #include "./webgl/WebGLActiveInfo.h"
 #include "./webgl/WebGLUniformLocation.h"
 #include "./webgl/WebGLRenderBuffer.h"
+#include "CairoCanvas.h"
+#include "CairoCanvasGradient.h"
+#include "CairoCanvasPattern.h"
+#include "CairoCanvasRenderingContext2d.h"
+#include "CairoImage.h"
+#include "CairoImageData.h"
+#include "backend/Backend.h"
+#include "backend/ImageBackend.h"
+
 
 Napi::Object createCanvas(const Napi::CallbackInfo &info)
 {
@@ -29,13 +38,26 @@ Napi::Object createCanvas(const Napi::CallbackInfo &info)
         .ThrowAsJavaScriptException();
     return Napi::Object::New(env);
   }
-  return NodeBinding::Canvas::NewInstance(env, info[0], info[1]);
+
+  bool useCairo = true;
+  if( useCairo ){
+    printf("createCanvas  cairocanvas::Canvas::NewInstance\n");
+    return cairocanvas::Canvas::NewInstance(env, info[0], info[1]);
+  } else {
+    return NodeBinding::Canvas::NewInstance(env, info[0], info[1]);
+  }
 }
 
 Napi::Object createImage(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
-  return NodeBinding::Image::NewInstance(env);
+
+  bool useCairo = true;
+  if( useCairo ) {
+    return cairocanvas::Image::NewInstance(env);
+  } else {
+    return NodeBinding::Image::NewInstance(env);
+  }
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
@@ -49,6 +71,16 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   NodeBinding::ImageData::Init(env);
   NodeBinding::TextMetrics::Init(env);
   NodeBinding::Pattern::Init(env);
+  //Cairo
+  cairocanvas::Canvas::Init(env, exports);
+  cairocanvas::Context2d::Init(env, exports);
+  cairocanvas::Pattern::Init(env);
+  cairocanvas::Gradient::Init(env);
+  cairocanvas::Image::Init(env, exports);
+  cairocanvas::ImageData::Init(env);
+  cairocanvas::Backend::Init(env);
+  cairocanvas::ImageBackend::Init(env);
+
   //webl reousce binding
   NodeBinding::WebGLShader::Init(env);
   NodeBinding::WebGLProgram::Init(env);

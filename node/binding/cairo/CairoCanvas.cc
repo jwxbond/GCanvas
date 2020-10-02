@@ -51,16 +51,19 @@ std::vector<FontFace> font_face_list;
 
 Napi::Object Canvas::NewInstance(Napi::Env env, Napi::Value arg, Napi::Value arg2)
 {
+    std::cout << "[JWX]New Canvas 1" << std::endl;
+
     Napi::Object obj = constructor.New({arg, arg2});
-    obj.Set("name", Napi::String::New(env, "canvas"));
-    Canvas *canvas = Napi::ObjectWrap<Canvas>::Unwrap(obj);
-    canvas->mRef = Napi::ObjectReference::New(obj);
+    obj.Set("name", Napi::String::New(env, "cairocanvas"));
+    // Canvas *canvas = Napi::ObjectWrap<Canvas>::Unwrap(obj);
+    // canvas->mRef = Napi::ObjectReference::New(obj);
     return obj;
 }
 
 
 Canvas::Canvas(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Canvas>(info), mDataRaw(nullptr)
 {
+  std::cout << "[JWX]New Canvas 2" << std::endl;
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
@@ -68,8 +71,13 @@ Canvas::Canvas(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Canvas>(info),
   mWidth = info[0].As<Napi::Number>().Int32Value();
   mHeight = info[1].As<Napi::Number>().Int32Value();
 
-  // backend = new ImageBackend(mWidth, mHeight);
-  _backend = new ImageBackend(info);
+  std::cout << "width:" << mWidth << ", height:" << mHeight << std::endl;
+
+
+  // _backend = new ImageBackend(info, mWidth, mHeight);
+  // _backend = ImageBackend::NewInstance(env, mWidth, mHeight);
+  std::cout << "[JWX]New Canvas 3" << std::endl;
+
 
   if( !_backend->isSurfaceValid() )
   {
@@ -227,9 +235,9 @@ Napi::Buffer<unsigned char> Canvas::getRawDataBuffer(const Napi::CallbackInfo &i
 //       size = -1;
 //       return Napi::Buffer<unsigned char>::Copy(info.Env(), nullptr, 0);
 //   }
-// }
-// Napi::Value Canvas::ToBuffer(const Napi::CallbackInfo &info)
-// {
+}
+Napi::Value Canvas::ToBuffer(const Napi::CallbackInfo &info)
+{
 //   unsigned long size = 0;
 //   //默认输出png 编码
 //   if (info.Length() == 0)

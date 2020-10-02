@@ -10,7 +10,7 @@ namespace cairocanvas
 class ImageData: public Napi::ObjectWrap<ImageData> 
 {
   public:
-    static void init(Napi::Env env);
+    static void Init(Napi::Env env);
     static Napi::Object NewInstance(const Napi::CallbackInfo &info);
     ImageData(const Napi::CallbackInfo &info);
 

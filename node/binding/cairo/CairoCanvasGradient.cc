@@ -13,7 +13,7 @@ namespace cairocanvas
 Napi::FunctionReference Gradient::constructor;
 
 
-void Gradient::init(Napi::Env env)
+void Gradient::Init(Napi::Env env)
 {
   Napi::HandleScope scope(env);
 

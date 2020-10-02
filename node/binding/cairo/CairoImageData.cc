@@ -7,7 +7,7 @@ namespace cairocanvas
 {
     
 Napi::FunctionReference ImageData::constructor;
-void ImageData::init(Napi::Env env)
+void ImageData::Init(Napi::Env env)
 {
    Napi::HandleScope scope(env);
     Napi::Function func = DefineClass(env, "ImageData", {
