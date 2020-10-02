@@ -4,7 +4,6 @@
 #include <exception>
 #include <napi.h>
 #include <string>
-#include "CairoCanvas.h"
 
 namespace cairocanvas
 {

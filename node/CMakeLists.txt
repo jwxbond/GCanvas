@@ -86,8 +86,8 @@ set(SOURCE_FILES
         ./binding/cairo/backend/ImageBackend.cc
         ./binding/cairo/Backends.cc
         ./binding/cairo/CairoCanvas.cc
-        # ./binding/cairo/CanvasGradient.cc
-        # ./binding/cairo/CanvasPattern.cc
+        ./binding/cairo/CairoCanvasGradient.cc
+        ./binding/cairo/CairoCanvasPattern.cc
         ./binding/cairo/CairoCanvasRenderingContext2d.cc
         ./binding/cairo/CairoImage.cc
         ./binding/cairo/CairoImageData.cc

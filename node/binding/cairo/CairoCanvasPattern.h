@@ -27,11 +27,11 @@ class Pattern: public Napi::ObjectWrap<Pattern> {
     static repeat_type_t get_repeat_type_for_cairo_pattern(cairo_pattern_t *pattern);
 
     Pattern(const Napi::CallbackInfo &info);
+    ~Pattern();
     inline cairo_pattern_t *pattern(){ return _pattern; }
   private:
    static Napi::FunctionReference constructor;
 
-   ~Pattern();
    void setupPattern(cairo_surface_t *surface, repeat_type_t repeat);
    cairo_pattern_t *_pattern;
    repeat_type_t _repeat;

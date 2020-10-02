@@ -1,13 +1,16 @@
 // Copyright (c) 2010 LearnBoost <tj@learnboost.com>
 
-#include "CanvasGradient.h"
+#include "CairoCanvasGradient.h"
 
 #include "CairoCanvas.h"
 #include "color.h"
+#include "NodeBindingUtil.h"
 
 
+namespace cairocanvas
+{
 
-Nan::Persistent<FunctionTemplate> Gradient::constructor;
+Napi::FunctionReference Gradient::constructor;
 
 
 void Gradient::init(Napi::Env env)
@@ -25,15 +28,14 @@ void Gradient::init(Napi::Env env)
 
 
 Napi::Object Gradient::NewInstance(const Napi::CallbackInfo &info)
-
 {
-  Napi::Object obj = constructor.New(info);
-  obj.Set("name",  Napi::String::New(env, "Gradient"));
+  Napi::Object obj = constructor.New({});
+  obj.Set("name",  Napi::String::New(info.Env(), "Gradient"));
   return obj;
 }
 
 
-Gradient::Gradient(const Napi::CallbackInfo &info) : Napi::ObjectWrap<ImageData>(info)
+Gradient::Gradient(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Gradient>(info)
 {
   Napi::Env env = info.Env();
 
@@ -67,8 +69,6 @@ Gradient::Gradient(const Napi::CallbackInfo &info) : Napi::ObjectWrap<ImageData>
 /*
  * Add color stop.
  */
-
-
 void Gradient::addColorStop(const Napi::CallbackInfo &info)
 {
   if( info.Length() < 2)
@@ -88,30 +88,30 @@ void Gradient::addColorStop(const Napi::CallbackInfo &info)
   }
   else
   {
-    throwError(info, "offset is invalid");
+    NodeBinding::throwError(info, "offset is invalid");
     return;
   }
 
-  if (!info[1]->IsString())
+  if (!info[1].IsString())
   {
-    throwError(info, "color string is invalid");
+    NodeBinding::throwError(info, "color string is invalid");
     return;
   }
 
   short ok;
-  Nan::Utf8String str(info[1]);
-  uint32_t rgba = rgba_from_string(*str, &ok);
+  std::string str = info[1].As<Napi::String>().Utf8Value();
+  uint32_t rgba = rgba_from_string(str.c_str(), &ok);
   if (ok) {
     rgba_t color = rgba_create(rgba);
     cairo_pattern_add_color_stop_rgba(
-        grad->pattern()
-      , Nan::To<double>(info[0]).FromMaybe(0)
+        _pattern
+      , offset
       , color.r
       , color.g
       , color.b
       , color.a);
   } else {
-    napi_throw_error(env, "", "parse color failed");
+    NodeBinding::throwError(info, "parse color failed");
   }
 }
 
@@ -140,4 +140,7 @@ void Gradient::setupGradient(double x0, double y0, double r0, double x1, double 
 Gradient::~Gradient() 
 {
   cairo_pattern_destroy(_pattern);
+}
+
+
 }

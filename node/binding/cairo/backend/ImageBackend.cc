@@ -15,6 +15,11 @@ void ImageBackend::init(Napi::Env env)
   constructor.SuppressDestruct();
 }
 
+Napi::Object ImageBackend::NewInstance(const Napi::CallbackInfo &info)
+{
+  
+}
+
 Napi::Object ImageBackend::NewInstance(Napi::Env env, int width, int height)
 {
   Napi::Object obj = constructor.New({ 

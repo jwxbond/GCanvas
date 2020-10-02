@@ -20,11 +20,11 @@ void ImageData::init(Napi::Env env)
   constructor.SuppressDestruct();
 }
 
-
-sNapi::Object ImageData::NewInstance(const Napi::CallbackInfo &info)
+Napi::Object ImageData::NewInstance(const Napi::CallbackInfo &info)
 {
-    Napi::Object obj = constructor.New(info);
-    obj.Set("name", Napi::String::New(env, "imageData"));
+    //TODO  constructor.New
+    Napi::Object obj = constructor.New({});
+    obj.Set("name", Napi::String::New(info.Env(), "imageData"));
     return obj;
 }
 

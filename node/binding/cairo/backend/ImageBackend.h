@@ -16,6 +16,7 @@ class ImageBackend : public Backend
 
   public:
     static void init(Napi::Env env);
+    static Napi::Object NewInstance(const Napi::CallbackInfo &info);
     static Napi::Object NewInstance(Napi::Env env, int width, int height);
 
     ImageBackend(const Napi::CallbackInfo &info);

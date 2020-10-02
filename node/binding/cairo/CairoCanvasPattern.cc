@@ -1,15 +1,15 @@
 // Copyright (c) 2010 LearnBoost <tj@learnboost.com>
 
-#include "CanvasPattern.h"
+#include "CairoCanvasPattern.h"
 
-#include "Canvas.h"
-#include "Image.h"
+#include "CairoCanvas.h"
+#include "CairoImage.h"
 
 
 namespace cairocanvas
 {
 const cairo_user_data_key_t *pattern_repeat_key;
-Nan::Persistent<FunctionTemplate> Pattern::constructor;
+Napi::FunctionReference Pattern::constructor;
 
 void Pattern::init(Napi::Env env)
 {
@@ -22,12 +22,12 @@ void Pattern::init(Napi::Env env)
 
 Napi::Object Pattern::NewInstance(const Napi::CallbackInfo &info)
 {
-  Napi::Object obj = constructor.New(info);
-  obj.Set("name",  Napi::String::New(env, "Pattern"));
+  Napi::Object obj = constructor.New({});
+  obj.Set("name",  Napi::String::New(info.Env(), "Pattern"));
   return obj;
 }
 
-Pattern::Pattern(const Napi::CallbackInfo &info) 
+Pattern::Pattern(const Napi::CallbackInfo &info)  : Napi::ObjectWrap<Pattern>(info)
 {
   Napi::Env env = info.Env();
 
@@ -57,7 +57,7 @@ Pattern::Pattern(const Napi::CallbackInfo &info)
     //   napi_throw_error(env, "", "Image given has not completed loading");
     //   return;
     // }
-    surface = img->surface();
+    surface = img->getSurface();
   }
   else if( namePropetry == "canvas" )
   {

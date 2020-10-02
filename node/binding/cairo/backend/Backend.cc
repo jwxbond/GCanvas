@@ -1,4 +1,5 @@
 #include "Backend.h"
+#include "CairoCanvas.h"
 #include <string>
 
 namespace cairocanvas

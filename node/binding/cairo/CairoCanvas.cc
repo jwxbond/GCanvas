@@ -15,6 +15,7 @@
 #include <unordered_set>
 #include <vector>
 #include "backend/ImageBackend.h"
+#include "NodeBindingUtil.h"
 
 
 namespace cairocanvas
@@ -32,9 +33,9 @@ std::vector<FontFace> font_face_list;
         DefineClass(env,
             "Canvas",
             {
-              InstanceAccessor("type", &Canvas::getType, nullptr),
-              InstanceAccessor("stride", &Canvas::getHeight, nullptr),
-              InstanceAccessor("width", &Canvas::getStride, nullptr),
+              // InstanceAccessor("type", &Canvas::getType, nullptr),
+              // InstanceAccessor("stride", &Canvas::getStride, nullptr),
+              InstanceAccessor("width", &Canvas::getWidth, nullptr),
               InstanceAccessor("height", &Canvas::getHeight, nullptr),
               InstanceMethod("getContext", &Canvas::getContext),
               InstanceMethod("createPNG", &Canvas::createPNG),
@@ -67,24 +68,15 @@ Canvas::Canvas(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Canvas>(info),
   mWidth = info[0].As<Napi::Number>().Int32Value();
   mHeight = info[1].As<Napi::Number>().Int32Value();
 
-  backend = new ImageBackend(mWidth, mHeight);
+  // backend = new ImageBackend(mWidth, mHeight);
+  _backend = new ImageBackend(info);
 
-  if( !backend->isSurfaceValid() )
+  if( !_backend->isSurfaceValid() )
   {
-    delete backend;
+    delete _backend;
     return;
   }
-  backend->setCanvas(this);
-}
-
-int Canvas::getWidth()
-{
-    return mWidth;
-}
-
-int Canvas::getHeight()
-{
-    return mHeight;
+  // backend->setCanvas(this);
 }
 
 Napi::Value Canvas::getWidth(const Napi::CallbackInfo &info)
@@ -106,7 +98,7 @@ Napi::Value Canvas::getContext(const Napi::CallbackInfo &info)
   {
     if (mContext2dRef.IsEmpty())
     {
-      Napi::Object obj = Context2D::NewInstance(env);
+      Napi::Object obj = Context2d::NewInstance(info);
       //save reference
       mContext2dRef = Napi::ObjectReference::New(obj);
       return obj;
@@ -118,34 +110,18 @@ Napi::Value Canvas::getContext(const Napi::CallbackInfo &info)
   }
   else
   {
-    throwError(info, "type is invalid \n");
+    napi_throw_error(env, "", "type is invalid");
     return Napi::Object::New(env);
   }
 }
 
 void Canvas::createPNG(const Napi::CallbackInfo &info)
 {
-  NodeBinding::checkArgs(info, 1);
-  std::string arg = info[0].As<Napi::String>().Utf8Value();
-  if (mRenderContext)
-  {
-      mRenderContext->makeCurrent();
-      mRenderContext->drawFrame();
-      mRenderContext->render2file(arg.c_str(), PNG_FORAMT);
-  }
   return;
 }
 void Canvas::createJPEG(const Napi::CallbackInfo &info)
 {
-  NodeBinding::checkArgs(info, 1);
-  std::string arg = info[0].As<Napi::String>().Utf8Value();
-  if (mRenderContext)
-  {
-      mRenderContext->makeCurrent();
-      mRenderContext->drawFrame();
-      mRenderContext->render2file(arg.c_str(), JPEG_FORMAT);
-  }
-  return;
+  
 }
 Napi::Value Canvas::createJPGStreamSync(const Napi::CallbackInfo &info)
 {
@@ -198,96 +174,96 @@ Napi::Value Canvas::createPNGStreamSync(const Napi::CallbackInfo &info)
 }
 Napi::Buffer<unsigned char> Canvas::getPNGBuffer(const Napi::CallbackInfo &info, unsigned long &size)
 {
-  if (mRenderContext)
-  {
-      mRenderContext->makeCurrent();
-      mRenderContext->drawFrame();
-  }
-  std::vector<unsigned char> dataPNGFormat;
-  int ret = mRenderContext->getImagePixelPNG(dataPNGFormat);
-  if (ret == 0)
-  {
-      size = dataPNGFormat.size();
-      return Napi::Buffer<unsigned char>::Copy(info.Env(), &dataPNGFormat[0], dataPNGFormat.size());
-  }
-  else
-  {
-      return Napi::Buffer<unsigned char>::New(info.Env(), nullptr, 0);
-  }
+  // if (mRenderContext)
+  // {
+  //     mRenderContext->makeCurrent();
+  //     mRenderContext->drawFrame();
+  // }
+  // std::vector<unsigned char> dataPNGFormat;
+  // int ret = mRenderContext->getImagePixelPNG(dataPNGFormat);
+  // if (ret == 0)
+  // {
+  //     size = dataPNGFormat.size();
+  //     return Napi::Buffer<unsigned char>::Copy(info.Env(), &dataPNGFormat[0], dataPNGFormat.size());
+  // }
+  // else
+  // {
+  //     return Napi::Buffer<unsigned char>::New(info.Env(), nullptr, 0);
+  // }
 }
 Napi::Buffer<unsigned char> Canvas::getJPGBuffer(const Napi::CallbackInfo &info, unsigned long &size)
 {
-  if (mRenderContext)
-  {
-      mRenderContext->makeCurrent();
-      mRenderContext->drawFrame();
-  }
-  unsigned char *dataJPGFormat = nullptr;
-  int ret = mRenderContext->getImagePixelJPG(&dataJPGFormat, size);
-  if (ret == 0)
-  {
-      return Napi::Buffer<unsigned char>::Copy(info.Env(), dataJPGFormat, size);
-  }
-  else
-  {
-      size = -1;
-      return Napi::Buffer<unsigned char>::New(info.Env(), nullptr, 0);
-  }
+  // if (mRenderContext)
+  // {
+  //     mRenderContext->makeCurrent();
+  //     mRenderContext->drawFrame();
+  // }
+  // unsigned char *dataJPGFormat = nullptr;
+  // int ret = mRenderContext->getImagePixelJPG(&dataJPGFormat, size);
+  // if (ret == 0)
+  // {
+  //     return Napi::Buffer<unsigned char>::Copy(info.Env(), dataJPGFormat, size);
+  // }
+  // else
+  // {
+  //     size = -1;
+  //     return Napi::Buffer<unsigned char>::New(info.Env(), nullptr, 0);
+  // }
 }
 Napi::Buffer<unsigned char> Canvas::getRawDataBuffer(const Napi::CallbackInfo &info, unsigned long &size)
 {
 
-  if (mDataRaw == nullptr)
-  {
-      mDataRaw = new unsigned char[4 * mWidth * mHeight];
-  }
-  int ret = mRenderContext->readPixelAndSampleFromCurrentCtx(mDataRaw);
-  if (ret == 0)
-  {
-      return Napi::Buffer<unsigned char>::Copy(info.Env(), mDataRaw, 4 * mWidth * mHeight);
-  }
-  else
-  {
-      size = -1;
-      return Napi::Buffer<unsigned char>::Copy(info.Env(), nullptr, 0);
-  }
-}
-Napi::Value Canvas::ToBuffer(const Napi::CallbackInfo &info)
-{
-  unsigned long size = 0;
-  //默认输出png 编码
-  if (info.Length() == 0)
-  {
-      return getPNGBuffer(info, size);
-  }
-  else
-  {
-      Napi::Buffer<unsigned char> ret;
-      if (info.Length() == 1)
-      {
-          std::string mimeType = info[0].As<Napi::String>().Utf8Value();
-          if (mimeType == "image/png")
-          {
-              ret = getPNGBuffer(info, size);
-          }
-          else if (mimeType == "image/jpeg")
-          {
-              ret = getJPGBuffer(info, size);
-          }
-          else if (mimeType == "raw")
-          {
-              ret = getRawDataBuffer(info, size);
-          }
-      }
-      if (size < 0)
-      {
-          return info.Env().Null();
-      }
-      else
-      {
-          return ret;
-      }
-  }
+//   if (mDataRaw == nullptr)
+//   {
+//       mDataRaw = new unsigned char[4 * mWidth * mHeight];
+//   }
+//   int ret = mRenderContext->readPixelAndSampleFromCurrentCtx(mDataRaw);
+//   if (ret == 0)
+//   {
+//       return Napi::Buffer<unsigned char>::Copy(info.Env(), mDataRaw, 4 * mWidth * mHeight);
+//   }
+//   else
+//   {
+//       size = -1;
+//       return Napi::Buffer<unsigned char>::Copy(info.Env(), nullptr, 0);
+//   }
+// }
+// Napi::Value Canvas::ToBuffer(const Napi::CallbackInfo &info)
+// {
+//   unsigned long size = 0;
+//   //默认输出png 编码
+//   if (info.Length() == 0)
+//   {
+//       return getPNGBuffer(info, size);
+//   }
+//   else
+//   {
+//       Napi::Buffer<unsigned char> ret;
+//       if (info.Length() == 1)
+//       {
+//           std::string mimeType = info[0].As<Napi::String>().Utf8Value();
+//           if (mimeType == "image/png")
+//           {
+//               ret = getPNGBuffer(info, size);
+//           }
+//           else if (mimeType == "image/jpeg")
+//           {
+//               ret = getJPGBuffer(info, size);
+//           }
+//           else if (mimeType == "raw")
+//           {
+//               ret = getRawDataBuffer(info, size);
+//           }
+//       }
+//       if (size < 0)
+//       {
+//           return info.Env().Null();
+//       }
+//       else
+//       {
+//           return ret;
+//       }
+//   }
 }
 Canvas::~Canvas()
 {

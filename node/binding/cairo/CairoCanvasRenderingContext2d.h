@@ -70,6 +70,7 @@ class Context2d: public Napi::ObjectWrap<Context2d> {
     static Napi::Object NewInstance(const Napi::CallbackInfo &info);
 
     Context2d(const Napi::CallbackInfo &info);
+    ~Context2d();
     void setupContext2d(Canvas *canvas);
 
     inline void setContext(cairo_t *ctx) { _context = ctx; }
@@ -88,7 +89,7 @@ class Context2d: public Napi::ObjectWrap<Context2d> {
     void restorePath();
     void saveState();
     void restoreState();
-    void inline setFillRule(const Napi::CallbackInfo &info, const Napi::Value &value);
+    void inline setFillRule(const Napi::Value &value);
     void fill(bool preserve = false);
     void stroke(bool preserve = false);
     void save();
@@ -98,14 +99,15 @@ class Context2d: public Napi::ObjectWrap<Context2d> {
     inline PangoLayout *layout(){ return _layout; }
 
   private:
-    ~Context2d();
+
     void _resetPersistentHandles();
+    void paintText(const Napi::CallbackInfo &info, bool stroke);
 
     Napi::Value _getFillColor(const Napi::CallbackInfo &info);
     Napi::Value _getStrokeColor(const Napi::CallbackInfo &info);
-    void _setFillColor(const Napi::CallbackInfo &info, const Napi::Value &value);
+    void _setFillColor( const Napi::Value &value);
     void _setFillPattern(const Napi::CallbackInfo &info, const Napi::Value &value);
-    void _setStrokeColor(const Napi::CallbackInfo &info, const Napi::Value &value);
+    void _setStrokeColor(const Napi::Value &value);
     void _setStrokePattern(const Napi::CallbackInfo &info, const Napi::Value &value);
 
     Napi::ObjectReference _fillStyle;
@@ -164,6 +166,7 @@ class Context2d: public Napi::ObjectWrap<Context2d> {
     void transform(const Napi::CallbackInfo &info);
     void resetTransform(const Napi::CallbackInfo &info);
     void translate(const Napi::CallbackInfo &info);
+    void ellipse(const Napi::CallbackInfo &info);
 
     Napi::Value getFillStyle(const Napi::CallbackInfo &info);
     void setFillStyle(const Napi::CallbackInfo &info, const Napi::Value &value);

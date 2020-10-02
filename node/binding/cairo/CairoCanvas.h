@@ -39,7 +39,21 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
     Canvas(const Napi::CallbackInfo &info);
     virtual ~Canvas();
 
-  private:
+
+    inline Backend* backend() { return _backend; }
+    inline cairo_surface_t* surface(){ return backend()->getSurface(); }
+    cairo_t* createCairoContext();
+
+    inline uint8_t *data(){ return cairo_image_surface_get_data(surface()); }
+    inline int stride(){ return cairo_image_surface_get_stride(surface()); }
+    inline int nBytes(){ return getHeight() * stride(); }
+
+    inline int getWidth() { return backend()->getWidth(); }
+    inline int getHeight() { return backend()->getHeight(); }
+
+    Canvas(Backend* backend);
+
+ private:
     static Napi::FunctionReference constructor;
     Napi::Value getWidth(const Napi::CallbackInfo &info);
     Napi::Value getHeight(const Napi::CallbackInfo &info);
@@ -63,21 +77,7 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
     int mHeight = 0;
     unsigned char *mDataRaw;
 
-    inline Backend* backend() { return _backend; }
-    inline cairo_surface_t* surface(){ return backend()->getSurface(); }
-    cairo_t* createCairoContext();
-
-    inline uint8_t *data(){ return cairo_image_surface_get_data(surface()); }
-    inline int stride(){ return cairo_image_surface_get_stride(surface()); }
-    inline int nBytes(){ return getHeight() * stride(); }
-
-    inline int getWidth() { return backend()->getWidth(); }
-    inline int getHeight() { return backend()->getHeight(); }
-
-    Canvas(Backend* backend);
-
   private:
-    ~Canvas();
     Backend* _backend;
 };
 

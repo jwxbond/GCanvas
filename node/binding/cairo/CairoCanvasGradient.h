@@ -14,12 +14,15 @@ class Gradient: public Napi::ObjectWrap<Gradient>
     static Napi::Object NewInstance(const Napi::CallbackInfo &info);
 
     Gradient(const Napi::CallbackInfo &info);
+    ~Gradient();
+
+    void addColorStop(const Napi::CallbackInfo &info);
+    
     void setupGradient(double x0, double y0, double x1, double y1);
     void setupGradient(double x0, double y0, double r0, double x1, double y1, double r1);
     inline cairo_pattern_t *pattern(){ return _pattern; }
 
   private:
-    ~Gradient();
     static Napi::FunctionReference constructor;
     cairo_pattern_t *_pattern;
 };
