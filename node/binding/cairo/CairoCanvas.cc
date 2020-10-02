@@ -78,8 +78,20 @@ _backend = new CairoImageBackend(mWidth, mHeight);
     return;
   }
 
-    std::cout << "create CairoImageBackend Success width:" << mWidth << ", height:" << mHeight << std::endl;
-  _backend->setCanvas(this);
+  std::cout << "create CairoImageBackend Success width:" << mWidth << ", height:" << mHeight << std::endl;
+_backend->setCanvas(this);
+}
+
+Canvas::~Canvas()
+{
+
+}
+
+cairo_t* Canvas::createCairoContext()
+{
+  cairo_t* ret = cairo_create(surface());
+  cairo_set_line_width(ret, 1); // Cairo defaults to 2
+  return ret;
 }
 
 Napi::Value Canvas::getWidth(const Napi::CallbackInfo &info)
@@ -97,11 +109,16 @@ Napi::Value Canvas::getContext(const Napi::CallbackInfo &info)
   Napi::Env env = info.Env();
   NodeBinding::checkArgs(info, 1);
   std::string type = info[0].As<Napi::String>().Utf8Value();
+
+  std::cout << "Canvas::getContext('" <<  type << "')" <<  std::endl;
+
   if (type == "2d")
   {
     if (mContext2dRef.IsEmpty())
     {
       Napi::Object obj = Context2d::NewInstance(info);
+      Context2d *context2d = Napi::ObjectWrap<Context2d>::Unwrap(obj);
+      context2d->setupContext2d( this );
       //save reference
       mContext2dRef = Napi::ObjectReference::New(obj);
       return obj;
@@ -268,14 +285,5 @@ Napi::Value Canvas::ToBuffer(const Napi::CallbackInfo &info)
 //       }
 //   }
 }
-Canvas::~Canvas()
-{
-    // mRenderContext = nullptr;
-    // if (mDataRaw != nullptr)
-    // {
-    //     free(mDataRaw);
-    //     mDataRaw = nullptr;
-    // }
-    // printf("canvas destroy called \n");
-}
+
 }

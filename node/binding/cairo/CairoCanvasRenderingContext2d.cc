@@ -55,9 +55,9 @@ namespace cairocanvas
     return;                                           \
   double args[4];                                     \
   args[0] = info[0].As<Napi::Number>().DoubleValue(); \
-  args[1] = info[0].As<Napi::Number>().DoubleValue(); \
-  args[2] = info[0].As<Napi::Number>().DoubleValue(); \
-  args[3] = info[0].As<Napi::Number>().DoubleValue(); \
+  args[1] = info[1].As<Napi::Number>().DoubleValue(); \
+  args[2] = info[2].As<Napi::Number>().DoubleValue(); \
+  args[3] = info[3].As<Napi::Number>().DoubleValue(); \
   double x = args[0];                                 \
   double y = args[1];                                 \
   double width = args[2];                             \
@@ -180,7 +180,6 @@ void Context2d::Init(Napi::Env env, Napi::Object exports)
 
 Napi::Object Context2d::NewInstance(const Napi::CallbackInfo &info)
 {
-  //TODO
   Napi::Object obj = constructor.New({});
   obj.Set("name", Napi::String::New(info.Env(), "context2d"));
   return obj;
@@ -189,9 +188,7 @@ Napi::Object Context2d::NewInstance(const Napi::CallbackInfo &info)
 
 Context2d::Context2d(const Napi::CallbackInfo &info): Napi::ObjectWrap<Context2d>(info)
 {
-  //TODO 
-  Canvas *canvas = nullptr;
-  setupContext2d(canvas);
+
 }
 
 /*
