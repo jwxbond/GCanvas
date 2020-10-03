@@ -20,10 +20,10 @@ void Pattern::Init(Napi::Env env)
 }
 
 
-Napi::Object Pattern::NewInstance(const Napi::CallbackInfo &info)
+Napi::Object Pattern::NewInstance(const Napi::CallbackInfo &info,  Napi::Value image, Napi::Value repetition)
 {
-  Napi::Object obj = constructor.New({});
-  obj.Set("name",  Napi::String::New(info.Env(), "Pattern"));
+  Napi::Object obj = constructor.New({image, repetition});
+  obj.Set("name",  Napi::String::New(info.Env(), "pattern"));
   return obj;
 }
 

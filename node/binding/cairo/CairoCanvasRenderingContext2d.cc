@@ -1543,8 +1543,11 @@ Napi::Value Context2d::_getStrokeColor(const Napi::CallbackInfo &info)
 Napi::Value Context2d::createPattern(const Napi::CallbackInfo &info)
 {
   TRACE_CONTEXT_API
-  
-  //TODO
+
+    if( info.Length() < 2  ){
+    return  info.Env().Undefined();
+  }
+  return Pattern::NewInstance(info,  info[0], info[1]);
 }
 
 Napi::Value Context2d::createLinearGradient(const Napi::CallbackInfo &info)
