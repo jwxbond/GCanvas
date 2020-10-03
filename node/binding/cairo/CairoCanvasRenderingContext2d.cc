@@ -1757,12 +1757,6 @@ void Context2d::scale(const Napi::CallbackInfo &info)
 void Context2d::clip(const Napi::CallbackInfo &info)
 {
   TRACE_CONTEXT_API
-  
-  if (info.Length() < 1)
-  {
-    return;
-  }
-
   setFillRule(info[0]);
   cairo_t *ctx = context();
   cairo_clip_preserve(ctx);
