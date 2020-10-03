@@ -35,8 +35,12 @@
 #endif
 
 
+#ifdef TRACE_API
 #define TRACE_CONTEXT_API     std::cout << "CairoContext2d ::"<< __FUNCTION__ << std::endl;
+#else
+#define TRACE_CONTEXT_API
 
+#endif
 namespace cairocanvas
 {
   Napi::FunctionReference Context2d::constructor;
@@ -1278,19 +1282,30 @@ void Context2d::setFillStyle(const Napi::CallbackInfo &info, const Napi::Value &
     _fillStyle.Reset();
     _setFillColor(value);
   }
-  else
+  else if( value.IsObject() )
   {
-    //TODO check HasInstance
-    //TODO Pattern & Gradient
-    // context->_fillStyle.Reset(value);
-    // Local<Object> obj = Nan::To<Object>(value).ToLocalChecked();
-    // if (Nan::New(Gradient::constructor)->HasInstance(obj)){
-    //   Gradient *grad = Napi::ObjectWrap::Unwrap<Gradient>(obj);
-    //   context->state->fillGradient = grad->pattern();
-    // } else if(Nan::New(Pattern::constructor)->HasInstance(obj)){
-    //   Pattern *pattern = Napi::ObjectWrap::Unwrap<Pattern>(obj);
-    //   context->state->fillPattern = pattern->pattern();
-    // }
+    Napi::Object object = value.As<Napi::Object>();
+    Napi::Value name = object.Get("name");
+    if (!name.IsString())
+    {
+      // throwError(info, "wrong argument for fillstyle");
+      return;
+    }
+    std::string namePropetry = name.As<Napi::String>().Utf8Value();
+    if (namePropetry == "linearGradient" ||  namePropetry == "radialGradient")
+    {
+      Gradient *grad = Napi::ObjectWrap<Gradient>::Unwrap(object);
+      state->fillGradient = grad->pattern();
+    }
+    else if(namePropetry == "pattern")
+    {
+      Pattern *pattern = Napi::ObjectWrap<Pattern>::Unwrap(object);
+      state->fillPattern = pattern->pattern();
+    }
+    else
+    {
+
+    }
   }
 }
 
@@ -1316,7 +1331,7 @@ void Context2d::setstrokeStyle(const Napi::CallbackInfo &info, const Napi::Value
   if (value.IsString())
   {    
     _strokeStyle.Reset();
-    _setFillColor(value);
+    _setStrokeColor(value);
   }
   else
   {
@@ -1532,20 +1547,22 @@ Napi::Value Context2d::createPattern(const Napi::CallbackInfo &info)
   //TODO
 }
 
-//TODO CreateLinearGradient
 Napi::Value Context2d::createLinearGradient(const Napi::CallbackInfo &info)
 {
-  TRACE_CONTEXT_API
-  
-  //TODO    static Napi::Object NewInstance(const Napi::CallbackInfo &info);
+  TRACE_CONTEXT_API  
+  if( info.Length() < 4  ){
+    return info.Env().Undefined();
+  }
+  return Gradient::NewInstance(info,  info[0], info[1], info[2], info[3]);
 }
 
-//TODO CreateRadialGradient
 Napi::Value Context2d::createRadialGradient(const Napi::CallbackInfo &info)
 {
   TRACE_CONTEXT_API
-  
-  //TODO
+  if( info.Length() < 6  ){
+    return  info.Env().Undefined();
+  }
+  return Gradient::NewInstance(info,  info[0], info[1], info[2], info[3], info[5], info[6]);
 }
 
 /*

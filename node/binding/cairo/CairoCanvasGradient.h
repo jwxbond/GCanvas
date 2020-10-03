@@ -11,7 +11,8 @@ class Gradient: public Napi::ObjectWrap<Gradient>
 {
   public:
     static void Init(Napi::Env env);
-    static Napi::Object NewInstance(const Napi::CallbackInfo &info);
+    static Napi::Object NewInstance(const Napi::CallbackInfo &info,  Napi::Value x0, Napi::Value y0, Napi::Value x1, Napi::Value y1 );
+    static Napi::Object NewInstance(const Napi::CallbackInfo &info,  Napi::Value x0, Napi::Value y0, Napi::Value r0, Napi::Value x1, Napi::Value y1, Napi::Value r1);
 
     Gradient(const Napi::CallbackInfo &info);
     ~Gradient();

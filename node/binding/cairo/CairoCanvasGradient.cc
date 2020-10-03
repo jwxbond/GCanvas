@@ -25,15 +25,19 @@ void Gradient::Init(Napi::Env env)
   constructor.SuppressDestruct();
 }
 
+ Napi::Object Gradient::NewInstance(const Napi::CallbackInfo &info,  Napi::Value x0, Napi::Value y0, Napi::Value x1, Napi::Value y1 )
+ {
+    Napi::Object obj = constructor.New({x0,y0,x1,y1});
+    obj.Set("name",  Napi::String::New(info.Env(), "linearGradient"));
+    return obj;
+ }
 
-
-Napi::Object Gradient::NewInstance(const Napi::CallbackInfo &info)
+Napi::Object Gradient::NewInstance(const Napi::CallbackInfo &info,  Napi::Value x0, Napi::Value y0, Napi::Value r0, Napi::Value x1, Napi::Value y1, Napi::Value r1)
 {
-  Napi::Object obj = constructor.New({});
-  obj.Set("name",  Napi::String::New(info.Env(), "Gradient"));
+  Napi::Object obj = constructor.New({x0,y0,r0, x1,y1, r1});
+  obj.Set("name",  Napi::String::New(info.Env(), "radialGradient"));
   return obj;
 }
-
 
 Gradient::Gradient(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Gradient>(info)
 {
@@ -121,6 +125,7 @@ void Gradient::addColorStop(const Napi::CallbackInfo &info)
 
 void Gradient::setupGradient(double x0, double y0, double x1, double y1) 
 {
+  std::cout << "Gradient::LinearGradient(" << x0 <<","  << y0 <<"," << x1 <<"," << y1 <<")"<< std::endl;
   _pattern = cairo_pattern_create_linear(x0, y0, x1, y1);
 }
 
@@ -130,6 +135,7 @@ void Gradient::setupGradient(double x0, double y0, double x1, double y1)
 
 void Gradient::setupGradient(double x0, double y0, double r0, double x1, double y1, double r1) 
 {
+    std::cout << "Gradient::RadialGradient(" << x0 <<","  << y0 <<"," << r0<<","<< x1 <<"," << y1 <<","<< r1 <<")"<< std::endl;
   _pattern = cairo_pattern_create_radial(x0, y0, r0, x1, y1, r1);
 }
 
