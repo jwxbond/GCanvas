@@ -54,8 +54,8 @@ Napi::Object Canvas::NewInstance(Napi::Env env, Napi::Value arg, Napi::Value arg
     std::cout << "Canvas::NewInstance" << std::endl;
     Napi::Object obj = constructor.New({arg, arg2});
     obj.Set("name", Napi::String::New(env, "cairocanvas"));
-    // Canvas *canvas = Napi::ObjectWrap<Canvas>::Unwrap(obj);
-    // canvas->mRef = Napi::ObjectReference::New(obj);
+    Canvas *canvas = Napi::ObjectWrap<Canvas>::Unwrap(obj);
+    canvas->mRef = Napi::ObjectReference::New(obj);
     return obj;
 }
 
