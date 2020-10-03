@@ -35,7 +35,8 @@
 #endif
 
 
-#ifdef TRACE_API
+// #define TRACE_API
+#ifdef TRACE_API 
 #define TRACE_CONTEXT_API     std::cout << "CairoContext2d ::"<< __FUNCTION__ << std::endl;
 #else
 #define TRACE_CONTEXT_API
@@ -411,11 +412,13 @@ cairo_pattern_t * create_transparent_pattern(cairo_pattern_t *source, float alph
 
 void Context2d::setFillRule(const Napi::Value &value)
 {
+  TRACE_CONTEXT_API
+
   cairo_fill_rule_t rule = CAIRO_FILL_RULE_WINDING;
   if (value.IsString())
   {
-    std::string rule = value.As<Napi::String>().Utf8Value();
-    if (rule == "evenodd")
+    std::string ruleStr = value.As<Napi::String>().Utf8Value();
+    if (ruleStr == "evenodd")
     {
       rule = CAIRO_FILL_RULE_EVEN_ODD;
     }
@@ -802,7 +805,7 @@ void Context2d::blur(cairo_surface_t *surface, int radius)
 
 //   Context2d *context = new Context2d(canvas);
 
-//   context->Wrap(info.This());
+//   Wrap(info.This());
 //   info.GetReturnValue().Set(info.This());
 // }
 
@@ -822,7 +825,7 @@ void Context2d::blur(cairo_surface_t *surface, int radius)
 // NAN_GETTER(Context2d::GetFormat) {
 //   Context2d *context = Napi::ObjectWrap::Unwrap<Context2d>(info.This());
 //   std::string pixelFormatString;
-//   switch (context->canvas()->backend()->getFormat()) {
+//   switch (canvas()->backend()->getFormat()) {
 //   case CAIRO_FORMAT_ARGB32: pixelFormatString = "RGBA32"; break;
 //   case CAIRO_FORMAT_RGB24: pixelFormatString = "RGB24"; break;
 //   case CAIRO_FORMAT_A8: pixelFormatString = "A8"; break;
@@ -843,12 +846,81 @@ void Context2d::putImageData(const Napi::CallbackInfo &info)
   //TODO
 }
 
-// NAN_METHOD(Context2d::GetImageData)
 Napi::Value Context2d::getImageData(const Napi::CallbackInfo &info)
 {  
   TRACE_CONTEXT_API
+  
+  int sx = info[0].As<Napi::Number>().Int32Value();
+  int sy = info[1].As<Napi::Number>().Int32Value();
+  int sw = info[2].As<Napi::Number>().Int32Value();
+  int sh = info[3].As<Napi::Number>().Int32Value();
 
-  //TODO
+  int width = _canvas->getWidth();
+  int height = _canvas->getHeight();
+
+  if (sw < 0)
+  {
+    sx += sw;
+    sw = -sw;
+  }
+  if (sh < 0)
+  {
+    sy += sh;
+    sh = -sh;
+  }
+
+  if (sx + sw > width)
+    sw = width - sx;
+  if (sy + sh > height)
+    sh = height - sy;
+
+  // WebKit/moz functionality. node-canvas used to return in either case.
+  if (sw <= 0)
+    sw = 1;
+  if (sh <= 0)
+    sh = 1;
+
+  // Non-compliant. "Pixels outside the canvas must be returned as transparent
+  // black." This instead clips the returned array to the canvas area.
+  if (sx < 0)
+  {
+    sw += sx;
+    sx = 0;
+  }
+  if (sy < 0)
+  {
+    sh += sy;
+    sy = 0;
+  }
+
+  int srcStride = _canvas->stride();
+  int bpp = srcStride / width;
+  int size = sw * sh * bpp;
+  int dstStride = sw * bpp;
+
+  uint8_t *src = _canvas->data();
+
+
+//  Napi::ArrayBuffer array = info[1].As<Napi::ArrayBuffer>();
+// Napi::Uint8Array buffer = array.As<Napi::Uint8Array>();
+  Napi::ArrayBuffer array = Napi::ArrayBuffer::New(info.Env(), size);
+
+  //TODO argb32 format
+  // Napi::TypedArray dataArray = Napi::Uint8Array::New()
+
+  // Napi::TypedArray dataArray = Napi::Uint8ClampedArray::New(info.Env() );
+
+
+
+    // Napi::Object imageDataObj = ImageData::NewInstance(info.Env(), info[2], info[3]);
+    // ImageData *ptr = Napi::ObjectWrap<ImageData>::Unwrap(imageDataObj);
+    // mRendergetCtx()->GetImageData(x, y, width, height, &ptr->getPixles()[0]);
+
+    // //flipY
+    // gcanvas::FlipPixel(&ptr->getPixles()[0], width, height);
+
+    // return info.Env():;
+  return info.Env().Undefined();
 }
 
 // NAN_METHOD(Context2d::CreateImageData)
@@ -913,12 +985,222 @@ void decompose_matrix(cairo_matrix_t matrix, double *destination)
  *
  */
 
-// NAN_METHOD(Context2d::DrawImage) {}
 void Context2d::drawImage(const Napi::CallbackInfo &info)
 {
-    TRACE_CONTEXT_API
+  TRACE_CONTEXT_API
+  int infoLen = info.Length();
+  if (infoLen != 3 && infoLen != 5 && infoLen != 9){
+    NodeBinding::throwError(info, "Invalid arguments");
+    return;
+  }
+  if (!info[0].IsObject()){
+    NodeBinding::throwError(info, "The first argument must be an object");    
+    return;
+  }
 
-  //TODO
+  double args[8];
+  if(!checkArgs(info, args, infoLen - 1, 1))
+    return;
+
+
+  std::cout << "drawage ....2" << std::endl;
+
+  double sx = 0, sy = 0, sw = 0, sh = 0;
+  double dx = 0, dy = 0, dw = 0, dh = 0;
+  double  source_w = 0, source_h = 0;
+
+  cairo_surface_t *surface;
+
+  Napi::Object object = info[0].As<Napi::Object>();
+  Napi::Value name = object.Get("name");
+
+  if (!name.IsString())
+  {
+    NodeBinding::throwError(info, "draw image invalid");    
+    return;
+  }
+
+  std::string namePropetry = name.As<Napi::String>().Utf8Value();
+  if (namePropetry == "image")
+  {
+    Image *img = Napi::ObjectWrap<Image>::Unwrap(info[0].As<Napi::Object>());
+
+    printf("Image ptr is: %p\n", img);
+    source_w = sw = img->getWidth();
+    source_h = sh = img->getHeight();
+    surface = img->getSurface();
+  }
+  else if (namePropetry == "canvas")
+  {
+    Canvas *canvas = Napi::ObjectWrap<Canvas>::Unwrap(info[0].As<Napi::Object>());
+    source_w = sw = canvas->getWidth();
+    source_h = sh = canvas->getHeight();
+    surface = canvas->surface();
+  }
+  else
+  {
+    NodeBinding::throwError(info, "Image or Canvas expected"); 
+    return;
+  }
+  cairo_t *ctx = context();
+
+  // Arguments
+  switch (infoLen) {
+    // img, sx, sy, sw, sh, dx, dy, dw, dh
+    case 9:
+      sx = args[0];
+      sy = args[1];
+      sw = args[2];
+      sh = args[3];
+      dx = args[4];
+      dy = args[5];
+      dw = args[6];
+      dh = args[7];
+      break;
+    // img, dx, dy, dw, dh
+    case 5:
+      dx = args[0];
+      dy = args[1];
+      dw = args[2];
+      dh = args[3];
+      break;
+    // img, dx, dy
+    case 3:
+      dx = args[0];
+      dy = args[1];
+      dw = sw;
+      dh = sh;
+      break;
+  }
+
+  if (!(sw && sh && dw && dh))
+    return;
+
+  // Start draw
+  cairo_save(ctx);
+
+  cairo_matrix_t matrix;
+  double transforms[6];
+  cairo_get_matrix(context(), &matrix);
+  decompose_matrix(matrix, transforms);
+  // extract the scale value from the current transform so that we know how many pixels we
+  // need for our extra canvas in the drawImage operation.
+  double current_scale_x = std::abs(transforms[1]);
+  double current_scale_y = std::abs(transforms[2]);
+  double extra_dx = 0;
+  double extra_dy = 0;
+  double fx = dw / sw * current_scale_x; // transforms[1] is scale on X
+  double fy = dh / sh * current_scale_y; // transforms[2] is scale on X
+  bool needScale = dw != sw || dh != sh;
+  bool needCut = sw != source_w || sh != source_h || sx < 0 || sy < 0;
+  bool sameCanvas = surface == canvas()->surface();
+  bool needsExtraSurface = sameCanvas || needCut || needScale;
+  cairo_surface_t *surfTemp = NULL;
+  cairo_t *ctxTemp = NULL;
+
+  if (needsExtraSurface) {
+    // we want to create the extra surface as small as possible.
+    // fx and fy are the total scaling we need to apply to sw, sh.
+    // from sw and sh we want to remove the part that is outside the source_w and soruce_h
+    double real_w = sw;
+    double real_h = sh;
+    double translate_x = 0;
+    double translate_y = 0;
+    // if sx or sy are negative, a part of the area represented by sw and sh is empty
+    // because there are empty pixels, so we cut it out.
+    // On the other hand if sx or sy are positive, but sw and sh extend outside the real
+    // source pixels, we cut the area in that case too.
+    if (sx < 0) {
+      extra_dx = -sx * fx;
+      real_w = sw + sx;
+    } else if (sx + sw > source_w) {
+      real_w = sw - (sx + sw - source_w);
+    }
+    if (sy < 0) {
+      extra_dy = -sy * fy;
+      real_h = sh + sy;
+    } else if (sy + sh > source_h) {
+      real_h = sh - (sy + sh - source_h);
+    }
+    // if after cutting we are still bigger than source pixels, we restrict again
+    if (real_w > source_w) {
+      real_w = source_w;
+    }
+    if (real_h > source_h) {
+      real_h = source_h;
+    }
+    // TODO: find a way to limit the surfTemp to real_w and real_h if fx and fy are bigger than 1.
+    // there are no more pixel than the one available in the source, no need to create a bigger surface.
+    surfTemp = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, round(real_w * fx), round(real_h * fy));
+    ctxTemp = cairo_create(surfTemp);
+    cairo_scale(ctxTemp, fx, fy);
+    if (sx > 0) {
+      translate_x = sx;
+    }
+    if (sy > 0) {
+      translate_y = sy;
+    }
+    cairo_set_source_surface(ctxTemp, surface, -translate_x, -translate_y);
+    cairo_pattern_set_filter(cairo_get_source(ctxTemp), state->imageSmoothingEnabled ? state->patternQuality : CAIRO_FILTER_NEAREST);
+    cairo_pattern_set_extend(cairo_get_source(ctxTemp), CAIRO_EXTEND_REFLECT);
+    cairo_paint_with_alpha(ctxTemp, 1);
+    surface = surfTemp;
+  }
+
+  // apply shadow if there is one
+  if (hasShadow()) {
+    if(state->shadowBlur) {
+      // we need to create a new surface in order to blur
+      int pad = state->shadowBlur * 2;
+      cairo_surface_t *shadow_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, dw + 2 * pad, dh + 2 * pad);
+      cairo_t *shadow_context = cairo_create(shadow_surface);
+
+      // mask and blur
+      setSourceRGBA(shadow_context, state->shadow);
+      cairo_mask_surface(shadow_context, surface, pad, pad);
+      blur(shadow_surface, state->shadowBlur);
+
+      // paint
+      // @note: ShadowBlur looks different in each browser. This implementation matches chrome as close as possible.
+      //        The 1.4 offset comes from visual tests with Chrome. I have read the spec and part of the shadowBlur
+      //        implementation, and its not immediately clear why an offset is necessary, but without it, the result
+      //        in chrome is different.
+      cairo_set_source_surface(ctx, shadow_surface,
+        dx + state->shadowOffsetX - pad + 1.4,
+        dy + state->shadowOffsetY - pad + 1.4);
+      cairo_paint(ctx);
+      // cleanup
+      cairo_destroy(shadow_context);
+      cairo_surface_destroy(shadow_surface);
+    } else {
+      setSourceRGBA(state->shadow);
+      cairo_mask_surface(ctx, surface,
+        dx + (state->shadowOffsetX),
+        dy + (state->shadowOffsetY));
+    }
+  }
+
+  double scaled_dx = dx;
+  double scaled_dy = dy;
+
+  if (needsExtraSurface && (current_scale_x != 1 || current_scale_y != 1)) {
+    // in this case our surface contains already current_scale_x, we need to scale back
+    cairo_scale(ctx, 1 / current_scale_x, 1 / current_scale_y);
+    scaled_dx *= current_scale_x;
+    scaled_dy *= current_scale_y;
+  }
+  // Paint
+  cairo_set_source_surface(ctx, surface, scaled_dx + extra_dx, scaled_dy + extra_dy);
+  cairo_pattern_set_filter(cairo_get_source(ctx), state->imageSmoothingEnabled ? state->patternQuality : CAIRO_FILTER_NEAREST);
+  cairo_pattern_set_extend(cairo_get_source(ctx), CAIRO_EXTEND_NONE);
+  cairo_paint_with_alpha(ctx, state->globalAlpha);
+
+  cairo_restore(ctx);
+
+  if (needsExtraSurface) {
+    cairo_destroy(ctxTemp);
+    cairo_surface_destroy(surfTemp);
+  }
 }
 
 Napi::Value Context2d::getglobalAlpha(const Napi::CallbackInfo &info)
@@ -2240,7 +2522,7 @@ void Context2d::setLineDash(const Napi::CallbackInfo &info)
 //     if (a[i] < 0 || isnan(a[i]) || isinf(a[i])) return;
 //   }
 //   Context2d *context = Napi::ObjectWrap::Unwrap<Context2d>(info.This());
-//   cairo_t *ctx = context->context();
+//   cairo_t *ctx = context();
 //   double offset;
 //   cairo_get_dash(ctx, NULL, &offset);
 //   if (zero_dashes == dashes) {
@@ -2265,7 +2547,7 @@ Napi::Value Context2d::getLineDash(const Napi::CallbackInfo &info)
 
 // NAN_METHOD(Context2d::GetLineDash) {
 //   Context2d *context = Napi::ObjectWrap::Unwrap<Context2d>(info.This());
-//   cairo_t *ctx = context->context();
+//   cairo_t *ctx = context();
 //   int dashes = cairo_get_dash_count(ctx);
 //   std::vector<double> a(dashes);
 //   cairo_get_dash(ctx, a.data(), NULL);

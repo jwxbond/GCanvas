@@ -31,14 +31,18 @@ void Image::Init(Napi::Env env, Napi::Object exports)
 
 Napi::Object Image::NewInstance(Napi::Env env)
 {
-  Napi::Object obj = constructor.New({});
-  obj.Set("name", Napi::String::New(env, "cairoimage"));
-  return obj;
+    Napi::Object obj = constructor.New({});
+    obj.Set("name", Napi::String::New(env, "image"));
+    return obj;
 }
 
 Image::Image(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Image>(info)
 {
     mCallbackSet = new ImageCallbackSet();
+  _data = nullptr;
+  _data_len = 0;
+  _surface = NULL;
+  width = height = 0;
 }
 
 Image::~Image()
