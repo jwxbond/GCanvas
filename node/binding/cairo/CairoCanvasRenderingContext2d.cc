@@ -35,6 +35,7 @@
 #endif
 
 
+#define TRACE_CONTEXT_API     std::cout << "CairoContext2d ::"<< __FUNCTION__ << std::endl;
 
 namespace cairocanvas
 {
@@ -200,6 +201,12 @@ void Context2d::setupContext2d(Canvas *canvas)
   //TODO 构造函数确认下
   _canvas = canvas;
   _context = canvas->createCairoContext();
+
+  if( _context != nullptr  )
+  {
+      std::cout << "Context2d::setupContext2d()  createCairoContext success  " << std::endl;
+  }
+
   _layout = pango_cairo_create_layout(_context);
   state = states[stateno = 0] = (canvas_state_t *)malloc(sizeof(canvas_state_t));
 
@@ -828,18 +835,22 @@ void Context2d::blur(cairo_surface_t *surface, int radius)
 // NAN_METHOD(Context2d::PutImageData)
 void Context2d::putImageData(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
   //TODO
 }
 
 // NAN_METHOD(Context2d::GetImageData)
 Napi::Value Context2d::getImageData(const Napi::CallbackInfo &info)
-{
+{  
+  TRACE_CONTEXT_API
+
   //TODO
 }
 
 // NAN_METHOD(Context2d::CreateImageData)
 Napi::Value Context2d::createImageData(const Napi::CallbackInfo &info)
 {
+    TRACE_CONTEXT_API
   //TODO
   Napi::Env env = info.Env();
   int32_t width, height;
@@ -901,16 +912,22 @@ void decompose_matrix(cairo_matrix_t matrix, double *destination)
 // NAN_METHOD(Context2d::DrawImage) {}
 void Context2d::drawImage(const Napi::CallbackInfo &info)
 {
+    TRACE_CONTEXT_API
+
   //TODO
 }
 
 Napi::Value Context2d::getglobalAlpha(const Napi::CallbackInfo &info)
 {
+    TRACE_CONTEXT_API
+
   return Napi::Number::New(info.Env(), state->globalAlpha);
 }
 
 void Context2d::setglobalAlpha(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+    TRACE_CONTEXT_API
+
   //TODO check args
   if (info.Length() < 1 || !info[0].IsNumber())
   {
@@ -926,6 +943,8 @@ void Context2d::setglobalAlpha(const Napi::CallbackInfo &info, const Napi::Value
 
 Napi::Value Context2d::getglobalCompositeOperation(const Napi::CallbackInfo &info)
 {
+    TRACE_CONTEXT_API
+
   cairo_t *ctx = context();
   const char *op = "source-over";
   switch (cairo_get_operator(ctx))
@@ -1031,6 +1050,8 @@ Napi::Value Context2d::getglobalCompositeOperation(const Napi::CallbackInfo &inf
 
 void Context2d::setglobalCompositeOperation(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+    TRACE_CONTEXT_API
+
   cairo_t *ctx = context();
   std::string opStr = info[0].As<Napi::String>().Utf8Value();
 
@@ -1080,11 +1101,15 @@ void Context2d::setglobalCompositeOperation(const Napi::CallbackInfo &info, cons
 // ShadowOffsetX
 Napi::Value Context2d::getshadowOffsetX(const Napi::CallbackInfo &info)
 {
+    TRACE_CONTEXT_API
+
   return Napi::Number::New(info.Env(), state->shadowOffsetX);
 }
 
 void Context2d::setshadowOffsetX(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+    TRACE_CONTEXT_API
+
   double offsetX = info[0].As<Napi::Number>().DoubleValue();
   state->shadowOffsetX = offsetX;
 }
@@ -1092,10 +1117,14 @@ void Context2d::setshadowOffsetX(const Napi::CallbackInfo &info, const Napi::Val
 // ShadowOffsetY
 Napi::Value Context2d::getshadowOffsetY(const Napi::CallbackInfo &info)
 {
+    TRACE_CONTEXT_API
+
   Napi::Number::New(info.Env(), state->shadowOffsetY);
 }
 void Context2d::setshadowOffsetY(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+    TRACE_CONTEXT_API
+
   double offsetY = info[0].As<Napi::Number>().DoubleValue();
   state->shadowOffsetY = offsetY;
 }
@@ -1103,11 +1132,15 @@ void Context2d::setshadowOffsetY(const Napi::CallbackInfo &info, const Napi::Val
 // Shadow blur
 Napi::Value Context2d::getshadowBlur(const Napi::CallbackInfo &info)
 {
+    TRACE_CONTEXT_API
+
   Napi::Number::New(info.Env(), state->shadowBlur);
 }
 
 void Context2d::setshadowBlur(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+    TRACE_CONTEXT_API
+
   double blur = info[0].As<Napi::Number>().DoubleValue();
   if (blur >= 0)
   {
@@ -1224,6 +1257,8 @@ void Context2d::setquality(const Napi::CallbackInfo &info, const Napi::Value &va
 // TODO FillStyle
 Napi::Value Context2d::getFillStyle(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+
   Napi::Value style;
   if (_fillStyle.IsEmpty())
   {
@@ -1237,6 +1272,7 @@ Napi::Value Context2d::getFillStyle(const Napi::CallbackInfo &info)
 }
 void Context2d::setFillStyle(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+  TRACE_CONTEXT_API
   if (value.IsString())
   {    
     _fillStyle.Reset();
@@ -1260,6 +1296,8 @@ void Context2d::setFillStyle(const Napi::CallbackInfo &info, const Napi::Value &
 
 Napi::Value Context2d::getstrokeStyle(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+
   Napi::Value style;
   if (_strokeStyle.IsEmpty())
   {
@@ -1273,6 +1311,7 @@ Napi::Value Context2d::getstrokeStyle(const Napi::CallbackInfo &info)
 }
 void Context2d::setstrokeStyle(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+  TRACE_CONTEXT_API
 
   if (value.IsString())
   {    
@@ -1296,11 +1335,15 @@ void Context2d::setstrokeStyle(const Napi::CallbackInfo &info, const Napi::Value
 
 Napi::Value Context2d::getmiterLimit(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+
   double value = cairo_get_miter_limit(context());
   return Napi::Number::New(info.Env(), value);
 }
 void Context2d::setmiterLimit(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+   TRACE_CONTEXT_API
+
   double v = info[0].As<Napi::Number>().DoubleValue();
   if (v > 0)
   {
@@ -1311,11 +1354,15 @@ void Context2d::setmiterLimit(const Napi::CallbackInfo &info, const Napi::Value 
 // LineWidth
 Napi::Value Context2d::getlineWidth(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+
   double v = cairo_get_line_width(context());
   return Napi::Number::New(info.Env(), v);
 }
 void Context2d::setlineWidth(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+  TRACE_CONTEXT_API
+
   double v = info[0].As<Napi::Number>().DoubleValue();
   if (v > 0 && v != std::numeric_limits<double>::infinity())
   {
@@ -1326,6 +1373,8 @@ void Context2d::setlineWidth(const Napi::CallbackInfo &info, const Napi::Value &
 //Line Join
 Napi::Value Context2d::getlineJoin(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+
   const char *join;
   switch (cairo_get_line_join(context()))
   {
@@ -1343,6 +1392,8 @@ Napi::Value Context2d::getlineJoin(const Napi::CallbackInfo &info)
 
 void Context2d::setlineJoin(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+  TRACE_CONTEXT_API
+
   std::string v = info[0].As<Napi::String>().Utf8Value();
   const char *type = v.c_str();
   cairo_t *ctx = context();
@@ -1364,6 +1415,8 @@ void Context2d::setlineJoin(const Napi::CallbackInfo &info, const Napi::Value &v
 //LineCap
 Napi::Value Context2d::getlineCap(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   const char *cap;
   switch (cairo_get_line_cap(context()))
   {
@@ -1380,6 +1433,8 @@ Napi::Value Context2d::getlineCap(const Napi::CallbackInfo &info)
 }
 void Context2d::setlineCap(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+  TRACE_CONTEXT_API
+  
   std::string v = info[0].As<Napi::String>().Utf8Value();
   const char *type = v.c_str();
   cairo_t *ctx = context();
@@ -1401,12 +1456,16 @@ void Context2d::setlineCap(const Napi::CallbackInfo &info, const Napi::Value &va
 //TODO  IsPointInPath
 Napi::Value Context2d::getshadowColor(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   char buf[64];
   rgba_to_string(state->shadow, buf, sizeof(buf));
   return Napi::String::New(info.Env(), buf);
 }
 void Context2d::setshadowColor(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+  TRACE_CONTEXT_API
+  
   std::string v = info[0].As<Napi::String>().Utf8Value();
   short ok;
   uint32_t rgba = rgba_from_string(v.c_str(), &ok);
@@ -1468,18 +1527,24 @@ Napi::Value Context2d::_getStrokeColor(const Napi::CallbackInfo &info)
 //TODO createPattern
 Napi::Value Context2d::createPattern(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   //TODO
 }
 
 //TODO CreateLinearGradient
 Napi::Value Context2d::createLinearGradient(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   //TODO    static Napi::Object NewInstance(const Napi::CallbackInfo &info);
 }
 
 //TODO CreateRadialGradient
 Napi::Value Context2d::createRadialGradient(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   //TODO
 }
 
@@ -1489,6 +1554,8 @@ Napi::Value Context2d::createRadialGradient(const Napi::CallbackInfo &info)
 
 void Context2d::bezierCurveTo(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   double args[6];
   if (!checkArgs(info, args, 6))
     return;
@@ -1502,6 +1569,8 @@ void Context2d::bezierCurveTo(const Napi::CallbackInfo &info)
 
 void Context2d::quadraticCurveTo(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   double args[4];
   if (!checkArgs(info, args, 4))
     return;
@@ -1526,6 +1595,8 @@ void Context2d::quadraticCurveTo(const Napi::CallbackInfo &info)
 
 void Context2d::save(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   save();
 }
 
@@ -1535,6 +1606,8 @@ void Context2d::save(const Napi::CallbackInfo &info)
 
 void Context2d::restore(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   restore();
 }
 
@@ -1543,6 +1616,8 @@ void Context2d::restore(const Napi::CallbackInfo &info)
  */
 void Context2d::beginPath(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   cairo_new_path(context());
 }
 
@@ -1552,6 +1627,8 @@ void Context2d::beginPath(const Napi::CallbackInfo &info)
 
 void Context2d::closePath(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   cairo_close_path(context());
 }
 
@@ -1561,6 +1638,8 @@ void Context2d::closePath(const Napi::CallbackInfo &info)
 
 void Context2d::rotate(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   double args[1];
   if (!checkArgs(info, args, 1))
     return;
@@ -1575,6 +1654,8 @@ void Context2d::rotate(const Napi::CallbackInfo &info)
 
 void Context2d::transform(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   double args[6];
   if (!checkArgs(info, args, 6))
     return;
@@ -1591,6 +1672,8 @@ void Context2d::transform(const Napi::CallbackInfo &info)
 
 void Context2d::resetTransform(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   cairo_identity_matrix(context());
 }
 
@@ -1600,6 +1683,8 @@ void Context2d::resetTransform(const Napi::CallbackInfo &info)
 
 void Context2d::setTransform(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   cairo_identity_matrix(context());
   transform(info);
 }
@@ -1610,6 +1695,8 @@ void Context2d::setTransform(const Napi::CallbackInfo &info)
 
 void Context2d::translate(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   double args[2];
   if (!checkArgs(info, args, 2))
     return;
@@ -1622,6 +1709,8 @@ void Context2d::translate(const Napi::CallbackInfo &info)
  */
 void Context2d::scale(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   double args[2];
   if (!checkArgs(info, args, 2))
     return;
@@ -1635,6 +1724,8 @@ void Context2d::scale(const Napi::CallbackInfo &info)
 
 void Context2d::clip(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   if (info.Length() < 1)
   {
     return;
@@ -1651,6 +1742,8 @@ void Context2d::clip(const Napi::CallbackInfo &info)
 
 void Context2d::fill(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   if (info.Length() < 1)
   {
     return;
@@ -1665,6 +1758,8 @@ void Context2d::fill(const Napi::CallbackInfo &info)
 
 void Context2d::stroke(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   stroke(true);
 }
 
@@ -1754,6 +1849,8 @@ void Context2d::paintText(const Napi::CallbackInfo &info, bool stroke)
  */
 void Context2d::fillText(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   paintText(info, false);
 }
 
@@ -1763,6 +1860,8 @@ void Context2d::fillText(const Napi::CallbackInfo &info)
 
 void Context2d::strokeText(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   paintText(info, true);
 }
 
@@ -1835,6 +1934,8 @@ void Context2d::setTextPath(double x, double y)
 
 void Context2d::lineTo(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   double args[2];
   if (!checkArgs(info, args, 2))
     return;
@@ -1848,6 +1949,8 @@ void Context2d::lineTo(const Napi::CallbackInfo &info)
 
 void Context2d::moveTo(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   double args[2];
   if (!checkArgs(info, args, 2))
     return;
@@ -1861,6 +1964,8 @@ void Context2d::moveTo(const Napi::CallbackInfo &info)
 
 Napi::Value Context2d::getfont(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   Napi::Value font;
   if (_font.IsEmpty())
     font = Napi::String::New(info.Env(), "10px sans-serif" );
@@ -1881,6 +1986,8 @@ Napi::Value Context2d::getfont(const Napi::CallbackInfo &info)
 //TODO setFont
 void Context2d::setfont(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+  TRACE_CONTEXT_API
+  
   //TODO
   if (!value.IsString())
     return;
@@ -1928,6 +2035,8 @@ void Context2d::setfont(const Napi::CallbackInfo &info, const Napi::Value &value
 
 Napi::Value Context2d::gettextBaseline(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   Napi::Value v;
   if (_textBaseline.IsEmpty())
     v = Napi::String::New(info.Env(), "alphabetic");
@@ -1942,6 +2051,8 @@ Napi::Value Context2d::gettextBaseline(const Napi::CallbackInfo &info)
 
 void Context2d::settextBaseline(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+  TRACE_CONTEXT_API
+  
   if (!value.IsString())
     return;
 
@@ -1969,6 +2080,8 @@ void Context2d::settextBaseline(const Napi::CallbackInfo &info, const Napi::Valu
 
 Napi::Value Context2d::gettextAlign(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   Napi::Value v;
   if (_textAlign.IsEmpty())
     v = Napi::String::New(info.Env(), "start");
@@ -1983,6 +2096,8 @@ Napi::Value Context2d::gettextAlign(const Napi::CallbackInfo &info)
 
 void Context2d::settextAlign(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+  TRACE_CONTEXT_API
+  
   if (!value.IsString())
     return;
 
@@ -2013,6 +2128,8 @@ void Context2d::settextAlign(const Napi::CallbackInfo &info, const Napi::Value &
 
 Napi::Value Context2d::measureText(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   cairo_t *ctx = context();
 
   std::string str = info[0].As<Napi::String>().Utf8Value();
@@ -2083,6 +2200,8 @@ Napi::Value Context2d::measureText(const Napi::CallbackInfo &info)
 //TODO LineDash
 void Context2d::setLineDash(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   //TODO Input value
 }
 
@@ -2118,6 +2237,8 @@ void Context2d::setLineDash(const Napi::CallbackInfo &info)
 
 Napi::Value Context2d::getLineDash(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   //TODO
 }
 
@@ -2142,6 +2263,8 @@ Napi::Value Context2d::getLineDash(const Napi::CallbackInfo &info)
  */
 void Context2d::setlineDashOffset(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
+  TRACE_CONTEXT_API
+  
   double offset = value.As<Napi::Number>().DoubleValue();
   if (isnan(offset) || isinf(offset))
     return;
@@ -2160,6 +2283,8 @@ void Context2d::setlineDashOffset(const Napi::CallbackInfo &info, const Napi::Va
  */
 Napi::Value Context2d::getlineDashOffset(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   cairo_t *ctx = context();
   double offset;
   cairo_get_dash(ctx, NULL, &offset);
@@ -2172,6 +2297,8 @@ Napi::Value Context2d::getlineDashOffset(const Napi::CallbackInfo &info)
 
 void Context2d::fillRect(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   RECT_ARGS;
   if (0 == width || 0 == height)
     return;
@@ -2188,6 +2315,8 @@ void Context2d::fillRect(const Napi::CallbackInfo &info)
 
 void Context2d::strokeRect(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   RECT_ARGS;
   if (0 == width && 0 == height)
     return;
@@ -2204,6 +2333,8 @@ void Context2d::strokeRect(const Napi::CallbackInfo &info)
 
 void Context2d::clearRect(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   RECT_ARGS;
   if (0 == width || 0 == height)
     return;
@@ -2223,6 +2354,8 @@ void Context2d::clearRect(const Napi::CallbackInfo &info)
 
 void Context2d::rect(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   RECT_ARGS;
   cairo_t *ctx = context();
   if (width == 0)
@@ -2246,7 +2379,9 @@ void Context2d::rect(const Napi::CallbackInfo &info)
  */
 void Context2d::arc(const Napi::CallbackInfo &info)
 {
-  if (!info[0].IsNumber() || !info[1].IsNumber() || !info[2].IsNumber() || !info[3].IsNumber() || !info[4].IsNumber())
+  TRACE_CONTEXT_API
+  
+if (!info[0].IsNumber() || !info[1].IsNumber() || !info[2].IsNumber() || !info[3].IsNumber() || !info[4].IsNumber())
     return;
 
   bool anticlockwise = false;
@@ -2255,9 +2390,9 @@ void Context2d::arc(const Napi::CallbackInfo &info)
     anticlockwise = info[5].As<Napi::Boolean>().ToBoolean();
   }
 
+anticlockwise =false;
   cairo_t *ctx = context();
-
-  if (anticlockwise && M_PI * 2 != info[5].As<Napi::Number>().DoubleValue())
+  if (anticlockwise && M_PI * 2 !=  info[4].As<Napi::Number>().DoubleValue()  )
   {
     cairo_arc_negative(ctx, info[0].As<Napi::Number>().DoubleValue(), info[1].As<Napi::Number>().DoubleValue(), info[2].As<Napi::Number>().DoubleValue(), info[3].As<Napi::Number>().DoubleValue(), info[4].As<Napi::Number>().DoubleValue());
   }
@@ -2275,6 +2410,8 @@ void Context2d::arc(const Napi::CallbackInfo &info)
 
 void Context2d::arcTo(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   double args[5];
   if (!checkArgs(info, args, 5))
     return;
@@ -2375,6 +2512,8 @@ void Context2d::arcTo(const Napi::CallbackInfo &info)
  */
 void Context2d::ellipse(const Napi::CallbackInfo &info)
 {
+  TRACE_CONTEXT_API
+  
   double args[7];
   if (!checkArgs(info, args, 7))
     return;
