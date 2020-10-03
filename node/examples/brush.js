@@ -1,3 +1,7 @@
+const fs = require('fs')
+const path = require('path');
+const out = fs.createWriteStream(path.join(__dirname, "..")+ '/brush.png');
+
 const { createCanvas, Image } = require('../export')
 
 function WriteFont(options) {
@@ -111,7 +115,12 @@ function WriteFont(options) {
     };
 
     this.save = function () {
-        obj.canvas.createPNG("brush");
+        // obj.canvas.createPNG("brush");
+        var stream = obj.canvas.createPNGStream();
+            stream.on('data', function (chunk) {
+            out.write(chunk);
+        });
+
     }
 }
 

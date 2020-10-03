@@ -1,3 +1,8 @@
+const fs = require('fs')
+const path = require('path')
+const out1 = fs.createWriteStream(path.join(__dirname, "..")+ '/imageCanvas1.png');
+const out2 = fs.createWriteStream(path.join(__dirname, "..")+ '/imageCanvas2.png');
+
 const { createCanvas, Image } = require('../export');
 
 function localFunctionCreateCanvas() {
@@ -29,7 +34,12 @@ setTimeout(() => {
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.drawImage(img, 0, 0, 100, 100);
-        canvas.createPNG("imageCanvas1");
+        // canvas.createPNG("imageCanvas1");
+        var stream = canvas.createPNGStream();
+        stream.on('data', function (chunk) {
+            out1.write(chunk);
+        });
+
         nextCanvasDrawImage();
     }
     img.onerror = err => {
@@ -49,7 +59,12 @@ setTimeout(() => {
             ctx2.fillStyle = "#000000";
             ctx2.fillRect(0, 0, ctx2.canvas.width, ctx2.canvas.height);
             ctx2.drawImage(img2, 0, 0, 100, 100);
-            canvas2.createPNG("imageCanvas2")
+            // canvas2.createPNG("imageCanvas2")
+            var stream = canvas.createPNGStream();
+            stream.on('data', function (chunk) {
+                out2.write(chunk);
+            });
+
         }
         img2.src = "https://img.alicdn.com/imgextra/i3/80/O1CN011CSgGWymNlCrNO3_!!80-2-luban.png"
     }

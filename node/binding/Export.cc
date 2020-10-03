@@ -25,9 +25,8 @@
 #include "CairoCanvasRenderingContext2d.h"
 #include "CairoImage.h"
 #include "CairoImageData.h"
-// #include "backend/Backend.h"
-// #include "backend/ImageBackend.h"
 
+static bool useCairo = false;
 
 Napi::Object createCanvas(const Napi::CallbackInfo &info)
 {
@@ -38,12 +37,17 @@ Napi::Object createCanvas(const Napi::CallbackInfo &info)
         .ThrowAsJavaScriptException();
     return Napi::Object::New(env);
   }
+  
+  if( info.Length() >=3 && info[2].IsBoolean() )
+  {
+    useCairo = info[2].As<Napi::Boolean>().ToBoolean();
+  }
 
-  bool useCairo = true;
   if( useCairo ){
-    printf("createCanvas  cairocanvas::Canvas::NewInstance\n");
+    printf("createCanvas  use cairo \n");
     return cairocanvas::Canvas::NewInstance(env, info[0], info[1]);
   } else {
+  printf("createCanvas  use gcanvas \n");
     return NodeBinding::Canvas::NewInstance(env, info[0], info[1]);
   }
 }
@@ -51,8 +55,6 @@ Napi::Object createCanvas(const Napi::CallbackInfo &info)
 Napi::Object createImage(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
-
-  bool useCairo = true;
   if( useCairo ) {
     return cairocanvas::Image::NewInstance(env);
   } else {

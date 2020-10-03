@@ -16,13 +16,9 @@ project(canvas)
  # CMake JS
 include_directories(${CMAKE_JS_INC})
 
-# find_package(cairo REQUIRED)
-# if(CAIRO_FOUND)
-#         message("Cairo found")
-#         include_directories(${Cairo_INCLUDE_DIRS})
-# else()
-#         message("Cairo not found")
-# endif()
+
+include_directories("/usr/include")
+link_directories("/usr/lib/x86_64-linux-gnu")
 
 include_directories("/usr/include/cairo")
 include_directories("/usr/include/pango-1.0 ")
@@ -136,6 +132,7 @@ set(SOURCE_FILES
 
 
 
+
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
@@ -152,7 +149,9 @@ target_link_libraries(${PROJECT_NAME}
                       jpeg
                       curl
                       glib-2.0
-                      cairo)
+                      cairo
+                      pango-1.0
+                      pangocairo-1.0)
 
 
                 #       ${Cairo_LIBRARIES}

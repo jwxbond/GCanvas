@@ -13,8 +13,8 @@ module.exports = {
     createCanvas: createCanvasInner,
     Image: createImage,
 }
-function createCanvasInner(width, height) {
-    let canvas = createCanvas(width, height);
+function createCanvasInner(width, height, usecairo) {
+    let canvas = createCanvas(width, height, usecairo);
     Object.defineProperty(canvas, 'createPNGStream', {
         value: function (options) {
             return new PNGStream(canvas, options);

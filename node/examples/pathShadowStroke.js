@@ -1,5 +1,3 @@
-const fs = require('fs')
-const path = require('path')
 const { createCanvas, Image } = require('../export');
 const canvas = createCanvas(400, 400)
 const ctx = canvas.getContext('2d')
@@ -18,6 +16,9 @@ ctx.shadowColor = "blue";
 ctx.strokeRect(75, 75, 200, 200);
 ctx.shadowColor = "red";
 ctx.strokeRect(100, 100, 200, 200);
+
+const fs = require('fs')
+const path = require('path')
 const out = fs.createWriteStream(path.join(__dirname, "..") + '/pathShadowStroke.png');
 var stream = canvas.createPNGStream();
 stream.on('data', function (chunk) {

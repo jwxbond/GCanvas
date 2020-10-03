@@ -438,6 +438,18 @@ namespace NodeBinding
         }
     }
 
+    int GRenderContext::getTextureIdByUrl(std::string url)
+    {
+        if (this->imageTextureMap.find(url) == imageTextureMap.end())
+        {
+            return -1;
+        }
+        else
+        {
+            return this->imageTextureMap[url];
+        }
+    }
+
     GRenderContext::~GRenderContext()
     {
         destoryRenderEnviroment();
