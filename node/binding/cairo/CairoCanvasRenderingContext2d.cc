@@ -1775,11 +1775,6 @@ void Context2d::clip(const Napi::CallbackInfo &info)
 void Context2d::fill(const Napi::CallbackInfo &info)
 {
   TRACE_CONTEXT_API
-  
-  if (info.Length() < 1)
-  {
-    return;
-  }
   setFillRule(info[0]);
   fill(true);
 }
