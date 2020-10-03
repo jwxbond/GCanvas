@@ -1333,18 +1333,30 @@ void Context2d::setstrokeStyle(const Napi::CallbackInfo &info, const Napi::Value
     _strokeStyle.Reset();
     _setStrokeColor(value);
   }
-  else
+  else if( value.IsObject() )
   {
-    //TODO Pattern & Gradient
-    // if (Nan::New(Gradient::constructor)->HasInstance(obj)){
-    //   Gradient *grad = Napi::ObjectWrap::Unwrap<Gradient>(obj);
-    //   context->state->strokeGradient = grad->pattern();
-    // } else if(Nan::New(Pattern::constructor)->HasInstance(obj)){
-    //   Pattern *pattern = Napi::ObjectWrap::Unwrap<Pattern>(obj);
-    //   context->state->strokePattern = pattern->pattern();
-    // } else {
-    //   return Nan::ThrowTypeError("Gradient or Pattern expected");
-    // }
+    Napi::Object object = value.As<Napi::Object>();
+    Napi::Value name = object.Get("name");
+    if (!name.IsString())
+    {
+      // throwError(info, "wrong argument for fillstyle");
+      return;
+    }
+    std::string namePropetry = name.As<Napi::String>().Utf8Value();
+    if (namePropetry == "linearGradient" ||  namePropetry == "radialGradient")
+    {
+      Gradient *grad = Napi::ObjectWrap<Gradient>::Unwrap(object);
+      state->strokeGradient = grad->pattern();
+    }
+    else if(namePropetry == "pattern")
+    {
+      Pattern *pattern = Napi::ObjectWrap<Pattern>::Unwrap(object);
+      state->strokePattern = pattern->pattern();
+    }
+    else
+    {
+
+    }
   }
 }
 
