@@ -51,7 +51,6 @@ std::vector<FontFace> font_face_list;
 
 Napi::Object Canvas::NewInstance(Napi::Env env, Napi::Value arg, Napi::Value arg2)
 {
-    std::cout << "Canvas::NewInstance" << std::endl;
     Napi::Object obj = constructor.New({arg, arg2});
     obj.Set("name", Napi::String::New(env, "cairocanvas"));
     Canvas *canvas = Napi::ObjectWrap<Canvas>::Unwrap(obj);
@@ -197,6 +196,8 @@ Napi::Buffer<unsigned char> Canvas::getPNGBuffer(const Napi::CallbackInfo &info,
   cairo_surface_t *s = surface();
   cairo_surface_flush(s);
   const unsigned char *data = cairo_image_surface_get_data(s);
+
+
   //TODO check argb only
   unsigned int width = cairo_image_surface_get_width(s);
   unsigned int height = cairo_image_surface_get_height(s);
@@ -214,13 +215,28 @@ Napi::Buffer<unsigned char> Canvas::getPNGBuffer(const Napi::CallbackInfo &info,
     if (alpha == 0) {
         b[0] = b[1] = b[2] = b[3] = 0;
     } else {
-        // b[0] = (((pixel & 0xff0000) >> 16) * 255 + alpha / 2) / alpha;
-        // b[1] = (((pixel & 0x00ff00) >>  8) * 255 + alpha / 2) / alpha;
-        // b[2] = (((pixel & 0x0000ff) >>  0) * 255 + alpha / 2) / alpha;
-        b[0] = ((pixel & 0xff0000) >> 16) * alpha / 255;
-        b[1] = ((pixel & 0x00ff00) >>  8 ) * alpha / 255;
-        b[2] = ((pixel & 0x0000ff) >>  0 ) * alpha / 255;
-        b[3] = alpha;
+      // b[0] = (((pixel & 0xff0000) >> 16) * 255 + alpha / 2) / alpha;
+      // b[1] = (((pixel & 0x00ff00) >>  8) * 255 + alpha / 2) / alpha;
+      // b[2] = (((pixel & 0x0000ff) >>  0) * 255 + alpha / 2) / alpha;
+
+      uint8_t rv =  (pixel & 0xff0000) >> 16;
+      uint8_t gv =  (pixel & 0x00ff00) >> 8;
+      uint8_t bv =  (pixel & 0x0000ff);
+
+      b[3] = alpha;
+      if( alpha == 255 )
+      {
+        b[0] = rv;
+        b[1] = gv;
+        b[2] = bv;
+      }
+      else
+      {
+        float alphaR = (float)255 / alpha;
+        b[0] = (int)((float)rv * alphaR);
+        b[1] = (int)((float)gv * alphaR);
+        b[2] = (int)((float)bv * alphaR);
+      }
     }
   }
 

@@ -22,3 +22,6 @@ RUN cd ./freetype-2.8.1 && ./configure && make && make install
 RUN npm config set registry https://registry.npm.taobao.org && npm install -g cmake-js
 #install curl-dev lib 
 RUN apt-get install libcurl4-openssl-dev libjpeg-dev
+
+## cairo and pango dev lib 
+RUN apt-get install -y libcairo2-dev  libpangocairo-1.0-0 libpango-1.0 libglib2.0-dev

@@ -33,7 +33,6 @@ Backend::Backend(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Backend>(inf
 
 Backend::Backend(const Napi::CallbackInfo &info, std::string name,  int width, int height) :Napi::ObjectWrap<Backend>(info)
 {
-  std::cout << "Backend::Backend constructor"  << std::endl;
   this->name = name;
   this->width = width;
   this->height = height;

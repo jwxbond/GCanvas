@@ -32,7 +32,7 @@ Note:Nodejs version >=10.0。
 OS | Command
 ----- | -----
 OS X | 即将支持
-Ubuntu 18.04 |  `sudo apt-get update && apt-get install -y libglfw3-dev libgles2-mesa-dev libboost-all-dev libfreetype6-dev libcurl4-openssl-dev libjpeg-dev libcairo2-dev  libpangocairo-1.0-0 libglib2.0-dev
+Ubuntu 18.04 |  `sudo apt-get update && apt-get install -y libglfw3-dev libgles2-mesa-dev libboost-all-dev libfreetype6-dev libcurl4-openssl-dev libjpeg-dev libcairo2-dev  libpangocairo-1.0-0 libpango-1.0 libglib2.0-dev
 `  && install [freetype字体库](http://www.linuxfromscratch.org/blfs/view/svn/general/freetype2.html) && install cmake
 Windows  | 暂不支持
 Docker   | [Dockerfile](./docker/Dockerfile)

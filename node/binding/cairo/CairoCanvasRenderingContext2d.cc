@@ -1002,9 +1002,6 @@ void Context2d::drawImage(const Napi::CallbackInfo &info)
   if(!checkArgs(info, args, infoLen - 1, 1))
     return;
 
-
-  std::cout << "drawage ....2" << std::endl;
-
   double sx = 0, sy = 0, sw = 0, sh = 0;
   double dx = 0, dy = 0, dw = 0, dh = 0;
   double  source_w = 0, source_h = 0;
