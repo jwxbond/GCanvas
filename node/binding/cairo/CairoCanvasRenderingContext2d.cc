@@ -901,9 +901,13 @@ Napi::Value Context2d::getImageData(const Napi::CallbackInfo &info)
   uint8_t *src = _canvas->data();
 
 
+  Napi::Array array = Napi::Array::New(info.Env(), size);
+
+
+
 //  Napi::ArrayBuffer array = info[1].As<Napi::ArrayBuffer>();
 // Napi::Uint8Array buffer = array.As<Napi::Uint8Array>();
-  Napi::ArrayBuffer array = Napi::ArrayBuffer::New(info.Env(), size);
+  // Napi::ArrayBuffer array = Napi::ArrayBuffer::New(info.Env(), size);
 
   //TODO argb32 format
   // Napi::TypedArray dataArray = Napi::Uint8Array::New()
@@ -912,9 +916,11 @@ Napi::Value Context2d::getImageData(const Napi::CallbackInfo &info)
 
 
 
-    // Napi::Object imageDataObj = ImageData::NewInstance(info.Env(), info[2], info[3]);
-    // ImageData *ptr = Napi::ObjectWrap<ImageData>::Unwrap(imageDataObj);
-    // mRendergetCtx()->GetImageData(x, y, width, height, &ptr->getPixles()[0]);
+    Napi::Object imageDataObj = ImageData::NewInstance(info.Env(), info[2], info[3]);
+    ImageData *imgData = Napi::ObjectWrap<ImageData>::Unwrap(imageDataObj);
+
+    
+    // mRendergetCtx()->GetImageData(x, y, width, height, &imgData->getPixles()[0]);
 
     // //flipY
     // gcanvas::FlipPixel(&ptr->getPixles()[0], width, height);
@@ -926,17 +932,16 @@ Napi::Value Context2d::getImageData(const Napi::CallbackInfo &info)
 // NAN_METHOD(Context2d::CreateImageData)
 Napi::Value Context2d::createImageData(const Napi::CallbackInfo &info)
 {
-    TRACE_CONTEXT_API
-  //TODO
+  TRACE_CONTEXT_API
+  
   Napi::Env env = info.Env();
   int32_t width, height;
 
   if (info[0].IsObject())
   {
-    //TODO get canvas width/height
-    // Local<Object> obj = Nan::To<Object>(info[0]).ToLocalChecked();
-    // width = Nan::To<int32_t>(Nan::Get(obj, Nan::New("width").ToLocalChecked()).ToLocalChecked()).FromMaybe(0);
-    // height = Nan::To<int32_t>(Nan::Get(obj, Nan::New("height").ToLocalChecked()).ToLocalChecked()).FromMaybe(0);
+    ImageData *imgData = Napi::ObjectWrap<ImageData>::Unwrap(info[0].As<Napi::Object>());
+    width = imgData->getWidth();
+    height = imgData->getHeight();
   }
   else
   {
@@ -952,13 +957,15 @@ Napi::Value Context2d::createImageData(const Napi::CallbackInfo &info)
   Napi::Object arr;
 
   if (_canvas->backend()->getFormat() == CAIRO_FORMAT_RGB16_565)
+  {
     arr = Napi::Uint16Array::New(env, nBytes / 2, ab, 0);
+  }
   else
   {
-    //TODO  Uint8ClampedArray
-    // arr = Napi::Uint8ClampedArray::New(env, nBytes, ab, 0);
+    arr = Napi::Uint8Array::New(env, nBytes, ab, 0);
   }
   //TODO ImageData NewInstance
+  Napi::Value value = ImageData::NewInstance();
 }
 
 /*

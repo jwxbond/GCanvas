@@ -34,7 +34,7 @@ void Gradient::Init(Napi::Env env)
 
 Napi::Object Gradient::NewInstance(const Napi::CallbackInfo &info,  Napi::Value x0, Napi::Value y0, Napi::Value r0, Napi::Value x1, Napi::Value y1, Napi::Value r1)
 {
-  Napi::Object obj = constructor.New({x0,y0,r0, x1,y1, r1});
+  Napi::Object obj = constructor.New({x0,y0,r0,x1,y1,r1});
   obj.Set("name",  Napi::String::New(info.Env(), "radialGradient"));
   return obj;
 }

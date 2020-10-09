@@ -22,17 +22,33 @@ void ImageData::Init(Napi::Env env)
 
 Napi::Object ImageData::NewInstance(const Napi::CallbackInfo &info)
 {
-    //TODO  constructor.New
-    Napi::Object obj = constructor.New({});
+    Napi::Object obj = constructor.New({info[0], info[1]});
+    obj.Set("name", Napi::String::New(info.Env(), "imageData"));
+    return obj;
+}
+
+Napi::Object ImageData::NewInstance(const Napi::CallbackInfo &info, Napi::Value width, Napi::Value height)
+{
+    Napi::Object obj = constructor.New({width, height});
     obj.Set("name", Napi::String::New(info.Env(), "imageData"));
     return obj;
 }
 
 ImageData::ImageData(const Napi::CallbackInfo &info) : Napi::ObjectWrap<ImageData>(info)
 {
-    _width = info[0].As<Napi::Number>().Int32Value();
-    _height = info[1].As<Napi::Number>().Int32Value();
-    pixels.resize(4 * _width * _height);
+    if( info.Length() == 1 &&  info[0].IsObject() )
+    {
+        ImageData *imgData = Napi::ObjectWrap<ImageData>::Unwrap(info[0].As<Napi::Object>());
+        _width = imgData->getWidth();
+        _height = imgData->getHeight();
+        pixels(imgData->getPixles());
+    }
+    else if( info.Length() == 2 && info[0].IsNumber() && info[1].IsNumber() )
+    {
+        _width = info[0].As<Napi::Number>().Int32Value();
+        _height = info[1].As<Napi::Number>().Int32Value();
+        pixels.resize(4 * _width * _height);
+    }
 }
 
 Napi::Value ImageData::getData(const Napi::CallbackInfo &info)

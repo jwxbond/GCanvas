@@ -12,11 +12,12 @@ class ImageData: public Napi::ObjectWrap<ImageData>
   public:
     static void Init(Napi::Env env);
     static Napi::Object NewInstance(const Napi::CallbackInfo &info);
+    static Napi::Object NewInstance(const Napi::CallbackInfo &info, Napi::Value width, Napi::Value height);
     ImageData(const Napi::CallbackInfo &info);
 
     std::vector<u_int8_t> &getPixles();
-    inline int width() { return _width; }
-    inline int height() { return _height; }
+    inline int getWidth() { return _width; }
+    inline int getWidth() { return _height; }
     inline uint8_t *data() { return _data; }
 
 
