@@ -9,8 +9,6 @@
 #include <GL/gl.h>
 // #include <GL/glut.h>
 #include <vector>
-#include "Context2DImplGCanvas.h"
-#include "Context2DImplCairo.h"
 
 namespace NodeBinding
 {

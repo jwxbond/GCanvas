@@ -65,16 +65,16 @@ set(SOURCE_FILES
         ./binding/webgl/WebGLActiveInfo.cc
         ./binding/webgl/WebGLUniformLocation.cc
         ./binding/renderContext/GRenderContext.cc
-        ./binding/renderContext/ImageBase.cc
-        ./binding/renderContext/ImageDataBase.cc
-        ./binding/renderContext/PatternBase.cc
-        ./binding/renderContext/GradientBase.cc
-        ./binding/renderContext/gcanvas/Context2DImplGCanvas.cc
-        ./binding/renderContext/gcanvas/ImageDataImplGCanvas.cc
-        ./binding/renderContext/cairo/Context2DImplCairo.cc
-        ./binding/renderContext/cairo/PatternImplCairo.cc
-        ./binding/renderContext/cairo/color.cc
-        ./binding/renderContext/cairo/ImageBackendCairo.cc
+        # ./binding/renderContext/ImageBase.cc
+        # ./binding/renderContext/ImageDataBase.cc
+        # ./binding/renderContext/PatternBase.cc
+        # ./binding/renderContext/GradientBase.cc
+        # ./binding/renderContext/gcanvas/Context2DImplGCanvas.cc
+        # ./binding/renderContext/gcanvas/ImageDataImplGCanvas.cc
+        # ./binding/renderContext/cairo/Context2DImplCairo.cc
+        # ./binding/renderContext/cairo/PatternImplCairo.cc
+        # ./binding/renderContext/cairo/color.cc
+        # ./binding/renderContext/cairo/ImageBackendCairo.cc
         ./binding/util/NodeBindingUtil.cc
         ./third_party/lodepng.cc
 
@@ -88,6 +88,8 @@ set(SOURCE_FILES
         ./binding/cairo/CairoCanvasRenderingContext2d.cc
         ./binding/cairo/CairoImage.cc
         ./binding/cairo/CairoImageData.cc
+        ./binding/cairo/color.cc
+
 
 
         ${CORE_DIR}src/GCanvas.cpp        
