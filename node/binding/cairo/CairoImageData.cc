@@ -41,7 +41,10 @@ ImageData::ImageData(const Napi::CallbackInfo &info) : Napi::ObjectWrap<ImageDat
         ImageData *imgData = Napi::ObjectWrap<ImageData>::Unwrap(info[0].As<Napi::Object>());
         _width = imgData->getWidth();
         _height = imgData->getHeight();
-        pixels(imgData->getPixles());
+        // pixels(imgData->getPixels());
+
+        //TODO  use ImageData initialize
+
     }
     else if( info.Length() == 2 && info[0].IsNumber() && info[1].IsNumber() )
     {
@@ -84,7 +87,7 @@ Napi::Value ImageData::getHeight(const Napi::CallbackInfo &info)
     return Napi::Number::New(info.Env(),_height);
 }
 
-std::vector<u_int8_t> &ImageData::getPixles()
+std::vector<u_int8_t> &ImageData::getPixels()
 {
     if (!mImageDataRef.IsEmpty() && hasImageDataWrite)
     {

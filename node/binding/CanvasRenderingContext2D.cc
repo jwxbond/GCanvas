@@ -598,10 +598,10 @@ if (mRenderContext)
 
     Napi::Object imageDataObj = ImageData::NewInstance(env, info[2], info[3]);
     ImageData *ptr = Napi::ObjectWrap<ImageData>::Unwrap(imageDataObj);
-    mRenderContext->getCtx2d()->GetImageData(x, y, width, height, &ptr->getPixles()[0]);
+    mRenderContext->getCtx2d()->GetImageData(x, y, width, height, &ptr->getPixels()[0]);
 
     //flipY
-    gcanvas::FlipPixel(&ptr->getPixles()[0], width, height);
+    gcanvas::FlipPixel(&ptr->getPixels()[0], width, height);
 
     return imageDataObj;
 }
@@ -697,7 +697,7 @@ if (mRenderContext)
         dirtyHeight = info[6].As<Napi::Number>().Int32Value();
     }
     mRenderContext->getCtx2d()->PutImageData(
-        &imgData->getPixles()[0], //content
+        &imgData->getPixels()[0], //content
         imgData->getWidth(),      //imageData width
         imgData->getHeight(),     //imageData height
         x,                        // draw start x

@@ -330,4 +330,46 @@ void CheckGLError(const char* stmt, const char* fname, int line)
 }
 #endif
 
+void pixelsConvertARGBToRGBA(unsigned char * data, int width, int height)
+{
+     // Raw ARGB data convert 
+  unsigned int rawBytes = width * height * 4;
+  for (unsigned int i = 0; i < rawBytes; i += 4)
+  {
+    uint8_t *b = (uint8_t*)&data[i];
+    uint32_t pixel;
+    uint8_t alpha;
+
+    memcpy (&pixel, b, sizeof (uint32_t));
+    alpha = (pixel & 0xff000000) >> 24;
+    if (alpha == 0) {
+        b[0] = b[1] = b[2] = b[3] = 0;
+    } else {
+      // b[0] = (((pixel & 0xff0000) >> 16) * 255 + alpha / 2) / alpha;
+      // b[1] = (((pixel & 0x00ff00) >>  8) * 255 + alpha / 2) / alpha;
+      // b[2] = (((pixel & 0x0000ff) >>  0) * 255 + alpha / 2) / alpha;
+      uint8_t rv =  (pixel & 0xff0000) >> 16;
+      uint8_t gv =  (pixel & 0x00ff00) >> 8;
+      uint8_t bv =  (pixel & 0x0000ff);
+
+      b[3] = alpha;
+      if( alpha == 255 )
+      {
+        b[0] = rv;
+        b[1] = gv;
+        b[2] = bv;
+      }
+      else
+      {
+        float alphaR = (float)255 / alpha;
+        b[0] = (int)((float)rv * alphaR);
+        b[1] = (int)((float)gv * alphaR);
+        b[2] = (int)((float)bv * alphaR);
+      }
+    }
+  }
+
+}
+
+
 } // namespace NodeBinding

@@ -84,7 +84,7 @@ int ImageData::getHeight()
     return mHeight;
 }
 
-std::vector<u_int8_t> &ImageData::getPixles()
+std::vector<u_int8_t> &ImageData::getPixels()
 {
     if (!mImageDataRef.IsEmpty() && hasImageDataWrite)
     {

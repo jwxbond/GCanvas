@@ -26,7 +26,7 @@
 #include "CairoImage.h"
 #include "CairoImageData.h"
 
-static bool useCairo = false;
+static bool useCairo = true;
 
 Napi::Object createCanvas(const Napi::CallbackInfo &info)
 {

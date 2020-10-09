@@ -15,9 +15,9 @@ class ImageData: public Napi::ObjectWrap<ImageData>
     static Napi::Object NewInstance(const Napi::CallbackInfo &info, Napi::Value width, Napi::Value height);
     ImageData(const Napi::CallbackInfo &info);
 
-    std::vector<u_int8_t> &getPixles();
+    std::vector<u_int8_t> &getPixels();
     inline int getWidth() { return _width; }
-    inline int getWidth() { return _height; }
+    inline int getHeight() { return _height; }
     inline uint8_t *data() { return _data; }
 
 

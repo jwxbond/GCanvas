@@ -759,91 +759,126 @@ void Context2d::blur(cairo_surface_t *surface, int radius)
   free(precalc);
 }
 
-/*
- * Initialize a new Context2d with the given canvas.
- */
-
-// NAN_METHOD(Context2d::New) {
-//   if (!info.IsConstructCall()) {
-//     return Nan::ThrowTypeError("Class constructors cannot be invoked without 'new'");
-//   }
-
-//   if (!info[0]->IsObject())
-//     return Nan::ThrowTypeError("Canvas expected");
-//   Local<Object> obj = Nan::To<Object>(info[0]).ToLocalChecked();
-//   if (!Nan::New(Canvas::constructor)->HasInstance(obj))
-//     return Nan::ThrowTypeError("Canvas expected");
-//   Canvas *canvas = Napi::ObjectWrap::Unwrap<Canvas>(obj);
-
-//   bool isImageBackend = canvas->backend()->getName() == "image";
-//   if (isImageBackend) {
-//     cairo_format_t format = ImageBackend::DEFAULT_FORMAT;
-//     if (info[1]->IsObject()) {
-//       Local<Object> ctxAttributes = Nan::To<Object>(info[1]).ToLocalChecked();
-
-//       Local<Value> pixelFormat = Nan::Get(ctxAttributes, Nan::New("pixelFormat").ToLocalChecked()).ToLocalChecked();
-//       if (pixelFormat->IsString()) {
-//         Nan::Utf8String utf8PixelFormat(pixelFormat);
-//         if (!strcmp(*utf8PixelFormat, "RGBA32")) format = CAIRO_FORMAT_ARGB32;
-//         else if (!strcmp(*utf8PixelFormat, "RGB24")) format = CAIRO_FORMAT_RGB24;
-//         else if (!strcmp(*utf8PixelFormat, "A8")) format = CAIRO_FORMAT_A8;
-//         else if (!strcmp(*utf8PixelFormat, "RGB16_565")) format = CAIRO_FORMAT_RGB16_565;
-//         else if (!strcmp(*utf8PixelFormat, "A1")) format = CAIRO_FORMAT_A1;
-// #ifdef CAIRO_FORMAT_RGB30
-//         else if (!strcmp(utf8PixelFormat, "RGB30")) format = CAIRO_FORMAT_RGB30;
-// #endif
-//       }
-
-//       // alpha: false forces use of RGB24
-//       Local<Value> alpha = Nan::Get(ctxAttributes, Nan::New("alpha").ToLocalChecked()).ToLocalChecked();
-//       if (alpha->IsBoolean() && !Nan::To<bool>(alpha).FromMaybe(false)) {
-//         format = CAIRO_FORMAT_RGB24;
-//       }
-//     }
-//     static_cast<ImageBackend*>(canvas->backend())->setFormat(format);
-//   }
-
-//   Context2d *context = new Context2d(canvas);
-
-//   Wrap(info.This());
-//   info.GetReturnValue().Set(info.This());
-// }
-
-/*
-* Save some external modules as private references.
-*/
-
-// NAN_METHOD(Context2d::SaveExternalModules) {
-//   _DOMMatrix.Reset(Nan::To<Function>(info[0]).ToLocalChecked());
-//   _parseFont.Reset(Nan::To<Function>(info[1]).ToLocalChecked());
-// }
-
-/*
-* Get format (string).
-*/
-
-// NAN_GETTER(Context2d::GetFormat) {
-//   Context2d *context = Napi::ObjectWrap::Unwrap<Context2d>(info.This());
-//   std::string pixelFormatString;
-//   switch (canvas()->backend()->getFormat()) {
-//   case CAIRO_FORMAT_ARGB32: pixelFormatString = "RGBA32"; break;
-//   case CAIRO_FORMAT_RGB24: pixelFormatString = "RGB24"; break;
-//   case CAIRO_FORMAT_A8: pixelFormatString = "A8"; break;
-//   case CAIRO_FORMAT_A1: pixelFormatString = "A1"; break;
-//   case CAIRO_FORMAT_RGB16_565: pixelFormatString = "RGB16_565"; break;
-// #ifdef CAIRO_FORMAT_RGB30
-//   case CAIRO_FORMAT_RGB30: pixelFormatString = "RGB30"; break;
-// #endif
-//   default: return info.GetReturnValue().SetNull();
-//   }
-//   info.GetReturnValue().Set(Nan::New<String>(pixelFormatString).ToLocalChecked());
-// }
-
 // NAN_METHOD(Context2d::PutImageData)
 void Context2d::putImageData(const Napi::CallbackInfo &info)
 {
   TRACE_CONTEXT_API
-  //TODO
+  Napi::Env env = info.Env();
+  if (info.Length() < 3)
+  {
+      NodeBinding::throwError(info, "wrong argument number");
+      return;
+  }
+  if (!info[0].IsObject())
+  {
+      NodeBinding::throwError(info, "imgData must be object");
+      return;
+  }
+
+  ImageData *imageData = Napi::ObjectWrap<ImageData>::Unwrap(info[0].As<Napi::Object>());
+  
+
+  uint8_t *src = &(imageData->getPixels()[0]);
+  uint8_t *dst = canvas()->data();
+
+   int dstStride = canvas()->stride();
+  int Bpp = dstStride / canvas()->getWidth();
+  int srcStride = Bpp * imageData->getWidth();
+
+  int sx=0, sy=0, sw=0, sh=0;
+  int dx = info[1].As<Napi::Number>().Int32Value();
+  int dy = info[2].As<Napi::Number>().Int32Value();
+  int rows, cols;
+
+  int len = info.Length();
+  switch (len)
+  {
+  case 3: //  imageData, dx, dy
+    sw = imageData->getWidth();
+    sh = imageData->getHeight();
+    break;
+
+  case 7:  // imageData, dx, dy, sx, sy, sw, sh
+    sx = info[3].As<Napi::Number>().Int32Value();
+    sy = info[4].As<Napi::Number>().Int32Value();
+    sw = info[5].As<Napi::Number>().Int32Value();
+    sh = info[6].As<Napi::Number>().Int32Value();
+
+    // fix up negative height, width
+    if (sw < 0) sx += sw, sw = -sw;
+    if (sh < 0) sy += sh, sh = -sh;
+    // clamp the left edge
+    if (sx < 0) sw += sx, sx = 0;
+    if (sy < 0) sh += sy, sy = 0;
+    // clamp the right edge
+    if (sx + sw > imageData->getWidth()) sw = imageData->getWidth() - sx;
+    if (sy + sh > imageData->getHeight()) sh = imageData->getHeight() - sy;
+    // start destination at source offset
+    dx += sx;
+    dy += sy;
+  default:
+    NodeBinding::throwError(info, "invalid arguments");
+    return;
+  }
+
+
+  // chop off outlying source data
+  if (dx < 0) sw += dx, sx -= dx, dx = 0;
+  if (dy < 0) sh += dy, sy -= dy, dy = 0;
+  // clamp width at canvas size
+  // Need to wrap std::min calls using parens to prevent macro expansion on
+  // windows. See http://stackoverflow.com/questions/5004858/stdmin-gives-error
+  cols = (std::min)(sw, canvas()->getWidth() - dx);
+  rows = (std::min)(sh, canvas()->getHeight() - dy);
+
+  if (cols <= 0 || rows <= 0) return;
+
+  // switch (canvas()->backend()->getFormat()) 
+  // {
+  //   case CAIRO_FORMAT_ARGB32: 
+  //   {
+  //     src += sy * srcStride + sx * 4;
+  //     dst += dstStride * dy + 4 * dx;
+  //     for (int y = 0; y < rows; ++y) {
+  //       uint8_t *dstRow = dst;
+  //       uint8_t *srcRow = src;
+  //       for (int x = 0; x < cols; ++x) {
+  //         // rgba
+  //         uint8_t r = *srcRow++;
+  //         uint8_t g = *srcRow++;
+  //         uint8_t b = *srcRow++;
+  //         uint8_t a = *srcRow++;
+
+  //         // argb
+  //         // performance optimization: fully transparent/opaque pixels can be
+  //         // processed more efficiently.
+  //         if (a == 0) {
+  //           *dstRow++ = 0;
+  //           *dstRow++ = 0;
+  //           *dstRow++ = 0;
+  //           *dstRow++ = 0;
+  //         } else if (a == 255) {
+  //           *dstRow++ = b;
+  //           *dstRow++ = g;
+  //           *dstRow++ = r;
+  //           *dstRow++ = a;
+  //         } else {
+  //           float alpha = (float)a / 255;
+  //           *dstRow++ = b * alpha;
+  //           *dstRow++ = g * alpha;
+  //           *dstRow++ = r * alpha;
+  //           *dstRow++ = a;
+  //         }
+  //       }
+  //       dst += dstStride;
+  //       src += srcStride;
+  //     }
+  //     break;
+  //   }
+  // }
+
+
+  cairo_surface_mark_dirty_rectangle( canvas()->surface(), dx, dy, cols, rows);
 }
 
 Napi::Value Context2d::getImageData(const Napi::CallbackInfo &info)
@@ -899,34 +934,16 @@ Napi::Value Context2d::getImageData(const Napi::CallbackInfo &info)
   int dstStride = sw * bpp;
 
   uint8_t *src = _canvas->data();
-
-
-  Napi::Array array = Napi::Array::New(info.Env(), size);
-
-
-
-//  Napi::ArrayBuffer array = info[1].As<Napi::ArrayBuffer>();
-// Napi::Uint8Array buffer = array.As<Napi::Uint8Array>();
-  // Napi::ArrayBuffer array = Napi::ArrayBuffer::New(info.Env(), size);
-
-  //TODO argb32 format
-  // Napi::TypedArray dataArray = Napi::Uint8Array::New()
-
-  // Napi::TypedArray dataArray = Napi::Uint8ClampedArray::New(info.Env() );
-
-
-
-    Napi::Object imageDataObj = ImageData::NewInstance(info.Env(), info[2], info[3]);
-    ImageData *imgData = Napi::ObjectWrap<ImageData>::Unwrap(imageDataObj);
-
-    
-    // mRendergetCtx()->GetImageData(x, y, width, height, &imgData->getPixles()[0]);
-
-    // //flipY
-    // gcanvas::FlipPixel(&ptr->getPixles()[0], width, height);
-
-    // return info.Env():;
-  return info.Env().Undefined();
+ 
+  Napi::Object imageDataObj = ImageData::NewInstance(info, info[2], info[3]);
+  ImageData *imgData = Napi::ObjectWrap<ImageData>::Unwrap(imageDataObj);
+  std::vector<u_int8_t>  pixels = imgData->getPixels();
+  for (uint i = 0; i < pixels.size(); ++i) 
+  {
+    pixels[i] = *(src+i);
+  }
+  
+  return imageDataObj;
 }
 
 // NAN_METHOD(Context2d::CreateImageData)
@@ -953,19 +970,20 @@ Napi::Value Context2d::createImageData(const Napi::CallbackInfo &info)
   double Bpp = static_cast<double>(stride) / _canvas->getWidth();
   int nBytes = static_cast<int>(Bpp * width * height + .5);
 
-  Napi::ArrayBuffer ab = Napi::ArrayBuffer::New(env, nBytes);
-  Napi::Object arr;
+  // Napi::ArrayBuffer ab = Napi::ArrayBuffer::New(env, nBytes);
+  // Napi::Object arr;
 
-  if (_canvas->backend()->getFormat() == CAIRO_FORMAT_RGB16_565)
-  {
-    arr = Napi::Uint16Array::New(env, nBytes / 2, ab, 0);
-  }
-  else
-  {
-    arr = Napi::Uint8Array::New(env, nBytes, ab, 0);
-  }
-  //TODO ImageData NewInstance
-  Napi::Value value = ImageData::NewInstance();
+  // if (_canvas->backend()->getFormat() == CAIRO_FORMAT_RGB16_565)
+  // {
+  //   arr = Napi::Uint16Array::New(env, nBytes / 2, ab, 0);
+  // }
+  // else
+  // {
+  //   arr = Napi::Uint8Array::New(env, nBytes, ab, 0);
+  // }
+
+  Napi::Object obj  = ImageData::NewInstance(info, Napi::Number::New(env, width), Napi::Number::New(env, height));
+  return obj;
 }
 
 /*
