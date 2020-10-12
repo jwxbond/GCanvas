@@ -52,7 +52,7 @@ std::vector<FontFace> font_face_list;
 Napi::Object Canvas::NewInstance(Napi::Env env, Napi::Value arg, Napi::Value arg2)
 {
   Napi::Object obj = constructor.New({arg, arg2});
-  obj.Set("name", Napi::String::New(env, "cairocanvas"));
+  obj.Set("name", Napi::String::New(env, "canvas"));
   Canvas *canvas = Napi::ObjectWrap<Canvas>::Unwrap(obj);
   canvas->mRef = Napi::ObjectReference::New(obj);
   return obj;

@@ -1055,11 +1055,11 @@ void Context2d::drawImage(const Napi::CallbackInfo &info)
   }
 
   std::string namePropetry = name.As<Napi::String>().Utf8Value();
+
   if (namePropetry == "image")
   {
     Image *img = Napi::ObjectWrap<Image>::Unwrap(info[0].As<Napi::Object>());
 
-    printf("Image ptr is: %p\n", img);
     source_w = sw = img->getWidth();
     source_h = sh = img->getHeight();
     surface = img->getSurface();
@@ -1239,16 +1239,15 @@ void Context2d::drawImage(const Napi::CallbackInfo &info)
 
 Napi::Value Context2d::getglobalAlpha(const Napi::CallbackInfo &info)
 {
-    TRACE_CONTEXT_API
+  TRACE_CONTEXT_API
 
   return Napi::Number::New(info.Env(), state->globalAlpha);
 }
 
 void Context2d::setglobalAlpha(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
-    TRACE_CONTEXT_API
+  TRACE_CONTEXT_API
 
-  //TODO check args
   if (info.Length() < 1 || !info[0].IsNumber())
   {
     return;
