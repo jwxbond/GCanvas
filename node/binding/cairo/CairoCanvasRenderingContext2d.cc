@@ -207,11 +207,13 @@ void Context2d::setupContext2d(Canvas *canvas)
   _canvas = canvas;
   _context = canvas->createCairoContext();
 
-  if( _context != nullptr  )
+  if( _context == nullptr  )
   {
-      std::cout << "Context2d::setupContext2d()  createCairoContext success  " << std::endl;
+    return;
   }
-
+  
+  std::cout << "Context2d::setupContext2d()  createCairoContext success  " << std::endl;
+  
   _layout = pango_cairo_create_layout(_context);
   state = states[stateno = 0] = (canvas_state_t *)malloc(sizeof(canvas_state_t));
 

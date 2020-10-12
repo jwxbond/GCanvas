@@ -68,7 +68,7 @@ Canvas::Canvas(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Canvas>(info),
   mWidth = info[0].As<Napi::Number>().Int32Value();
   mHeight = info[1].As<Napi::Number>().Int32Value();
 
-_backend = new CairoImageBackend(mWidth, mHeight);
+  _backend = new CairoImageBackend(mWidth, mHeight);
 
   if( !_backend->isSurfaceValid() )
   {
@@ -76,8 +76,8 @@ _backend = new CairoImageBackend(mWidth, mHeight);
     return;
   }
 
-  std::cout << "create CairoImageBackend Success width:" << mWidth << ", height:" << mHeight << std::endl;
-_backend->setCanvas(this);
+// std::cout << "create CairoImageBackend Success width:" << mWidth << ", height:" << mHeight << std::endl;
+  _backend->setCanvas(this);
 }
 
 Canvas::~Canvas()
@@ -191,6 +191,7 @@ Napi::Value Canvas::createPNGStreamSync(const Napi::CallbackInfo &info)
   }
   return info.Env().Undefined();
 }
+
 Napi::Buffer<unsigned char> Canvas::getPNGBuffer(const Napi::CallbackInfo &info, unsigned long &size)
 {
   cairo_surface_t *s = surface();
@@ -204,44 +205,8 @@ Napi::Buffer<unsigned char> Canvas::getPNGBuffer(const Napi::CallbackInfo &info,
   
   NodeBinding::pixelsConvertARGBToRGBA(( unsigned char *)data, width, height);
 
-  //  // Raw ARGB data convert 
-  // unsigned int rawBytes = width * height * 4;
-  // for (unsigned int i = 0; i < rawBytes; i += 4)
-  // {
-  //   uint8_t *b = (uint8_t*)&data[i];
-  //   uint32_t pixel;
-  //   uint8_t alpha;
-
-  //   memcpy (&pixel, b, sizeof (uint32_t));
-  //   alpha = (pixel & 0xff000000) >> 24;
-  //   if (alpha == 0) {
-  //       b[0] = b[1] = b[2] = b[3] = 0;
-  //   } else {
-  //     // b[0] = (((pixel & 0xff0000) >> 16) * 255 + alpha / 2) / alpha;
-  //     // b[1] = (((pixel & 0x00ff00) >>  8) * 255 + alpha / 2) / alpha;
-  //     // b[2] = (((pixel & 0x0000ff) >>  0) * 255 + alpha / 2) / alpha;
-  //     uint8_t rv =  (pixel & 0xff0000) >> 16;
-  //     uint8_t gv =  (pixel & 0x00ff00) >> 8;
-  //     uint8_t bv =  (pixel & 0x0000ff);
-
-  //     b[3] = alpha;
-  //     if( alpha == 255 )
-  //     {
-  //       b[0] = rv;
-  //       b[1] = gv;
-  //       b[2] = bv;
-  //     }
-  //     else
-  //     {
-  //       float alphaR = (float)255 / alpha;
-  //       b[0] = (int)((float)rv * alphaR);
-  //       b[1] = (int)((float)gv * alphaR);
-  //       b[2] = (int)((float)bv * alphaR);
-  //     }
-  //   }
-  // }
-
   std::vector<unsigned char> dataVec;
+
   NodeBinding::encodePNGInBuffer(dataVec, (unsigned char*)data, getWidth(), getHeight());
 
   size = dataVec.size();
@@ -257,40 +222,41 @@ Napi::Buffer<unsigned char> Canvas::getPNGBuffer(const Napi::CallbackInfo &info,
 }
 Napi::Buffer<unsigned char> Canvas::getJPGBuffer(const Napi::CallbackInfo &info, unsigned long &size)
 {
-  // if (mRenderContext)
-  // {
-  //     mRenderContext->makeCurrent();
-  //     mRenderContext->drawFrame();
-  // }
-  // unsigned char *dataJPGFormat = nullptr;
-  // int ret = mRenderContext->getImagePixelJPG(&dataJPGFormat, size);
-  // if (ret == 0)
-  // {
-  //     return Napi::Buffer<unsigned char>::Copy(info.Env(), dataJPGFormat, size);
-  // }
-  // else
-  // {
-  //     size = -1;
-  //     return Napi::Buffer<unsigned char>::New(info.Env(), nullptr, 0);
-  // }
+  cairo_surface_t *s = surface();
+  cairo_surface_flush(s);
+  unsigned char *data = cairo_image_surface_get_data(s);
+
+  //TODO check argb only
+  unsigned int width = cairo_image_surface_get_width(s);
+  unsigned int height = cairo_image_surface_get_height(s);
+  
+  size = 4 * width * height;
+  NodeBinding::pixelsConvertARGBToRGBA(( unsigned char *)data, width, height);
+
+  std::cout <<  "Canvas::getJPGBuffer size:" << size << std::endl;
+
+
+  unsigned char *jpegBuffer = nullptr;
+  NodeBinding::encodeJPEGInBuffer(&jpegBuffer, size, data, width, height);
+  return Napi::Buffer<unsigned char>::Copy(info.Env(), jpegBuffer, size);
 }
 Napi::Buffer<unsigned char> Canvas::getRawDataBuffer(const Napi::CallbackInfo &info, unsigned long &size)
 {
+  if (mDataRaw == nullptr)
+  {
+    size = 4 * mWidth * mHeight;
+    mDataRaw = new unsigned char[size];
+  }
 
-//   if (mDataRaw == nullptr)
-//   {
-//       mDataRaw = new unsigned char[4 * mWidth * mHeight];
-//   }
-//   int ret = mRenderContext->readPixelAndSampleFromCurrentCtx(mDataRaw);
-//   if (ret == 0)
-//   {
-//       return Napi::Buffer<unsigned char>::Copy(info.Env(), mDataRaw, 4 * mWidth * mHeight);
-//   }
-//   else
-//   {
-//       size = -1;
-//       return Napi::Buffer<unsigned char>::Copy(info.Env(), nullptr, 0);
-//   }
+  cairo_surface_t *s = surface();
+  cairo_surface_flush(s);
+  mDataRaw = cairo_image_surface_get_data(s);
+
+unsigned char *jpegBuffer = nullptr;
+
+NodeBinding::encodeJPEGInBuffer(&jpegBuffer, size, mDataRaw, mWidth, mHeight);
+return Napi::Buffer<unsigned char>::Copy(info.Env(), jpegBuffer, size);
+  // return Napi::Buffer<unsigned char>::Copy(info.Env(), nullptr, 0);
 }
 Napi::Value Canvas::ToBuffer(const Napi::CallbackInfo &info)
 {
