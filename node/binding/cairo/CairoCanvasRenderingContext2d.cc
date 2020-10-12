@@ -2321,11 +2321,9 @@ Napi::Value Context2d::getfont(const Napi::CallbackInfo &info)
  *   - unit
  *   - family
  */
-
-//TODO setFont
 void Context2d::setfont(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
-  TRACE_CONTEXT_AP
+  TRACE_CONTEXT_API
 
   if (!value.IsString())
     return;
