@@ -226,6 +226,16 @@ Napi::Value Context2d::getCanvas(const Napi::CallbackInfo &info)
 }
 
 
+void Context2d::registerParseFont(Napi::Function func)
+{
+  if ( func != nullptr)
+  {
+    std::cout << "Context2d::registerParseFont" << std::endl;
+    _parseFont = Napi::Persistent(func);
+  }
+}
+
+
 /*
  * Destroy cairo context.
  */
@@ -1590,11 +1600,12 @@ void Context2d::setFillStyle(const Napi::CallbackInfo &info, const Napi::Value &
   }
   else if( value.IsObject() )
   {
+    _fillStyle.Reset( value.ToObject(), 1 );
     Napi::Object object = value.As<Napi::Object>();
     Napi::Value name = object.Get("name");
     if (!name.IsString())
     {
-      // throwError(info, "wrong argument for fillstyle");
+      NodeBinding::throwError(info, "wrong argument for fillstyle");
       return;
     }
     std::string namePropetry = name.As<Napi::String>().Utf8Value();
@@ -1610,7 +1621,7 @@ void Context2d::setFillStyle(const Napi::CallbackInfo &info, const Napi::Value &
     }
     else
     {
-
+      NodeBinding::throwError(info, "wrong argument for fillstyle");
     }
   }
 }
@@ -1641,11 +1652,12 @@ void Context2d::setstrokeStyle(const Napi::CallbackInfo &info, const Napi::Value
   }
   else if( value.IsObject() )
   {
+    _strokeStyle.Reset(value.ToObject(), 1);
     Napi::Object object = value.As<Napi::Object>();
     Napi::Value name = object.Get("name");
     if (!name.IsString())
     {
-      // throwError(info, "wrong argument for fillstyle");
+      NodeBinding::throwError(info, "wrong argument for strokestyle");
       return;
     }
     std::string namePropetry = name.As<Napi::String>().Utf8Value();
@@ -1661,7 +1673,7 @@ void Context2d::setstrokeStyle(const Napi::CallbackInfo &info, const Napi::Value
     }
     else
     {
-
+      NodeBinding::throwError(info, "wrong argument for strokestyle");
     }
   }
 }
@@ -1862,7 +1874,7 @@ Napi::Value Context2d::createPattern(const Napi::CallbackInfo &info)
 {
   TRACE_CONTEXT_API
 
-    if( info.Length() < 2  ){
+  if( info.Length() < 2  ){
     return  info.Env().Undefined();
   }
   return Pattern::NewInstance(info,  info[0], info[1]);
@@ -1883,7 +1895,7 @@ Napi::Value Context2d::createRadialGradient(const Napi::CallbackInfo &info)
   if( info.Length() < 6  ){
     return  info.Env().Undefined();
   }
-  return Gradient::NewInstance(info,  info[0], info[1], info[2], info[3], info[5], info[6]);
+  return Gradient::NewInstance(info,  info[0], info[1], info[2], info[3], info[4], info[5]);
 }
 
 /*
@@ -2313,47 +2325,43 @@ Napi::Value Context2d::getfont(const Napi::CallbackInfo &info)
 //TODO setFont
 void Context2d::setfont(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
-  TRACE_CONTEXT_API
-  
-  //TODO
+  TRACE_CONTEXT_AP
+
   if (!value.IsString())
     return;
 
   std::string str = value.As<Napi::String>().Utf8Value();
-  if (!str.empty())
+  if (str.empty())
     return;
+    
+  Napi::Value mparsed = _parseFont.Call( {value});
+  if (mparsed.IsUndefined()) return;
 
-  // const int argc = 1;
-  // Local<Value> argv[argc] = { value };
+  Napi::Object font = mparsed.As<Napi::Object>();
 
-  // Local<Value> mparsed = Nan::Call(_parseFont.Get(iso), ctx->Global(), argc, argv).ToLocalChecked();
-  // // parseFont returns undefined for invalid CSS font strings
-  // if (mparsed->IsUndefined()) return;
-  // Local<Object> font = Nan::To<Object>(mparsed).ToLocalChecked();
+  std::string weight = font.Get("weight").As<Napi::String>().Utf8Value();
+  std::string style = font.Get("style").As<Napi::String>().Utf8Value();
+  double size  = font.Get("size").As<Napi::Number>().DoubleValue();
+  std::string unit = font.Get("unit").As<Napi::String>();
+  std::string family = font.Get("family").As<Napi::String>().Utf8Value();
 
-  // Nan::Utf8String weight(Nan::Get(font, Nan::New("weight").ToLocalChecked()).ToLocalChecked());
-  // Nan::Utf8String style(Nan::Get(font, Nan::New("style").ToLocalChecked()).ToLocalChecked());
-  // double size = Nan::To<double>(Nan::Get(font, Nan::New("size").ToLocalChecked()).ToLocalChecked()).FromMaybe(0);
-  // Nan::Utf8String unit(Nan::Get(font, Nan::New("unit").ToLocalChecked()).ToLocalChecked());
-  // Nan::Utf8String family(Nan::Get(font, Nan::New("family").ToLocalChecked()).ToLocalChecked());
+  PangoFontDescription *desc = pango_font_description_copy(state->fontDescription);
+  pango_font_description_free(state->fontDescription);
 
-  // PangoFontDescription *desc = pango_font_description_copy(state->fontDescription);
-  // pango_font_description_free(state->fontDescription);
+  pango_font_description_set_style(desc, Canvas::GetStyleFromCSSString(style.c_str()));
+  pango_font_description_set_weight(desc, Canvas::GetWeightFromCSSString(weight.c_str()));
 
-  // pango_font_description_set_style(desc, Canvas::GetStyleFromCSSString(*style));
-  // pango_font_description_set_weight(desc, Canvas::GetWeightFromCSSString(*weight));
+  if (strlen(family.c_str()) > 0) pango_font_description_set_family(desc, family.c_str());
 
-  // if (strlen(*family) > 0) pango_font_description_set_family(desc, *family);
+  PangoFontDescription *sys_desc = Canvas::ResolveFontDescription(desc);
+  pango_font_description_free(desc);
 
-  // PangoFontDescription *sys_desc = Canvas::ResolveFontDescription(desc);
-  // pango_font_description_free(desc);
+  if (size > 0) pango_font_description_set_absolute_size(sys_desc, size * PANGO_SCALE);
 
-  // if (size > 0) pango_font_description_set_absolute_size(sys_desc, size * PANGO_SCALE);
+  state->fontDescription = sys_desc;
+  pango_layout_set_font_description(_layout, sys_desc);
 
-  // state->fontDescription = sys_desc;
-  // pango_layout_set_font_description(_layout, sys_desc);
-
-  // _font.Reset(value);
+  _font.Reset(value.ToObject(), 1);
 }
 
 /*
@@ -2396,9 +2404,7 @@ void Context2d::settextBaseline(const Napi::CallbackInfo &info, const Napi::Valu
     return;
 
   state->textBaseline = op->second;
-  //TODO
-   _textBaseline.Reset();
-  // _textBaseline.Reset(value);
+  _textBaseline.Reset( value.ToObject(), 1 );
 }
 
 /*
@@ -2440,10 +2446,7 @@ void Context2d::settextAlign(const Napi::CallbackInfo &info, const Napi::Value &
     return;
 
   state->textAlignment = op->second;
-
-    //TODO
-    _textAlign.Reset();
-  // _textAlign.Reset(value);
+  _textAlign.Reset( value.ToObject(), 1 );
 }
 
 /*

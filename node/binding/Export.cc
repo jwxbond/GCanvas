@@ -62,6 +62,15 @@ Napi::Object createImage(const Napi::CallbackInfo &info)
   }
 }
 
+Napi::Object registerParseFont(const Napi::CallbackInfo &info )
+{
+  Napi::Env env = info.Env();
+  if ( info.Length() == 1 && info[0].IsFunction() )
+  {
+    cairocanvas::Context2d::registerParseFont(info[0].As<Napi::Function>());
+  }
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
   //所有binding对象的初始化入口
@@ -80,8 +89,6 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   cairocanvas::Gradient::Init(env);
   cairocanvas::Image::Init(env, exports);
   cairocanvas::ImageData::Init(env);
-  // cairocanvas::Backend::Init(env);
-  // cairocanvas::ImageBackend::Init(env);
 
   //webl reousce binding
   NodeBinding::WebGLShader::Init(env);
@@ -96,6 +103,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
               Napi::Function::New(env, createCanvas));
   exports.Set(Napi::String::New(env, "createImage"),
               Napi::Function::New(env, createImage));
+  exports.Set(Napi::String::New(env, "registerParseFont"),
+              Napi::Function::New(env, registerParseFont));
   return exports;
 }
 

@@ -6,9 +6,12 @@
  * For the full copyright and license information, please view
  * the LICENSE file in the root directory of this source tree.
  */
-const { createCanvas , createImage} = require('bindings')('canvas');
+const { createCanvas , createImage, registerParseFont} = require('bindings')('canvas');
 const { PNGStream } = require("./stream/pngstream");
-const { JPGStream } = require('./stream/jpgstream')
+const { JPGStream } = require('./stream/jpgstream');
+const parseFont = require('./stream/parse-font');
+
+
 module.exports = {
     createCanvas: createCanvasInner,
     Image: createImage,
@@ -27,6 +30,8 @@ function createCanvasInner(width, height, usecairo) {
     })
     return canvas;    
 }
+
+registerParseFont(parseFont);
 
 
 

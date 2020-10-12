@@ -68,6 +68,7 @@ class Context2d: public Napi::ObjectWrap<Context2d> {
 
     static void Init(Napi::Env env, Napi::Object exports);
     static Napi::Object NewInstance(const Napi::CallbackInfo &info);
+    static void registerParseFont(Napi::Function func);
 
     Context2d(const Napi::CallbackInfo &info);
     ~Context2d();
