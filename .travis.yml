@@ -15,7 +15,7 @@ addons:
     - cppcheck
 before_install:
 - sudo apt-get update && sudo apt-get install libglfw3-dev libgles2-mesa-dev libcurl4-openssl-dev 
-- sudo apt-get install libboost-all-dev
+- sudo apt-get install libboost-all-dev libjpeg-dev libcairo2-dev libpangocairo-1.0-0 libpango-1.0 libglib2.0-dev
 - npm install -g cmake-js
 - |
   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
