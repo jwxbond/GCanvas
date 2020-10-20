@@ -61,5 +61,8 @@ deploy:
   skip_cleanup: true
   overwrite: true
   draft: true
+  on:
+      branch: feature_cairo_binding
+
 
 
