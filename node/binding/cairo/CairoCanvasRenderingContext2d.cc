@@ -230,9 +230,8 @@ void Context2d::registerParseFont(Napi::Function func)
 {
   if ( func != nullptr)
   {
-    std::cout << "Context2d::registerParseFont" << std::endl;
     _parseFont = Napi::Persistent(func);
-    std::cout << "Context2d::registerParseFont 2" << std::endl;
+    std::cout << "Context2d::registerParseFont success " << std::endl;
   }
 }
 
