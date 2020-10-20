@@ -50,11 +50,14 @@ before_deploy:
   - git config --local user.name "jwxbond"
   - git config --local user.email "jwxbond@gmail.com"
   - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+  - echo $TRAVIS_TAG
   - git tag $TRAVIS_TAG
+  - git push origin --tags
 deploy:
   provider: releases
-  api_key: $ENCRYPTED_GITHUB_TOKEN
-  file: "FILE TO UPLOAD"
+  api_key: $GITHUB_TOKEN  
+  file: 
+    - build/Release/canvas.node
   skip_cleanup: true
   overwrite: true
   draft: true
