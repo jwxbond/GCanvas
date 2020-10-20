@@ -232,6 +232,7 @@ void Context2d::registerParseFont(Napi::Function func)
   {
     std::cout << "Context2d::registerParseFont" << std::endl;
     _parseFont = Napi::Persistent(func);
+    std::cout << "Context2d::registerParseFont 2" << std::endl;
   }
 }
 
