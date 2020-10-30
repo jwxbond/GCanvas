@@ -29,12 +29,14 @@ stream.on('data', function (chunk) {
 });
 
 
-const canvas2 = createCanvas(150, 150);
-const ctx2 = canvas2.getContext('2d');
-console.log("ctx2 drawimage with canvas1")
-ctx2.drawImage(canvas1, 0, 0);
-var stream = canvas2.createPNGStream();
-stream.on('data', function (chunk) {
-    out2.write(chunk);
-});
+setTimeout(function(){
+    const canvas2 = createCanvas(150, 150);
+    const ctx2 = canvas2.getContext('2d');
+    console.log("ctx2 drawimage with canvas1")
+    ctx2.drawImage(canvas1, 0, 0);
+    var stream = canvas2.createPNGStream();
+    stream.on('data', function (chunk) {
+        out2.write(chunk);
+    });
+}, 1);
 

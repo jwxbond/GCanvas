@@ -31,10 +31,10 @@ setTimeout(() => {
     const img = new Image()
 
     img.onload = () => {
+        console.log("image1 onload success!");
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.drawImage(img, 0, 0, 100, 100);
-        // canvas.createPNG("imageCanvas1");
         var stream = canvas.createPNGStream();
         stream.on('data', function (chunk) {
             out1.write(chunk);
@@ -56,10 +56,10 @@ setTimeout(() => {
             console.log(err)
         }
         img2.onload = () => {
+            console.log("image2 onload success!");
             ctx2.fillStyle = "#000000";
             ctx2.fillRect(0, 0, ctx2.canvas.width, ctx2.canvas.height);
             ctx2.drawImage(img2, 0, 0, 100, 100);
-            // canvas2.createPNG("imageCanvas2")
             var stream = canvas.createPNGStream();
             stream.on('data', function (chunk) {
                 out2.write(chunk);

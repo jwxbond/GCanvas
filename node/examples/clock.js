@@ -10,7 +10,7 @@ function getY(angle) {
 
 function clock(ctx) {
   var x, y, i
-  var now = new Date()
+  var now = new Date('2020-05-01 09:14:30');
 
   ctx.clearRect(0, 0, 320, 320)
 
