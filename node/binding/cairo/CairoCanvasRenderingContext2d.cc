@@ -1438,7 +1438,7 @@ Napi::Value Context2d::getshadowOffsetY(const Napi::CallbackInfo &info)
 {
     TRACE_CONTEXT_API
 
-  Napi::Number::New(info.Env(), state->shadowOffsetY);
+  return Napi::Number::New(info.Env(), state->shadowOffsetY);
 }
 void Context2d::setshadowOffsetY(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
@@ -1453,7 +1453,7 @@ Napi::Value Context2d::getshadowBlur(const Napi::CallbackInfo &info)
 {
     TRACE_CONTEXT_API
 
-  Napi::Number::New(info.Env(), state->shadowBlur);
+  return Napi::Number::New(info.Env(), state->shadowBlur);
 }
 
 void Context2d::setshadowBlur(const Napi::CallbackInfo &info, const Napi::Value &value)
@@ -2570,6 +2570,7 @@ Napi::Value Context2d::getLineDash(const Napi::CallbackInfo &info)
   TRACE_CONTEXT_API
   
   //TODO
+  return  info.Env().Undefined();
 }
 
 // NAN_METHOD(Context2d::GetLineDash) {
