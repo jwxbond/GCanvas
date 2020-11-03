@@ -24,44 +24,36 @@ include_directories(${CMAKE_JS_INC})
 
 IF (APPLE)
         MESSAGE(STSTUS "############# APPLE ######################")
-        include_directories("/usr/local/include")
+        # include_directories("/usr/local/include")
         include_directories("/usr/local/include/cairo")
         include_directories("/usr/local/include/pango-1.0")
         include_directories("/usr/local/include/glib-2.0")
         include_directories("/usr/local/include/harfbuzz")
-        # include_directories("/usr/local/opt/libjpeg/include")
-        # include_directories("/usr/local/include/libjpeg")
+        include_directories("/usr/local/opt/jpeg-turbo/include")
 
         include_directories("/usr/local/lib/glib-2.0/include")  #fix glibconfig.h not found
 
-
-        link_directories("/usr/local/lib")
+        # link_directories("/usr/local/lib")
+        link_directories("/usr/local/opt/jpeg-turbo/lib")
         link_directories("/usr/local/opt/glib/lib")
         link_directories("/usr/local/opt/cairo/lib")
         link_directories("/usr/local/opt/pango/lib")
         link_directories("/usr/local/opt/libffi/lib")
 
-        # link_directories("/usr/local/opt/jpeg/lib")
-        # link_directories("/usr/local/opt/libffi/lib")
-        # link_directories("/usr/local/opt/libffi/lib")
-        # link_directories("/usr/local/opt/libffi/lib")
+        # find_package(GLFW3 REQUIRED)
+        # if(GLFW3_FOUND)
+        #         message(STATUS "GLFW3 library status:" )
+        #         message(STATUS "            Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
+        #         include_directories(${GLFW3_INCLUDE_DIR})
+        # endif()
 
-
-        find_package(GLFW3 REQUIRED)
-        if(GLFW3_FOUND)
-                message(STATUS "GLFW3 library status:" )
-                message(STATUS "            Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
-                include_directories(${GLFW3_INCLUDE_DIR})
-        endif()
-
-        find_package(JPEG REQUIRED)
-                if(JPEG_FOUND)
-                message(STATUS "JPEG library status:" )
-                message(STATUS "                    include path:${JPEG_INCLUDE_DIR}")
-                message(STATUS "                    library path:${JPEG_LIBRARIES}")
-                include_directories(${JPEG_INCLUDE_DIR})
-        endif()
-
+        # find_package(JPEG REQUIRED)
+        #         if(JPEG_FOUND)
+        #         message(STATUS "JPEG library status:" )
+        #         message(STATUS "                    include path:${JPEG_INCLUDE_DIR}")
+        #         message(STATUS "                    library path:${JPEG_LIBRARIES}")
+        #         include_directories(${JPEG_INCLUDE_DIR})
+        # endif()
 
         find_package(PNG REQUIRED)
         if(PNG_FOUND)
@@ -71,20 +63,6 @@ IF (APPLE)
                 include_directories(${PNG_INCLUDE_DIR})
         endif()
 
-# brew install pkg-config cairo pango libpng jpeg giflib librsvg
-# GL
-# GLESv2
-# EGL
-# atomic
-# glfw
-# freetype
-# boost_system
-# jpeg
-# curl
-# glib-2.0
-# cairo
-# pango-1.0
-# pangocairo-1.0
 ELSEIF (UNIX) 
         MESSAGE(STSTUS "############# UNIX ######################")
 
@@ -162,22 +140,10 @@ set(SOURCE_FILES
         ./binding/webgl/WebGLActiveInfo.cc
         ./binding/webgl/WebGLUniformLocation.cc
         ./binding/renderContext/GRenderContext.cc
-        # ./binding/renderContext/ImageBase.cc
-        # ./binding/renderContext/ImageDataBase.cc
-        # ./binding/renderContext/PatternBase.cc
-        # ./binding/renderContext/GradientBase.cc
-        # ./binding/renderContext/gcanvas/Context2DImplGCanvas.cc
-        # ./binding/renderContext/gcanvas/ImageDataImplGCanvas.cc
-        # ./binding/renderContext/cairo/Context2DImplCairo.cc
-        # ./binding/renderContext/cairo/PatternImplCairo.cc
-        # ./binding/renderContext/cairo/color.cc
-        # ./binding/renderContext/cairo/ImageBackendCairo.cc
+        
         ./binding/util/NodeBindingUtil.cc
         ./third_party/lodepng.cc
 
-        # ./binding/cairo/backend/Backend.cc
-        # ./binding/cairo/backend/ImageBackend.cc
-        # ./binding/cairo/Backends.cc
         ./binding/cairo/backend/CairoImageBackend.cc
         ./binding/cairo/CairoCanvas.cc
         ./binding/cairo/CairoCanvasGradient.cc
@@ -186,8 +152,6 @@ set(SOURCE_FILES
         ./binding/cairo/CairoImage.cc
         ./binding/cairo/CairoImageData.cc
         ./binding/cairo/color.cc
-
-
 
         ${CORE_DIR}src/GCanvas.cpp        
         ${CORE_DIR}src/GCanvasManager.cpp

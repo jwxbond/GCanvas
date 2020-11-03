@@ -234,11 +234,8 @@ void encodePixelsToJPEGFile(std::string filename, uint8_t *buffer, int width, in
     cinfo.image_width = width;
     cinfo.image_height = height;
     cinfo.input_components = 4;
-#ifdef __APPLE__
-    cinfo.in_color_space = JCS_RGB;
-#elif __LINUX
     cinfo.in_color_space = JCS_EXT_RGBA;
-#endif 
+
     jpeg_set_defaults(&cinfo);
     jpeg_start_compress(&cinfo, TRUE);
     row_stride = width * 4;
@@ -265,11 +262,8 @@ void decodeImageJPEG(std::vector<unsigned char> &pixels, unsigned int &width, un
     (void)jpeg_start_decompress(&cinfo);
     //rgba
     cinfo.output_components = 4;
-#ifdef __APPLE__
-    cinfo.out_color_space = JCS_RGB;
-#elif __LINUX
-    cinfo.in_color_space = JCS_EXT_RGBA;
-#endif 
+    cinfo.out_color_space = JCS_EXT_RGBA;
+
     width = cinfo.output_width;
     height = cinfo.output_height;
     row_stride = cinfo.output_width * cinfo.output_components;
@@ -299,11 +293,8 @@ void encodeJPEGInBuffer(unsigned char **out,unsigned long &size ,unsigned char *
     cinfo.image_width = width;
     cinfo.image_height = height;
     cinfo.input_components = 4;
-#ifdef __APPLE__
-    cinfo.in_color_space = JCS_RGB;
-#elif __LINUX
     cinfo.in_color_space = JCS_EXT_RGBA;
-#endif 
+    
     jpeg_set_defaults(&cinfo);
     jpeg_start_compress(&cinfo, TRUE);
     row_stride = width * 4;
