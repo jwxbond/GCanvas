@@ -39,7 +39,8 @@ const defaultHeight = 16 // pt, common browser default
  * @api private
  */
 
-module.exports = function (str) {
+var parseFontFunc = function (str) {
+  console.log("parse font............." + str)
   // Cached
   if (cache[str]) return cache[str]
 
@@ -100,3 +101,5 @@ module.exports = function (str) {
 
   return (cache[str] = font)
 }
+
+module.exports.parseFont = parseFontFunc;

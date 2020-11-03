@@ -2331,6 +2331,9 @@ void Context2d::setfont(const Napi::CallbackInfo &info, const Napi::Value &value
   if (str.empty())
     return;
     
+  if( !_parseFont )
+    return;
+
   Napi::Value mparsed = _parseFont.Call( {value});
   if (mparsed.IsUndefined()) return;
 

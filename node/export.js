@@ -9,8 +9,9 @@
 const { createCanvas , createImage, registerParseFont} = require('bindings')('canvas');
 const { PNGStream } = require("./stream/pngstream");
 const { JPGStream } = require('./stream/jpgstream');
-const parseFont = require('./stream/parse-font');
+const { parseFont } = require('./stream/parse-font');
 
+registerParseFont(parseFont);
 
 module.exports = {
     createCanvas: createCanvasInner,
@@ -30,8 +31,5 @@ function createCanvasInner(width, height, usecairo) {
     })
     return canvas;    
 }
-
-registerParseFont(parseFont);
-
 
 

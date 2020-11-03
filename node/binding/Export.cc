@@ -8,6 +8,18 @@
  */
 #include <napi.h>
 #include <iostream>
+
+
+#include "CairoCanvas.h"
+#include "CairoCanvasGradient.h"
+#include "CairoCanvasPattern.h"
+#include "CairoCanvasRenderingContext2d.h"
+#include "CairoImage.h"
+#include "CairoImageData.h"
+
+#ifdef __APPLE__
+
+#else
 #include "Canvas.h"
 #include "Image.h"
 #include "TextMetrics.h"
@@ -19,17 +31,17 @@
 #include "./webgl/WebGLActiveInfo.h"
 #include "./webgl/WebGLUniformLocation.h"
 #include "./webgl/WebGLRenderBuffer.h"
-#include "CairoCanvas.h"
-#include "CairoCanvasGradient.h"
-#include "CairoCanvasPattern.h"
-#include "CairoCanvasRenderingContext2d.h"
-#include "CairoImage.h"
-#include "CairoImageData.h"
 
-static bool useCairo = true;
+#endif
+
+static bool useCairo = true;  //TODO check use cairo 
+
+
 
 Napi::Object createCanvas(const Napi::CallbackInfo &info)
 {
+  printf("jwxb createCanvas ..1\n");
+
   Napi::Env env = info.Env();
   if (info.Length() < 2)
   {
@@ -43,27 +55,41 @@ Napi::Object createCanvas(const Napi::CallbackInfo &info)
     useCairo = info[2].As<Napi::Boolean>().ToBoolean();
   }
 
-  if( useCairo ){
-    printf("createCanvas  use cairo \n");
+  #ifdef __APPLE__
+    printf("createCanvas use cairo in MacOS\n");
     return cairocanvas::Canvas::NewInstance(env, info[0], info[1]);
-  } else {
-  printf("createCanvas  use gcanvas \n");
-    return NodeBinding::Canvas::NewInstance(env, info[0], info[1]);
-  }
+  #else
+    if( useCairo ){
+      printf("createCanvas  use cairo in  linux\n");
+      return cairocanvas::Canvas::NewInstance(env, info[0], info[1]);
+    } else {
+    printf("createCanvas  use gcanvas \n");
+      return NodeBinding::Canvas::NewInstance(env, info[0], info[1]);
+    }
+  #endif 
 }
 
 Napi::Object createImage(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
-  if( useCairo ) {
+
+  #ifdef __APPLE__
     return cairocanvas::Image::NewInstance(env);
-  } else {
-    return NodeBinding::Image::NewInstance(env);
-  }
+  #else
+    //TODO check useCairo in Unix
+    if( useCairo ) {
+      return cairocanvas::Image::NewInstance(env);
+    }else{
+      return NodeBinding::Image::NewInstance(env);
+    }
+  #endif
 }
 
 Napi::Object registerParseFont(const Napi::CallbackInfo &info )
 {
+  printf("createCanvas registerParseFont\n");
+
+
   Napi::Env env = info.Env();
   if ( info.Length() == 1 && info[0].IsFunction() )
   {
@@ -73,6 +99,15 @@ Napi::Object registerParseFont(const Napi::CallbackInfo &info )
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
+  //Cairo
+  cairocanvas::Canvas::Init(env, exports);
+  cairocanvas::Context2d::Init(env, exports);
+  cairocanvas::Pattern::Init(env);
+  cairocanvas::Gradient::Init(env);
+  cairocanvas::Image::Init(env, exports);
+  cairocanvas::ImageData::Init(env);
+
+#ifndef __APPLE__
   //所有binding对象的初始化入口
   NodeBinding::Canvas::Init(env, exports);
   NodeBinding::Image::Init(env, exports);
@@ -82,13 +117,6 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   NodeBinding::ImageData::Init(env);
   NodeBinding::TextMetrics::Init(env);
   NodeBinding::Pattern::Init(env);
-  //Cairo
-  cairocanvas::Canvas::Init(env, exports);
-  cairocanvas::Context2d::Init(env, exports);
-  cairocanvas::Pattern::Init(env);
-  cairocanvas::Gradient::Init(env);
-  cairocanvas::Image::Init(env, exports);
-  cairocanvas::ImageData::Init(env);
 
   //webl reousce binding
   NodeBinding::WebGLShader::Init(env);
@@ -98,13 +126,16 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   NodeBinding::WebGLFrameBuffer::Init(env);
   NodeBinding::WebGLRenderBuffer::Init(env);
   NodeBinding::WebGLActiveInfo::Init(env);
-  NodeBinding::WebGLUniformLocation::Init(env);
+  NodeBinding::WebGLUniformLocation::Init(env); 
+#else
+  exports.Set(Napi::String::New(env, "registerParseFont"),
+              Napi::Function::New(env, registerParseFont));
+#endif
+
   exports.Set(Napi::String::New(env, "createCanvas"),
               Napi::Function::New(env, createCanvas));
   exports.Set(Napi::String::New(env, "createImage"),
               Napi::Function::New(env, createImage));
-  exports.Set(Napi::String::New(env, "registerParseFont"),
-              Napi::Function::New(env, registerParseFont));
   return exports;
 }
 

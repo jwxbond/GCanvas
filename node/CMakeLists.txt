@@ -17,13 +17,89 @@ project(canvas)
 include_directories(${CMAKE_JS_INC})
 
 
-include_directories("/usr/include")
-link_directories("/usr/lib/x86_64-linux-gnu")
+MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
-include_directories("/usr/include/cairo")
-include_directories("/usr/include/pango-1.0")
-include_directories("/usr/lib/x86_64-linux-gnu/glib-2.0/include")
-include_directories("/usr/include/glib-2.0")
+ # CMake JS
+include_directories(${CMAKE_JS_INC})
+
+IF (APPLE)
+        MESSAGE(STSTUS "############# APPLE ######################")
+        include_directories("/usr/local/include")
+        include_directories("/usr/local/include/cairo")
+        include_directories("/usr/local/include/pango-1.0")
+        include_directories("/usr/local/include/glib-2.0")
+        include_directories("/usr/local/include/harfbuzz")
+        # include_directories("/usr/local/opt/libjpeg/include")
+        # include_directories("/usr/local/include/libjpeg")
+
+        include_directories("/usr/local/lib/glib-2.0/include")  #fix glibconfig.h not found
+
+
+        link_directories("/usr/local/lib")
+        link_directories("/usr/local/opt/glib/lib")
+        link_directories("/usr/local/opt/cairo/lib")
+        link_directories("/usr/local/opt/pango/lib")
+        link_directories("/usr/local/opt/libffi/lib")
+
+        # link_directories("/usr/local/opt/jpeg/lib")
+        # link_directories("/usr/local/opt/libffi/lib")
+        # link_directories("/usr/local/opt/libffi/lib")
+        # link_directories("/usr/local/opt/libffi/lib")
+
+
+        find_package(GLFW3 REQUIRED)
+        if(GLFW3_FOUND)
+                message(STATUS "GLFW3 library status:" )
+                message(STATUS "            Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
+                include_directories(${GLFW3_INCLUDE_DIR})
+        endif()
+
+        find_package(JPEG REQUIRED)
+                if(JPEG_FOUND)
+                message(STATUS "JPEG library status:" )
+                message(STATUS "                    include path:${JPEG_INCLUDE_DIR}")
+                message(STATUS "                    library path:${JPEG_LIBRARIES}")
+                include_directories(${JPEG_INCLUDE_DIR})
+        endif()
+
+
+        find_package(PNG REQUIRED)
+        if(PNG_FOUND)
+                message(STATUS "PNG library status:" )
+                message(STATUS "                    include path:${PNG_INCLUDE_DIR}")
+                message(STATUS "                    library path:${PNG_LIBRARIES}")	
+                include_directories(${PNG_INCLUDE_DIR})
+        endif()
+
+# brew install pkg-config cairo pango libpng jpeg giflib librsvg
+# GL
+# GLESv2
+# EGL
+# atomic
+# glfw
+# freetype
+# boost_system
+# jpeg
+# curl
+# glib-2.0
+# cairo
+# pango-1.0
+# pangocairo-1.0
+ELSEIF (UNIX) 
+        MESSAGE(STSTUS "############# UNIX ######################")
+
+        include_directories("/usr/include")
+        include_directories("/usr/include/cairo")
+        include_directories("/usr/include/pango-1.0")
+        include_directories("/usr/include/glib-2.0")
+        include_directories("/usr/lib/x86_64-linux-gnu/glib-2.0/include") #fix glibconfig.h not found
+
+
+        link_directories("/usr/lib/x86_64-linux-gnu")
+ENDIF()
+
+
+
 
 
 include_directories("./binding")
@@ -44,6 +120,27 @@ include_directories("${CORE_DIR}src/gcanvas/GL")
 include_directories("${CORE_DIR}src/support")
 include_directories("${CORE_DIR}src/platform/Android")
 include_directories("${CORE_DIR}src/platform/Linux")
+
+
+IF(APPLE)
+set(SOURCE_FILES 
+        ./binding/Export.cc
+        ./binding/util/NodeBindingUtil.cc
+        ./third_party/lodepng.cc
+        ./binding/cairo/backend/CairoImageBackend.cc
+        ./binding/cairo/CairoCanvas.cc
+        ./binding/cairo/CairoCanvasGradient.cc
+        ./binding/cairo/CairoCanvasPattern.cc
+        ./binding/cairo/CairoCanvasRenderingContext2d.cc
+        ./binding/cairo/CairoImage.cc
+        ./binding/cairo/CairoImageData.cc
+        ./binding/cairo/color.cc
+
+        ./binding/ImageWorker.cc
+
+)
+
+ELSEIF(UNIX)
 
 set(SOURCE_FILES 
         ./binding/Export.cc
@@ -133,6 +230,8 @@ set(SOURCE_FILES
         ${CORE_DIR}src/support/Value.cpp
 )
 
+ENDIF()
+
 
 
 
@@ -140,24 +239,42 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
-target_link_libraries(${PROJECT_NAME} 
-                      ${CMAKE_JS_LIB}
-                      GL
-                      GLESv2
-                      EGL
-                      atomic
-                      glfw
-                      freetype
-                      boost_system
-                      jpeg
-                      curl
-                      glib-2.0
-                      cairo
-                      pango-1.0
-                      pangocairo-1.0)
+
+if( APPLE )
+  target_link_libraries(${PROJECT_NAME} 
+                        ${CMAKE_JS_LIB}
+                        "-framework GLUT"
+                        "-framework OpenGL"
+                        ${JPEG_LIBRARIES}
+                        ${PNG_LIBRARIES}
+                        jpeg
+                        ffi
+                        curl
+                        glib-2.0
+                        cairo
+                        pango-1.0
+                        pangocairo-1.0)
+
+elseif(UNIX)
+        target_link_libraries(${PROJECT_NAME} 
+                        ${CMAKE_JS_LIB}
+                        GL
+                        GLESv2
+                        EGL
+                        atomic
+                        glfw
+                        freetype
+                        boost_system
+                        jpeg
+                        curl
+                        glib-2.0
+                        cairo
+                        pango-1.0
+                        pangocairo-1.0)
 
 
                 #       ${Cairo_LIBRARIES}
+endif()
 
 # Include N-API wrappers
 execute_process(COMMAND node -p "require('node-addon-api').include"
