@@ -8,7 +8,7 @@ var grd=ctx.createLinearGradient(0,0,200,0);
 grd.addColorStop(0,"red");
 grd.addColorStop(1,"blue");
 ctx.fillStyle=grd;
-ctx.arc(0, 0,100, 100, 0, 2 * Math.PI);
+ctx.arc(0, 0, 100, 0, 2 * Math.PI);
 ctx.save();
 ctx.transform(1,0,0,1,-100.5,-100.5);
 ctx.fill();
