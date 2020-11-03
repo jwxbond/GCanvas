@@ -9,6 +9,21 @@
 #include "./webgl/WebGLUniformLocation.h"
 #include "Image.h"
 
+#define  ENABLE_CHECK_GL_ERROR
+#ifdef ENABLE_CHECK_GL_ERROR
+void CheckGLError(const char* stmt, const char* fname, int line);
+#define GL_CHECK(stmt)  \
+        stmt;   \
+        CheckGLError(#stmt, __FILE__, __LINE__);
+
+#else
+#define GL_CHECK(stmt)  \
+    do{     \
+        stmt;   \
+    } while (0)
+#endif
+
+
 
 // #define ENABLE_RECORD_COST_TIME
 #ifdef ENABLE_RECORD_COST_TIME

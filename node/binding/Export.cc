@@ -40,8 +40,6 @@ static bool useCairo = true;  //TODO check use cairo
 
 Napi::Object createCanvas(const Napi::CallbackInfo &info)
 {
-  printf("jwxb createCanvas ..1\n");
-
   Napi::Env env = info.Env();
   if (info.Length() < 2)
   {
@@ -60,7 +58,7 @@ Napi::Object createCanvas(const Napi::CallbackInfo &info)
     return cairocanvas::Canvas::NewInstance(env, info[0], info[1]);
   #else
     if( useCairo ){
-      printf("createCanvas  use cairo in  linux\n");
+      printf("createCanvas  use cairo \n");
       return cairocanvas::Canvas::NewInstance(env, info[0], info[1]);
     } else {
     printf("createCanvas  use gcanvas \n");
@@ -127,10 +125,9 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   NodeBinding::WebGLRenderBuffer::Init(env);
   NodeBinding::WebGLActiveInfo::Init(env);
   NodeBinding::WebGLUniformLocation::Init(env); 
-#else
+#endif
   exports.Set(Napi::String::New(env, "registerParseFont"),
               Napi::Function::New(env, registerParseFont));
-#endif
 
   exports.Set(Napi::String::New(env, "createCanvas"),
               Napi::Function::New(env, createCanvas));

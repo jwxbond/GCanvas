@@ -11,7 +11,6 @@
 #include <napi.h>
 #include <unordered_map>
 #include "ImageCahced.h"
-// #include "GGL.h"
 
 #define TIMEOUT_VALUE 5L
 namespace NodeBinding
@@ -41,21 +40,5 @@ unsigned int downloadImage(const std::string &src, ImageContent *content);
 void throwError(const Napi::CallbackInfo &info, const std::string &exception);
 void throwError(const Napi::Env &env, const std::string &exception);
 void pixelsConvertARGBToRGBA(unsigned char * data, int width, int height);
-
-
-// #define  ENABLE_CHECK_GL_ERROR
-// #ifdef ENABLE_CHECK_GL_ERROR
-// void CheckGLError(const char* stmt, const char* fname, int line);
-// #define GL_CHECK(stmt)  \
-//         stmt;   \
-//         CheckGLError(#stmt, __FILE__, __LINE__);
-
-// #else
-// #define GL_CHECK(stmt)  \
-//     do{     \
-//         stmt;   \
-//     } while (0)
-// #endif
-
 } // namespace NodeBinding
 #endif
