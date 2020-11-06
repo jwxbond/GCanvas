@@ -169,6 +169,8 @@ class Context2d: public Napi::ObjectWrap<Context2d> {
     void translate(const Napi::CallbackInfo &info);
     void ellipse(const Napi::CallbackInfo &info);
 
+    Napi::Value IsPointInPath(const Napi::CallbackInfo &info);
+
     Napi::Value getFillStyle(const Napi::CallbackInfo &info);
     void setFillStyle(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getfont(const Napi::CallbackInfo &info);

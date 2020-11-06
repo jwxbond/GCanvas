@@ -3,7 +3,6 @@
 #include "CairoCanvasRenderingContext2d.h"
 
 #include <algorithm>
-// #include "backend/ImageBackend.h"
 #include "backend/CairoImageBackend.h"
 #include "CairoCanvas.h"
 #include "CairoCanvasGradient.h"
@@ -105,9 +104,6 @@ inline static bool checkArgs(const Napi::CallbackInfo &info, double *args, int a
           val == std::numeric_limits<double>::infinity() ||
           val == -std::numeric_limits<double>::infinity())
       {
-        // We should continue the loop instead of returning immediately
-        // See https://html.spec.whatwg.org/multipage/canvas.html
-
         areArgsValid = false;
         continue;
       }
@@ -160,6 +156,7 @@ void Context2d::Init(Napi::Env env, Napi::Object exports)
     InstanceMethod("transform", &Context2d::transform),
     InstanceMethod("translate", &Context2d::translate),
     InstanceMethod("ellipse", &Context2d::ellipse),
+    InstanceMethod("isPointInPath", &Context2d::IsPointInPath),
 
     InstanceAccessor("fillStyle", &Context2d::getFillStyle, &Context2d::setFillStyle),
     InstanceAccessor("font", &Context2d::getfont, &Context2d::setfont),
@@ -203,7 +200,6 @@ Context2d::Context2d(const Napi::CallbackInfo &info): Napi::ObjectWrap<Context2d
 
 void Context2d::setupContext2d(Canvas *canvas)
 {
-  //TODO 构造函数确认下
   _canvas = canvas;
   _context = canvas->createCairoContext();
 
@@ -828,6 +824,7 @@ void Context2d::putImageData(const Napi::CallbackInfo &info)
     // start destination at source offset
     dx += sx;
     dy += sy;
+	break;
   default:
     NodeBinding::throwError(info, "invalid arguments");
     return;
@@ -1797,7 +1794,32 @@ void Context2d::setlineCap(const Napi::CallbackInfo &info, const Napi::Value &va
   }
 }
 
-//TODO  IsPointInPath
+Napi::Value Context2d::IsPointInPath(const Napi::CallbackInfo &info)
+{
+  int infoLen = info.Length();
+  if ( infoLen >= 2 && info[0].IsNumber() && info[1].IsNumber() ) 
+  {
+    cairo_t *ctx = context();
+    double x = info[0].As<Napi::Number>().DoubleValue();
+    double y = info[1].As<Napi::Number>().DoubleValue();
+
+
+    cairo_fill_rule_t rule = CAIRO_FILL_RULE_WINDING;
+    if( infoLen >= 3 && info[2].IsString()  )
+    {
+      std::string ruleStr = info[2].As<Napi::String>().Utf8Value();
+      if (ruleStr == "evenodd")
+      {
+        rule = CAIRO_FILL_RULE_EVEN_ODD;
+      }
+    }
+    cairo_set_fill_rule(_context, rule);
+    bool value = cairo_in_fill(ctx, x, y) || cairo_in_stroke(ctx, x, y);
+    return Napi::Boolean::New(info.Env(), value);
+  }
+  return Napi::Boolean::New(info.Env(), false);
+}
+
 Napi::Value Context2d::getshadowColor(const Napi::CallbackInfo &info)
 {
   TRACE_CONTEXT_API
@@ -1868,7 +1890,6 @@ Napi::Value Context2d::_getStrokeColor(const Napi::CallbackInfo &info)
   return Napi::String::New(info.Env(), buf);
 }
 
-//TODO createPattern
 Napi::Value Context2d::createPattern(const Napi::CallbackInfo &info)
 {
   TRACE_CONTEXT_API
