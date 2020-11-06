@@ -5,6 +5,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
+#include <iostream>
 
 
 namespace cairocanvas
@@ -50,8 +51,9 @@ Image::~Image()
     clearData();
     
     if(mDownloadImageWorker) {
-        delete mDownloadImageWorker;
-        mDownloadImageWorker = nullptr;
+        // mDownloadImageWorker
+        // delete mDownloadImageWorker;
+        // mDownloadImageWorker = nullptr;
     }
 
     if( mCallbackSet ) {

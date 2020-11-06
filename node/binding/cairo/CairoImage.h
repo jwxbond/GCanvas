@@ -3,7 +3,6 @@
 #pragma once
 
 #include <cairo.h>
-// #include "CanvasError.h"
 #include <functional>
 #include <napi.h>
 #include <stdint.h> // node < 7 uses libstdc++ on macOS which lacks complete c++11
