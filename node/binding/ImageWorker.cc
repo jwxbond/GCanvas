@@ -1,6 +1,11 @@
 #include "ImageWorker.h"
+#include <iostream>
 namespace NodeBinding
 {
+    ImageWorker::~ImageWorker()
+    {
+        std::cout << "ImageWorker destructor .." << std::endl;
+    }
 
     void ImageWorker::setOnErrorCallback(Napi::Function func)
     {

@@ -18,12 +18,16 @@ void cachedImage(const std::string url,std::shared_ptr<ImageCached> imageCached)
 class ImageWorker : public Napi::AsyncWorker
 {
 public:
-    
-    ImageWorker(Napi::Env env,  std::shared_ptr<ImageCached>& image, unsigned int &width, unsigned int &height) : Napi::AsyncWorker(env), mImageMemCached(image),
-                                                                                                             _height(height),
-                                                                                                             _width(width)
+
+    ImageWorker(Napi::Env env,  std::shared_ptr<ImageCached>& image, unsigned int &width, unsigned int &height) : 
+        Napi::AsyncWorker(env), 
+        mImageMemCached(image),
+        _height(height),
+        _width(width)
     {
     }
+
+    ~ImageWorker();
 
     void Execute();
     void OnOK();
