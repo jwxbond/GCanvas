@@ -41,9 +41,6 @@ namespace cairocanvas
         // 命中缓存,直接返回
         if(cacheRet){
             this->mImageMemCached=cacheRet;
-
-            //callback success
-            cb(Env(), mImageMemCached->getPixels().data(), mImageMemCached->size(), nullptr);
             return;
         }
         bool isHttpProtocol=url.rfind("http", 0) == 0;
