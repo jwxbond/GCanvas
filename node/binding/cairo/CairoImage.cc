@@ -227,11 +227,6 @@ std::vector<unsigned char> &Image::getPixels()
     return _surface;
 }
 
-// void Image::setSurface(cairo_surface_t* surface)
-// {
-//     _surface = surface;
-// }
-
 void Image::clearData()
 {
     if (_surface) {

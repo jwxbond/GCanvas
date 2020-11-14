@@ -27,28 +27,25 @@ Napi::FunctionReference Canvas::constructor;
 
 std::vector<FontFace> font_face_list;
 
- void Canvas::Init(Napi::Env env, Napi::Object exports)
+void Canvas::Init(Napi::Env env, Napi::Object exports)
 {
-    Napi::HandleScope scope(env);
+  Napi::HandleScope scope(env);
 
-    Napi::Function func =
-        DefineClass(env,
-            "Canvas",
-            {
-              // InstanceAccessor("type", &Canvas::getType, nullptr),
-              // InstanceAccessor("stride", &Canvas::getStride, nullptr),
-              InstanceAccessor("width", &Canvas::getWidth, nullptr),
-              InstanceAccessor("height", &Canvas::getHeight, nullptr),
-              InstanceMethod("getContext", &Canvas::getContext),
-              InstanceMethod("createPNG", &Canvas::createPNG),
-              InstanceMethod("createJPEG", &Canvas::createJPEG),
-              InstanceMethod("createPNGStreamSync", &Canvas::createPNGStreamSync),
-              InstanceMethod("createJPGStreamSync", &Canvas::createJPGStreamSync),
-              InstanceMethod("toBuffer", &Canvas::ToBuffer),
-            });
-    constructor = Napi::Persistent(func);
-    constructor.SuppressDestruct();
-    return;
+  Napi::Function func = DefineClass(env, "Canvas", {
+    // InstanceAccessor("type", &Canvas::getType, nullptr),
+    // InstanceAccessor("stride", &Canvas::getStride, nullptr),
+    InstanceAccessor("width", &Canvas::getWidth, nullptr),
+    InstanceAccessor("height", &Canvas::getHeight, nullptr),
+    InstanceMethod("getContext", &Canvas::getContext),
+    InstanceMethod("createPNG", &Canvas::createPNG),
+    InstanceMethod("createJPEG", &Canvas::createJPEG),
+    InstanceMethod("createPNGStreamSync", &Canvas::createPNGStreamSync),
+    InstanceMethod("createJPGStreamSync", &Canvas::createJPGStreamSync),
+    InstanceMethod("toBuffer", &Canvas::ToBuffer),
+  });
+  constructor = Napi::Persistent(func);
+  constructor.SuppressDestruct();
+  return;
 }
 
 Napi::Object Canvas::NewInstance(Napi::Env env, Napi::Value arg, Napi::Value arg2)
@@ -154,17 +151,13 @@ Napi::Value Canvas::createJPGStreamSync(const Napi::CallbackInfo &info)
     Napi::Function callback = info[0].As<Napi::Function>();
     //handlescope 表示作用域,一般调用callback函数时使用
     Napi::HandleScope scope(info.Env());
-    callback.Call({info.Env().Null(),
-                    buffer,
-                    Napi::Number::New(info.Env(), size)});
+    callback.Call({info.Env().Null(), buffer, Napi::Number::New(info.Env(), size)});
   }
   else
   {
     Napi::Function callback = info[0].As<Napi::Function>();
     Napi::HandleScope scope(info.Env());
-    callback.Call({Napi::String::New(Env(), "createJPGStreamFail"),
-                    info.Env().Null(),
-                    info.Env().Null()});
+    callback.Call({Napi::String::New(Env(), "createJPGStreamFail"), info.Env().Null(), info.Env().Null()});
   }
   return info.Env().Undefined();
 }
@@ -180,17 +173,13 @@ Napi::Value Canvas::createPNGStreamSync(const Napi::CallbackInfo &info)
     Napi::Function callback = info[0].As<Napi::Function>();
     //handlescope 表示作用域,一般调用callback函数时使用
     Napi::HandleScope scope(info.Env());
-    callback.Call({info.Env().Null(),
-                    buffer,
-                    Napi::Number::New(info.Env(), size)});
+    callback.Call({info.Env().Null(), buffer, Napi::Number::New(info.Env(), size)});
   }
   else
   {
     Napi::Function callback = info[0].As<Napi::Function>();
     Napi::HandleScope scope(info.Env());
-    callback.Call({Napi::String::New(Env(), "createPNGStreamFail"),
-                    info.Env().Null(),
-                    info.Env().Null()});
+    callback.Call({Napi::String::New(Env(), "createPNGStreamFail"), info.Env().Null(), info.Env().Null()});
   }
   return info.Env().Undefined();
 }
@@ -237,13 +226,11 @@ Napi::Buffer<unsigned char> Canvas::getJPGBuffer(const Napi::CallbackInfo &info,
   size = 4 * width * height;
   NodeBinding::pixelsConvertARGBToRGBA(( unsigned char *)data, width, height);
 
-  std::cout <<  "Canvas::getJPGBuffer size:" << size << std::endl;
-
-
   unsigned char *jpegBuffer = nullptr;
   NodeBinding::encodeJPEGInBuffer(&jpegBuffer, size, data, width, height);
   return Napi::Buffer<unsigned char>::Copy(info.Env(), jpegBuffer, size);
 }
+
 Napi::Buffer<unsigned char> Canvas::getRawDataBuffer(const Napi::CallbackInfo &info, unsigned long &size)
 {
   if (mDataRaw == nullptr)

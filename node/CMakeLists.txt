@@ -24,17 +24,20 @@ include_directories(${CMAKE_JS_INC})
 
 IF (APPLE)
         MESSAGE(STSTUS "############# APPLE ######################")
-        include_directories("/usr/local/include")
+        # include_directories("/usr/local/include")
         include_directories("/usr/local/include/cairo")
         include_directories("/usr/local/include/pango-1.0")
         include_directories("/usr/local/include/glib-2.0")
         include_directories("/usr/local/include/harfbuzz")
-        include_directories("/usr/local/opt/jpeg/include")
+        # include_directories("/usr/local/opt/jpeg/include")
+        include_directories("/usr/local/opt/jpeg-turbo/include")
 
         include_directories("/usr/local/lib/glib-2.0/include")  #fix glibconfig.h not found
         include_directories("/usr/local/opt/curl-openssl/include")
 
-        link_directories("/usr/local/lib")
+        link_directories("/usr/local/opt/jpeg-turbo/lib")
+
+        # link_directories("/usr/local/lib")
         link_directories("/usr/local/opt/glib/lib")
         link_directories("/usr/local/opt/cairo/lib")
         link_directories("/usr/local/opt/pango/lib")
@@ -58,12 +61,8 @@ ELSEIF (UNIX)
         include_directories("/usr/include/glib-2.0")
         include_directories("/usr/lib/x86_64-linux-gnu/glib-2.0/include") #fix glibconfig.h not found
 
-
         link_directories("/usr/lib/x86_64-linux-gnu")
 ENDIF()
-
-
-
 
 
 include_directories("./binding")

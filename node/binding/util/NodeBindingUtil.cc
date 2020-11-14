@@ -234,9 +234,7 @@ void encodePixelsToJPEGFile(std::string filename, uint8_t *buffer, int width, in
     cinfo.image_width = width;
     cinfo.image_height = height;
     cinfo.input_components = 4;
-    // cinfo.in_color_space = JCS_EXT_RGBA;
-    cinfo.in_color_space = JCS_RGB;
-
+    cinfo.in_color_space = JCS_EXT_RGBA;
 
     jpeg_set_defaults(&cinfo);
     jpeg_start_compress(&cinfo, TRUE);
@@ -264,8 +262,7 @@ void decodeImageJPEG(std::vector<unsigned char> &pixels, unsigned int &width, un
     (void)jpeg_start_decompress(&cinfo);
     //rgba
     cinfo.output_components = 4;
-    // cinfo.out_color_space = JCS_EXT_RGBA;
-    cinfo.out_color_space = JCS_RGB;
+    cinfo.out_color_space = JCS_EXT_RGBA;
 
 
     width = cinfo.output_width;
@@ -297,8 +294,7 @@ void encodeJPEGInBuffer(unsigned char **out,unsigned long &size ,unsigned char *
     cinfo.image_width = width;
     cinfo.image_height = height;
     cinfo.input_components = 4;
-    // cinfo.in_color_space = JCS_EXT_RGBA;
-    cinfo.in_color_space = JCS_RGB;
+    cinfo.in_color_space = JCS_EXT_RGBA;
 
     
     jpeg_set_defaults(&cinfo);

@@ -42,7 +42,6 @@ class Image: public Napi::ObjectWrap<Image>
 
   public:
     cairo_surface_t* getSurface();
-    // void setSurface(cairo_surface_t* surface); 
 
   private:
     //cairo data
