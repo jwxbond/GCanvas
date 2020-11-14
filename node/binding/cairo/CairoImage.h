@@ -12,7 +12,7 @@
 #include "NodeBindingUtil.h"
 #include "lodepng.h"
 #include "ImageCahced.h"
-#include "ImageWorker.h"
+#include "ImageAsyncWorker.h"
 
 namespace cairocanvas
 {
@@ -42,7 +42,7 @@ class Image: public Napi::ObjectWrap<Image>
 
   public:
     cairo_surface_t* getSurface();
-    void setSurface(cairo_surface_t* surface); 
+    // void setSurface(cairo_surface_t* surface); 
 
   private:
     //cairo data
@@ -50,15 +50,20 @@ class Image: public Napi::ObjectWrap<Image>
     uint8_t *_data = nullptr;
     int _data_len;
     int width, height;
+    int naturalWidth, naturalHeight;
+
     void clearData();
 
   private:
     static Napi::FunctionReference constructor;
     std::string src;
     ImageCallbackSet *mCallbackSet;
-    NodeBinding::ImageWorker *mDownloadImageWorker = nullptr;
+    ImageAsyncWorker *mDownloadImageWorker = nullptr;
     std::vector<unsigned char> emptyPixels;
     std::shared_ptr<ImageCached> mImageMemCached;
+
+    void DownloadCallback(Napi::Env env, uint8_t *data, size_t size, std::string errMsg );
+
 
     Napi::Value getSrc(const Napi::CallbackInfo &info);
     void setSrc(const Napi::CallbackInfo &info, const Napi::Value &value);
@@ -68,6 +73,42 @@ class Image: public Napi::ObjectWrap<Image>
     void setOnErrorCallback(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getWidth(const Napi::CallbackInfo &info);
     Napi::Value getHeight(const Napi::CallbackInfo &info);
+
+
+    inline uint8_t *data(){ return cairo_image_surface_get_data(_surface); }
+    inline int stride(){ return cairo_image_surface_get_stride(_surface); }
+    static int isPNG(uint8_t *data);
+    static int isJPEG(uint8_t *data);
+    static cairo_status_t readPNG(void *closure, unsigned char *data, unsigned len);
+    // inline int isComplete(){ return COMPLETE == state; }
+
+    cairo_status_t loadFromBuffer(uint8_t *buf, unsigned len);
+    cairo_status_t loadPNGFromBuffer(uint8_t *buf);
+    cairo_status_t loadPNG();
+    void loaded();
+
+
+    enum {
+        DEFAULT
+      , LOADING
+      , COMPLETE
+    } state;
+
+    enum data_mode_t {
+        DATA_IMAGE = 1
+      , DATA_MIME = 2
+    } data_mode;
+
+    typedef enum {
+        UNKNOWN
+      , GIF
+      , JPEG
+      , PNG
+      , SVG
+    } type;
+
+    static type extension(const char *filename);
+
 };
 
 }

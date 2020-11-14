@@ -35,10 +35,11 @@ setTimeout(() => {
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.drawImage(img, 0, 0, 100, 100);
-        var stream = canvas.createPNGStream();
-        stream.on('data', function (chunk) {
-            out1.write(chunk);
-        });
+        // var stream = canvas.createPNGStream();
+        // stream.on('data', function (chunk) {
+        //     out1.write(chunk);
+        // });
+        canvas.createPNGStream().pipe(out1);
 
         nextCanvasDrawImage();
     }
@@ -59,11 +60,12 @@ setTimeout(() => {
             console.log("image2 onload success!");
             ctx2.fillStyle = "#000000";
             ctx2.fillRect(0, 0, ctx2.canvas.width, ctx2.canvas.height);
-            ctx2.drawImage(img2, 0, 0, 100, 100);
-            var stream = canvas.createPNGStream();
-            stream.on('data', function (chunk) {
-                out2.write(chunk);
-            });
+            ctx2.drawImage(img, 0, 0, 100, 100);
+            // var stream = canvas.createPNGStream();
+            // stream.on('data', function (chunk) {
+            //     out2.write(chunk);
+            // });
+            canvas2.createPNGStream().pipe(out2);
 
         }
         img2.src = "https://img.alicdn.com/imgextra/i3/80/O1CN011CSgGWymNlCrNO3_!!80-2-luban.png"

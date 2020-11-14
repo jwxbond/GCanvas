@@ -16,6 +16,8 @@
 #include <vector>
 #include "backend/CairoImageBackend.h"
 #include "NodeBindingUtil.h"
+#include "closure.h"
+#include "PNG.h"
 
 using namespace std;
 
@@ -147,7 +149,7 @@ Napi::Value Canvas::createJPGStreamSync(const Napi::CallbackInfo &info)
   NodeBinding::checkArgs(info, 2);
   unsigned long size = 0;
   Napi::Buffer<unsigned char> buffer = getJPGBuffer(info, size);
-  if (size >= 0)
+  if (size > 0)
   {
     Napi::Function callback = info[0].As<Napi::Function>();
     //handlescope 表示作用域,一般调用callback函数时使用
@@ -172,7 +174,8 @@ Napi::Value Canvas::createPNGStreamSync(const Napi::CallbackInfo &info)
   NodeBinding::checkArgs(info, 2);
   unsigned long size = 0;
   Napi::Buffer<unsigned char> buffer = getPNGBuffer(info, size);
-  if (size >= 0)
+
+  if (size > 0)
   {
     Napi::Function callback = info[0].As<Napi::Function>();
     //handlescope 表示作用域,一般调用callback函数时使用
@@ -198,28 +201,29 @@ Napi::Buffer<unsigned char> Canvas::getPNGBuffer(const Napi::CallbackInfo &info,
   cairo_surface_flush(s);
   const unsigned char *data = cairo_image_surface_get_data(s);
 
+  PngClosure closure(this);
 
-  //TODO check argb only
-  unsigned int width = cairo_image_surface_get_width(s);
-  unsigned int height = cairo_image_surface_get_height(s);
-  
-  NodeBinding::pixelsConvertARGBToRGBA(( unsigned char *)data, width, height);
-
-  std::vector<unsigned char> dataVec;
-
-  NodeBinding::encodePNGInBuffer(dataVec, (unsigned char*)data, getWidth(), getHeight());
-
-  size = dataVec.size();
-
-  if( !dataVec .empty())
+  try
   {
-    return Napi::Buffer<unsigned char>::Copy(info.Env(), &dataVec[0], dataVec.size());
+    cairo_status_t status = canvas_write_to_png_stream(s, PngClosure::writeVec, &closure);
+  }
+  catch(const std::exception& e)
+  {
+    std::cerr << e.what() << '\n';
+  }
+
+  size = closure.vec.size();
+  
+  if( !closure.vec.empty() )
+  {
+    return Napi::Buffer<unsigned char>::Copy(info.Env(), &closure.vec[0], closure.vec.size());
   }
   else
   {
     return Napi::Buffer<unsigned char>::New(info.Env(), nullptr, 0);
   }
 }
+
 Napi::Buffer<unsigned char> Canvas::getJPGBuffer(const Napi::CallbackInfo &info, unsigned long &size)
 {
   cairo_surface_t *s = surface();
@@ -283,7 +287,7 @@ Napi::Value Canvas::ToBuffer(const Napi::CallbackInfo &info)
               ret = getRawDataBuffer(info, size);
           }
       }
-      if (size < 0)
+      if (size <= 0)
       {
           return info.Env().Null();
       }

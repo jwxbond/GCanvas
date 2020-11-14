@@ -22,7 +22,4 @@ ctx.fillRect(60, 60, 30, 30) // Draw a rectangle with restored settings
 const fs = require('fs')
 const path = require('path');
 const out = fs.createWriteStream(path.join(__dirname, "..")+ '/app.png');
-var stream = canvas.createPNGStream();
-stream.on('data', function (chunk) {
-    out.write(chunk);
-});
+canvas.createPNGStream().pipe(out)

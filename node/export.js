@@ -7,11 +7,12 @@
  * the LICENSE file in the root directory of this source tree.
  */
 const { createCanvas , createImage, registerParseFont} = require('bindings')('canvas');
-const { PNGStream } = require("./stream/pngstream");
-const { JPGStream } = require('./stream/jpgstream');
-const { parseFont } = require('./stream/parse-font');
+const { PNGStream } = require("./libs/pngstream");
+const { JPGStream } = require('./libs/jpgstream');
+const { parseFont } = require('./libs/parse-font');
 
-registerParseFont(parseFont);
+
+// registerParseFont(parseFont);
 
 module.exports = {
     createCanvas: createCanvasInner,

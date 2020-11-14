@@ -24,36 +24,22 @@ include_directories(${CMAKE_JS_INC})
 
 IF (APPLE)
         MESSAGE(STSTUS "############# APPLE ######################")
-        # include_directories("/usr/local/include")
+        include_directories("/usr/local/include")
         include_directories("/usr/local/include/cairo")
         include_directories("/usr/local/include/pango-1.0")
         include_directories("/usr/local/include/glib-2.0")
         include_directories("/usr/local/include/harfbuzz")
-        include_directories("/usr/local/opt/jpeg-turbo/include")
+        include_directories("/usr/local/opt/jpeg/include")
 
         include_directories("/usr/local/lib/glib-2.0/include")  #fix glibconfig.h not found
+        include_directories("/usr/local/opt/curl-openssl/include")
 
-        # link_directories("/usr/local/lib")
-        link_directories("/usr/local/opt/jpeg-turbo/lib")
+        link_directories("/usr/local/lib")
         link_directories("/usr/local/opt/glib/lib")
         link_directories("/usr/local/opt/cairo/lib")
         link_directories("/usr/local/opt/pango/lib")
         link_directories("/usr/local/opt/libffi/lib")
-
-        # find_package(GLFW3 REQUIRED)
-        # if(GLFW3_FOUND)
-        #         message(STATUS "GLFW3 library status:" )
-        #         message(STATUS "            Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
-        #         include_directories(${GLFW3_INCLUDE_DIR})
-        # endif()
-
-        # find_package(JPEG REQUIRED)
-        #         if(JPEG_FOUND)
-        #         message(STATUS "JPEG library status:" )
-        #         message(STATUS "                    include path:${JPEG_INCLUDE_DIR}")
-        #         message(STATUS "                    library path:${JPEG_LIBRARIES}")
-        #         include_directories(${JPEG_INCLUDE_DIR})
-        # endif()
+        link_directories("/usr/local/opt/curl-openssl/lib")
 
         find_package(PNG REQUIRED)
         if(PNG_FOUND)
@@ -113,13 +99,10 @@ set(SOURCE_FILES
         ./binding/cairo/CairoImage.cc
         ./binding/cairo/CairoImageData.cc
         ./binding/cairo/color.cc
-
-        ./binding/ImageWorker.cc
-
+        ./binding/cairo/closure.cc
+        ./binding/cairo/ImageAsyncWorker.cc
 )
-
 ELSEIF(UNIX)
-
 set(SOURCE_FILES 
         ./binding/Export.cc
         ./binding/Canvas.cc
@@ -209,7 +192,7 @@ if( APPLE )
                         ${CMAKE_JS_LIB}
                         "-framework GLUT"
                         "-framework OpenGL"
-                        ${JPEG_LIBRARIES}
+                        # ${JPEG_LIBRARIES}
                         ${PNG_LIBRARIES}
                         jpeg
                         ffi

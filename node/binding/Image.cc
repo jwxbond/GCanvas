@@ -22,8 +22,7 @@ namespace NodeBinding
     Image::~Image()
     {
         if(mDownloadImageWorker) {
-            delete mDownloadImageWorker;
-            mDownloadImageWorker = nullptr;
+            mDownloadImageWorker->Cancel();
         }
 
         if( mCallbackSet ) {
@@ -37,16 +36,13 @@ namespace NodeBinding
     {
         Napi::HandleScope scope(env);
 
-        Napi::Function func =
-            DefineClass(env,
-                        "Image",
-                        {
-                            InstanceAccessor("src", &Image::getSrc, &Image::setSrc),
-                            InstanceAccessor("width", &Image::getWidth, nullptr),
-                            InstanceAccessor("height", &Image::getHeight, nullptr),
-                            InstanceAccessor("onload", &Image::getOnLoadCallback, &Image::setOnLoadCallback),
-                            InstanceAccessor("onerror", &Image::getOnErrorCallback, &Image::setOnErrorCallback),
-                        });
+        Napi::Function func = DefineClass(env, "Image",{
+            InstanceAccessor("src", &Image::getSrc, &Image::setSrc),
+            InstanceAccessor("width", &Image::getWidth, nullptr),
+            InstanceAccessor("height", &Image::getHeight, nullptr),
+            InstanceAccessor("onload", &Image::getOnLoadCallback, &Image::setOnLoadCallback),
+            InstanceAccessor("onerror", &Image::getOnErrorCallback, &Image::setOnErrorCallback),
+        });
         constructor = Napi::Persistent(func);
         constructor.SuppressDestruct();
         exports.Set("Image", func);

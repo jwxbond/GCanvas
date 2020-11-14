@@ -234,7 +234,9 @@ void encodePixelsToJPEGFile(std::string filename, uint8_t *buffer, int width, in
     cinfo.image_width = width;
     cinfo.image_height = height;
     cinfo.input_components = 4;
-    cinfo.in_color_space = JCS_EXT_RGBA;
+    // cinfo.in_color_space = JCS_EXT_RGBA;
+    cinfo.in_color_space = JCS_RGB;
+
 
     jpeg_set_defaults(&cinfo);
     jpeg_start_compress(&cinfo, TRUE);
@@ -262,7 +264,9 @@ void decodeImageJPEG(std::vector<unsigned char> &pixels, unsigned int &width, un
     (void)jpeg_start_decompress(&cinfo);
     //rgba
     cinfo.output_components = 4;
-    cinfo.out_color_space = JCS_EXT_RGBA;
+    // cinfo.out_color_space = JCS_EXT_RGBA;
+    cinfo.out_color_space = JCS_RGB;
+
 
     width = cinfo.output_width;
     height = cinfo.output_height;
@@ -293,7 +297,9 @@ void encodeJPEGInBuffer(unsigned char **out,unsigned long &size ,unsigned char *
     cinfo.image_width = width;
     cinfo.image_height = height;
     cinfo.input_components = 4;
-    cinfo.in_color_space = JCS_EXT_RGBA;
+    // cinfo.in_color_space = JCS_EXT_RGBA;
+    cinfo.in_color_space = JCS_RGB;
+
     
     jpeg_set_defaults(&cinfo);
     jpeg_start_compress(&cinfo, TRUE);
@@ -335,8 +341,8 @@ void CheckGLError(const char* stmt, const char* fname, int line)
 
 void pixelsConvertARGBToRGBA(unsigned char * data, int width, int height)
 {
-     // Raw ARGB data convert 
   unsigned int rawBytes = width * height * 4;
+     // Raw ARGB data convert 
   for (unsigned int i = 0; i < rawBytes; i += 4)
   {
     uint8_t *b = (uint8_t*)&data[i];
@@ -371,8 +377,47 @@ void pixelsConvertARGBToRGBA(unsigned char * data, int width, int height)
       }
     }
   }
-
 }
 
+void pixelsConvertRGBAToARGB(unsigned char * data, int width, int height)
+{
+    std::cout  << "pixelsConvertRGBAToARBG" << std::endl;
+    unsigned int rawBytes = width * height * 4;
+    // Raw ARGB data convert 
+    for (unsigned int i = 0; i < rawBytes; i += 4)
+    {
+        uint8_t *b = (uint8_t*)&data[i];
+        uint32_t pixel;
+        uint8_t alpha;
+
+        memcpy (&pixel, b, sizeof (uint32_t));
+        alpha = (pixel & 0x000000ff);
+        if (alpha == 0) {
+            b[0] = b[1] = b[2] = b[3] = 0;
+        } else {
+        uint8_t rv =  (pixel & 0xff000000) >> 24;
+        uint8_t gv =  (pixel & 0x00ff0000) >> 16;
+        uint8_t bv =  (pixel & 0x0000ff00) >> 8;
+
+        b[0] = alpha;
+        if( alpha == 255 )
+        {
+            b[1] = rv;
+            b[2] = gv;
+            b[3] = bv;
+        }
+        else
+        {
+            // float alphaR = (float)255 / alpha;
+            // b[0] = (int)((float)rv * alphaR);
+            // b[1] = (int)((float)gv * alphaR);
+            // b[2] = (int)((float)bv * alphaR);
+            b[1] = rv;
+            b[2] = gv;
+            b[3] = bv;
+        }
+    }
+  }
+}
 
 } // namespace NodeBinding

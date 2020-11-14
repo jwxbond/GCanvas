@@ -83,7 +83,7 @@ Napi::Object createImage(const Napi::CallbackInfo &info)
   #endif
 }
 
-Napi::Object registerParseFont(const Napi::CallbackInfo &info )
+void registerParseFont(const Napi::CallbackInfo &info )
 {
   printf("createCanvas registerParseFont\n");
 
@@ -97,7 +97,9 @@ Napi::Object registerParseFont(const Napi::CallbackInfo &info )
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
-  //Cairo
+  //export  all binding class
+
+  //2d Cairo 
   cairocanvas::Canvas::Init(env, exports);
   cairocanvas::Context2d::Init(env, exports);
   cairocanvas::Pattern::Init(env);
@@ -106,7 +108,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   cairocanvas::ImageData::Init(env);
 
 #ifndef __APPLE__
-  //所有binding对象的初始化入口
+  //2d gcanvas
   NodeBinding::Canvas::Init(env, exports);
   NodeBinding::Image::Init(env, exports);
   NodeBinding::Context2D::Init(env);
@@ -116,7 +118,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   NodeBinding::TextMetrics::Init(env);
   NodeBinding::Pattern::Init(env);
 
-  //webl reousce binding
+  //webgl
   NodeBinding::WebGLShader::Init(env);
   NodeBinding::WebGLProgram::Init(env);
   NodeBinding::WebGLBuffer ::Init(env);
@@ -126,13 +128,11 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   NodeBinding::WebGLActiveInfo::Init(env);
   NodeBinding::WebGLUniformLocation::Init(env); 
 #endif
-  exports.Set(Napi::String::New(env, "registerParseFont"),
-              Napi::Function::New(env, registerParseFont));
 
-  exports.Set(Napi::String::New(env, "createCanvas"),
-              Napi::Function::New(env, createCanvas));
-  exports.Set(Napi::String::New(env, "createImage"),
-              Napi::Function::New(env, createImage));
+  //export functions
+  exports.Set(Napi::String::New(env, "registerParseFont"), Napi::Function::New(env, registerParseFont));
+  exports.Set(Napi::String::New(env, "createCanvas"), Napi::Function::New(env, createCanvas));
+  exports.Set(Napi::String::New(env, "createImage"), Napi::Function::New(env, createImage));
   return exports;
 }
 
