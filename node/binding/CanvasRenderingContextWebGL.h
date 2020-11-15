@@ -43,7 +43,7 @@ namespace NodeBinding
         virtual ~ContextWebGL();
         void inline setRenderContext(std::shared_ptr<GRenderContext> renderContext)
         {
-            this->mRenderContext = renderContext;
+            mRenderContext = renderContext;
         }
 
     private:
@@ -499,12 +499,12 @@ namespace NodeBinding
 
         Napi::Value getDrawingBufferWidth(const Napi::CallbackInfo &info)
         {
-            return Napi::Number::New(info.Env(), this->mRenderContext->getWdith());
+            return Napi::Number::New(info.Env(), mRenderContext->getWdith());
         }
 
         Napi::Value getDrawingBufferHeight(const Napi::CallbackInfo &info)
         {
-            return Napi::Number::New(info.Env(), this->mRenderContext->getHeight());
+            return Napi::Number::New(info.Env(), mRenderContext->getHeight());
         }
 
     protected:

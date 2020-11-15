@@ -13,7 +13,7 @@ Napi::FunctionReference Pattern::constructor;
 
 void Pattern::Init(Napi::Env env)
 {
-  Napi::Function func = DefineClass(env, "Cairo.Pattern", {});
+  Napi::Function func = DefineClass(env, "CanvasPattern", {});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();

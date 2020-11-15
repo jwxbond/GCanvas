@@ -13,19 +13,13 @@ namespace NodeBinding
 Napi::FunctionReference WebGLFrameBuffer::constructor;
 WebGLFrameBuffer::WebGLFrameBuffer(const Napi::CallbackInfo &info) : Napi::ObjectWrap<WebGLFrameBuffer>(info)
 {
-    this->mId = info[0].As<Napi::Number>().Uint32Value();
+    mId = info[0].As<Napi::Number>().Uint32Value();
 }
 
 void WebGLFrameBuffer::Init(Napi::Env env)
 {
     Napi::HandleScope scope(env);
-
-    Napi::Function func =
-        DefineClass(env,
-                    "WebGLFrameBuffer",
-                    {
-    
-                    });
+    Napi::Function func = DefineClass(env, "WebGLFrameBuffer",{});
     constructor = Napi::Persistent(func);
     constructor.SuppressDestruct();
 }

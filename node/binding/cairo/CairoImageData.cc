@@ -9,7 +9,7 @@ namespace cairocanvas
 Napi::FunctionReference ImageData::constructor;
 void ImageData::Init(Napi::Env env)
 {
-   Napi::HandleScope scope(env);
+    Napi::HandleScope scope(env);
     Napi::Function func = DefineClass(env, "ImageData", {
         InstanceAccessor("data", &ImageData::getData, nullptr),
         InstanceAccessor("width", &ImageData::getWidth, nullptr),
@@ -42,9 +42,7 @@ ImageData::ImageData(const Napi::CallbackInfo &info) : Napi::ObjectWrap<ImageDat
         _width = imgData->getWidth();
         _height = imgData->getHeight();
         // pixels(imgData->getPixels());
-
         //TODO  use ImageData initialize
-
     }
     else if( info.Length() == 2 && info[0].IsNumber() && info[1].IsNumber() )
     {

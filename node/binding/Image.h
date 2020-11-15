@@ -35,9 +35,6 @@ public:
     std::vector<unsigned char> &getPixels();
     void setTextureId(int textureId);
     int getTextureId();
-    std::string getUrl(){
-        return this->src;
-    }
     static Napi::Object NewInstance(Napi::Env env);
 private:
     static Napi::FunctionReference constructor;

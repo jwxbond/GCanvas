@@ -13,19 +13,13 @@ namespace NodeBinding
 Napi::FunctionReference WebGLTexture::constructor;
 WebGLTexture::WebGLTexture(const Napi::CallbackInfo &info) : Napi::ObjectWrap<WebGLTexture>(info)
 {
-    this->mId = info[0].As<Napi::Number>().Uint32Value();
+    mId = info[0].As<Napi::Number>().Uint32Value();
 }
 
 void WebGLTexture::Init(Napi::Env env)
 {
     Napi::HandleScope scope(env);
-
-    Napi::Function func =
-        DefineClass(env,
-                    "WebGLTexture",
-                    {
-    
-                    });
+    Napi::Function func = DefineClass(env, "WebGLTexture", {});
     constructor = Napi::Persistent(func);
     constructor.SuppressDestruct();
 }

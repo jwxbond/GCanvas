@@ -13,17 +13,13 @@ namespace NodeBinding
     Napi::FunctionReference WebGLUniformLocation::constructor;
     WebGLUniformLocation::WebGLUniformLocation(const Napi::CallbackInfo &info) : Napi::ObjectWrap<WebGLUniformLocation>(info)
     {
-        this->mIndex = info[0].As<Napi::Number>().Uint32Value();
+        mIndex = info[0].As<Napi::Number>().Uint32Value();
     }
 
     void WebGLUniformLocation::Init(Napi::Env env)
     {
         Napi::HandleScope scope(env);
-
-        Napi::Function func =
-            DefineClass(env,
-                        "WebGLUniformLocation",
-                        {});
+        Napi::Function func = DefineClass(env, "WebGLUniformLocation", {});
         constructor = Napi::Persistent(func);
         constructor.SuppressDestruct();
     }

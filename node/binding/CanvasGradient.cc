@@ -41,13 +41,10 @@ Gradient::Gradient(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Gradient>(
 void Gradient::Init(Napi::Env env)
 {
     Napi::HandleScope scope(env);
-
-    Napi::Function func =
-        DefineClass(env,
-                    "CanvasGradient",
-                    {
-                        InstanceMethod("addColorStop", &Gradient::addColorStop),
-                    });
+    
+    Napi::Function func = DefineClass(env, "CanvasGradient", {
+        InstanceMethod("addColorStop", &Gradient::addColorStop),
+    });
     constructor = Napi::Persistent(func);
     constructor.SuppressDestruct();
 }

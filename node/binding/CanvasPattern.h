@@ -13,8 +13,9 @@
 #include "Image.h"
 namespace NodeBinding
 {
-class Pattern : public Napi::ObjectWrap<Pattern> {
-   public:
+class Pattern : public Napi::ObjectWrap<Pattern> 
+{
+public:
     Pattern(const Napi::CallbackInfo& info);
     static void Init(Napi::Env env);
     static Napi::Object NewInstance(Napi::Env env, const Napi::Value repetition);

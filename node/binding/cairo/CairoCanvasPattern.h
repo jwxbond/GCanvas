@@ -24,7 +24,6 @@ class Pattern: public Napi::ObjectWrap<Pattern> {
   public:
     static void Init(Napi::Env env);
     static Napi::Object NewInstance(const Napi::CallbackInfo &info,  Napi::Value image, Napi::Value repetition);
-
     static repeat_type_t get_repeat_type_for_cairo_pattern(cairo_pattern_t *pattern);
 
     Pattern(const Napi::CallbackInfo &info);

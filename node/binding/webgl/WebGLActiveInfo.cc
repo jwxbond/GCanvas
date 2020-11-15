@@ -13,33 +13,27 @@ namespace NodeBinding
     Napi::FunctionReference WebGLActiveInfo::constructor;
     WebGLActiveInfo::WebGLActiveInfo(const Napi::CallbackInfo &info) : Napi::ObjectWrap<WebGLActiveInfo>(info)
     {
-        this->mSize = info[0].As<Napi::Number>().Int32Value();
-        this->mType = info[1].As<Napi::Number>().Int32Value();
-        this->mName = info[2].As<Napi::String>().Utf8Value();
+        mSize = info[0].As<Napi::Number>().Int32Value();
+        mType = info[1].As<Napi::Number>().Int32Value();
+        mName = info[2].As<Napi::String>().Utf8Value();
     }
 
     void WebGLActiveInfo::Init(Napi::Env env)
     {
         Napi::HandleScope scope(env);
 
-        Napi::Function func =
-            DefineClass(env,
-                        "WebGLActiveInfo",
-
-                        {InstanceAccessor("name", &WebGLActiveInfo::getName, nullptr),
-                         InstanceAccessor("size", &WebGLActiveInfo::getSize, nullptr),
-                         InstanceAccessor("type", &WebGLActiveInfo::getType, nullptr)});
+        Napi::Function func = DefineClass(env, "WebGLActiveInfo", {
+            InstanceAccessor("name", &WebGLActiveInfo::getName, nullptr),
+            InstanceAccessor("size", &WebGLActiveInfo::getSize, nullptr),
+            InstanceAccessor("type", &WebGLActiveInfo::getType, nullptr)
+        });
         constructor = Napi::Persistent(func);
         constructor.SuppressDestruct();
     }
 
     Napi::Object WebGLActiveInfo::NewInstance(Napi::Env env, GLuint size, GLuint type, GLchar *buffer)
     {
-
-        Napi::Object obj = constructor.New({Napi::Number::New(env, size),
-                                            Napi::Number::New(env, type),
-                                            Napi::String::New(env, buffer)});
+        Napi::Object obj = constructor.New({Napi::Number::New(env, size), Napi::Number::New(env, type), Napi::String::New(env, buffer)});
         return obj;
-        // return obj;
     }
 } // namespace NodeBinding

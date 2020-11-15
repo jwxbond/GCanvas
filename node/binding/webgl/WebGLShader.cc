@@ -13,19 +13,13 @@ namespace NodeBinding
 Napi::FunctionReference WebGLShader::constructor;
 WebGLShader::WebGLShader(const Napi::CallbackInfo &info) : Napi::ObjectWrap<WebGLShader>(info)
 {
-    this->mId = info[0].As<Napi::Number>().Uint32Value();
+    mId = info[0].As<Napi::Number>().Uint32Value();
 }
 
 void WebGLShader::Init(Napi::Env env)
 {
     Napi::HandleScope scope(env);
-
-    Napi::Function func =
-        DefineClass(env,
-                    "WebGLShader",
-                    {
-    
-                    });
+    Napi::Function func = DefineClass(env, "WebGLShader", {});
     constructor = Napi::Persistent(func);
     constructor.SuppressDestruct();
 }

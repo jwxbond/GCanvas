@@ -65,24 +65,24 @@ static void canvas_unpremultiply_data(png_structp png, png_row_infop row_info, p
 
 /* Converts RGB16_565 format data to RGBA32 */
 static void canvas_convert_565_to_888(png_structp png, png_row_infop row_info, png_bytep data) {
-  // Loop in reverse to unpack in-place.
-  for (ptrdiff_t col = row_info->width - 1; col >= 0; col--) {
-    uint8_t* src = &data[col * sizeof(uint16_t)];
-    uint8_t* dst = &data[col * 3];
-    uint16_t pixel;
+    // Loop in reverse to unpack in-place.
+    for (ptrdiff_t col = row_info->width - 1; col >= 0; col--) {
+        uint8_t* src = &data[col * sizeof(uint16_t)];
+        uint8_t* dst = &data[col * 3];
+        uint16_t pixel;
 
-    memcpy(&pixel, src, sizeof(uint16_t));
+        memcpy(&pixel, src, sizeof(uint16_t));
 
-    // Convert and rescale to the full 0-255 range
-    // See http://stackoverflow.com/a/29326693
-    const uint8_t red5 = (pixel & 0xF800) >> 11;
-    const uint8_t green6 = (pixel & 0x7E0) >> 5;
-    const uint8_t blue5 = (pixel & 0x001F);
+        // Convert and rescale to the full 0-255 range
+        // See http://stackoverflow.com/a/29326693
+        const uint8_t red5 = (pixel & 0xF800) >> 11;
+        const uint8_t green6 = (pixel & 0x7E0) >> 5;
+        const uint8_t blue5 = (pixel & 0x001F);
 
-    dst[0] = ((red5 * 255 + 15) / 31);
-    dst[1] = ((green6 * 255 + 31) / 63);
-    dst[2] = ((blue5 * 255 + 15) / 31);
-  }
+        dst[0] = ((red5 * 255 + 15) / 31);
+        dst[1] = ((green6 * 255 + 31) / 63);
+        dst[2] = ((blue5 * 255 + 15) / 31);
+    }
 }
 
 struct canvas_png_write_closure_t {

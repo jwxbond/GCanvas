@@ -36,9 +36,6 @@ class Image: public Napi::ObjectWrap<Image>
     int getWidth();
     int getHeight();
     std::vector<unsigned char> &getPixels();
-    std::string getUrl(){
-        return this->src;
-    }
 
   public:
     cairo_surface_t* getSurface();

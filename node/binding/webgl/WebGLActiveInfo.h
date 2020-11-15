@@ -15,15 +15,15 @@ namespace NodeBinding
     private:
         Napi::Value getName(const Napi::CallbackInfo &info)
         {
-            return Napi::String::New(info.Env(), this->mName);
+            return Napi::String::New(info.Env(), mName);
         }
         Napi::Value getSize(const Napi::CallbackInfo &info)
         {
-            return Napi::Number::New(info.Env(), this->mSize);
+            return Napi::Number::New(info.Env(), mSize);
         }
         Napi::Value getType(const Napi::CallbackInfo &info)
         {
-            return Napi::Number::New(info.Env(), this->mType);
+            return Napi::Number::New(info.Env(), mType);
         }
         static Napi::FunctionReference constructor;
         GLint mType;

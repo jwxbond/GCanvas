@@ -2,7 +2,6 @@
 
 #pragma once
 
-// #include "backend/Backend.h"
 #include "backend/CairoImageBackend.h"
 
 #include <cairo.h>

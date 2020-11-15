@@ -11,11 +11,8 @@ namespace NodeBinding
         WebGLUniformLocation(const Napi::CallbackInfo &info);
         static void Init(Napi::Env env);
         static Napi::Object NewInstance(Napi::Env env, GLuint index);
-        inline GLuint getIndex(){
-            return this->mIndex;
-        }
+        inline GLuint getIndex(){ return mIndex; }
     private:
-
         static Napi::FunctionReference constructor;
         GLuint mIndex;
     };

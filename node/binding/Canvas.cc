@@ -16,7 +16,7 @@ namespace NodeBinding
     {
         Napi::Env env = info.Env();
         Napi::HandleScope scope(env);
-
+        
         NodeBinding::checkArgs(info, 2);
         mWidth = info[0].As<Napi::Number>().Int32Value();
         mHeight = info[1].As<Napi::Number>().Int32Value();
@@ -48,19 +48,16 @@ namespace NodeBinding
     {
         Napi::HandleScope scope(env);
 
-        Napi::Function func =
-            DefineClass(env,
-                        "Canvas",
-                        {
-                            InstanceAccessor("width", &Canvas::getWidth, nullptr),
-                            InstanceAccessor("height", &Canvas::getHeight, nullptr),
-                            InstanceMethod("getContext", &Canvas::getContext),
-                            InstanceMethod("createPNG", &Canvas::createPNG),
-                            InstanceMethod("createJPEG", &Canvas::createJPEG),
-                            InstanceMethod("createPNGStreamSync", &Canvas::createPNGStreamSync),
-                            InstanceMethod("createJPGStreamSync", &Canvas::createJPGStreamSync),
-                            InstanceMethod("toBuffer", &Canvas::ToBuffer),
-                        });
+        Napi::Function func = DefineClass(env, "Canvas", {
+            InstanceAccessor("width", &Canvas::getWidth, nullptr),
+            InstanceAccessor("height", &Canvas::getHeight, nullptr),
+            InstanceMethod("getContext", &Canvas::getContext),
+            InstanceMethod("createPNG", &Canvas::createPNG),
+            InstanceMethod("createJPEG", &Canvas::createJPEG),
+            InstanceMethod("createPNGStreamSync", &Canvas::createPNGStreamSync),
+            InstanceMethod("createJPGStreamSync", &Canvas::createJPGStreamSync),
+            InstanceMethod("toBuffer", &Canvas::ToBuffer),
+        });
         constructor = Napi::Persistent(func);
         constructor.SuppressDestruct();
         return;
