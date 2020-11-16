@@ -135,25 +135,12 @@ void Image::setOnErrorCallback(const Napi::CallbackInfo &info, const Napi::Value
 
 Napi::Value Image::getWidth(const Napi::CallbackInfo &info)
 {
-    if (mImageMemCached)
-    {
-        return Napi::Number::New(info.Env(), mImageMemCached->width);
-    }
-    else
-    {
-        return Napi::Number::New(info.Env(), 0);
-    }
+    return Napi::Number::New(info.Env(), width);
+
 }
 Napi::Value Image::getHeight(const Napi::CallbackInfo &info)
 {
-    if (mImageMemCached)
-    {
-        return Napi::Number::New(info.Env(), mImageMemCached->height);
-    }
-    else
-    {
-        return Napi::Number::New(info.Env(), 0);
-    }
+    return Napi::Number::New(info.Env(), height);
 }
 
 int Image::getWidth()

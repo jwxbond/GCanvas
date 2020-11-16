@@ -7,6 +7,9 @@ const ctx = canvas.getContext('2d');
 const img = new Image()
 
 img.onload = () => {
+
+    console.log("image onlaod.." + ",w:" +img.width + ",h:"+img.height)
+
     var pattern1 = ctx.createPattern(img, 'repeat');
     ctx.fillStyle = pattern1;
     ctx.fillRect(0, 0, img.width*3, img.height*1);
