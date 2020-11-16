@@ -6,8 +6,8 @@
  * For the full copyright and license information, please view
  * the LICENSE file in the root directory of this source tree.
  */
-#ifndef IMAGE_WORKER_H
-#define IMAGE_WORKER_H
+#ifndef IMAGE_ASYNC_WORKER_H
+#define IMAGE_ASYNC_WORKER_H
 #include <napi.h>
 #include "ImageCahced.h"
 #include "NodeBindingUtil.h"

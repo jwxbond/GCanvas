@@ -1,5 +1,3 @@
-// Copyright (c) 2010 LearnBoost <tj@learnboost.com>
-
 #include "CairoCanvasGradient.h"
 
 #include "CairoCanvas.h"

@@ -1,4 +1,5 @@
-// Copyright (c) 2010 LearnBoost <tj@learnboost.com>
+#ifndef CAIRO_CONTEXT2D_H
+#define CAIRO_CONTEXT2D_H
 
 #pragma once
 
@@ -207,3 +208,5 @@ class Context2d: public Napi::ObjectWrap<Context2d> {
 };
 
 }
+
+#endif

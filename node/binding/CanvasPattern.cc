@@ -43,7 +43,7 @@ void Pattern::Init(Napi::Env env) {
     Napi::HandleScope scope(env);
 
     Napi::Function func =  DefineClass(env, "CanvasPattern", {});
-    constructor  Napi::Persistent(func);
+    constructor = Napi::Persistent(func);
     constructor.SuppressDestruct();
 }
 

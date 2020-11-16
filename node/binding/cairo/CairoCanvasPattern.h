@@ -1,4 +1,5 @@
-// Copyright (c) 2011 LearnBoost <tj@learnboost.com>
+#ifndef CAIRO_PATTERN_H
+#define CAIRO_PATTERN_H
 
 #pragma once
 
@@ -38,3 +39,5 @@ class Pattern: public Napi::ObjectWrap<Pattern> {
 };
 
 }
+
+#endif

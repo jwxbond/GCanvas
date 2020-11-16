@@ -1,4 +1,5 @@
-// Copyright (c) 2010 LearnBoost <tj@learnboost.com>
+#ifndef CAIRO_IMAGEDATA_H
+#define CAIRO_IMAGEDATA_H
 
 
 #include <napi.h>
@@ -38,3 +39,5 @@ class ImageData: public Napi::ObjectWrap<ImageData>
 };
 
 }
+
+#endif

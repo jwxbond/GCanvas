@@ -134,6 +134,8 @@ set(SOURCE_FILES
         ./binding/cairo/CairoImage.cc
         ./binding/cairo/CairoImageData.cc
         ./binding/cairo/color.cc
+        ./binding/cairo/closure.cc
+        ./binding/cairo/ImageAsyncWorker.cc
 
         ${CORE_DIR}src/GCanvas.cpp        
         ${CORE_DIR}src/GCanvasManager.cpp

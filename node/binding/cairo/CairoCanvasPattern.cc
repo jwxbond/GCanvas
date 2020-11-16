@@ -1,4 +1,3 @@
-// Copyright (c) 2010 LearnBoost <tj@learnboost.com>
 
 #include "CairoCanvasPattern.h"
 

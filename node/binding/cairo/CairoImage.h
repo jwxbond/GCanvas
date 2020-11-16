@@ -1,6 +1,5 @@
-// Copyright (c) 2010 LearnBoost <tj@learnboost.com>
-
-#pragma once
+#ifndef CAIRO_IMAGE_H
+#define CAIRO_IMAGE_H
 
 #include <cairo.h>
 #include <functional>
@@ -108,3 +107,5 @@ class Image: public Napi::ObjectWrap<Image>
 };
 
 }
+
+#endif

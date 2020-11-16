@@ -1,4 +1,5 @@
-// Copyright (c) 2010 LearnBoost <tj@learnboost.com>
+#ifndef CAIRO_CANVAS_H
+#define CAIRO_CANVAS_H
 
 #pragma once
 
@@ -86,3 +87,5 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
 };
 
 }
+
+#endif

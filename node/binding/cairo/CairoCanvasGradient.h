@@ -1,4 +1,5 @@
-// Copyright (c) 2010 LearnBoost <tj@learnboost.com>
+#ifndef CAIRO_GRADIENT_H
+#define CAIRO_GRADIENT_H
 
 #include <napi.h>
 #include <cairo.h>
@@ -29,3 +30,5 @@ class Gradient: public Napi::ObjectWrap<Gradient>
 };
 
 }
+
+#endif
