@@ -13,8 +13,6 @@ ctx.fillRect(0, 0, 200, 200);
 
 const fs = require('fs')
 const path = require('path')
-const out = fs.createWriteStream(path.join(__dirname, "..") + '/pathShadowFill.png');
+const out = fs.createWriteStream(path.join(__dirname, "..") + '/path-shadow-fill.png');
 var stream = canvas.createPNGStream();
-stream.on('data', function (chunk) {
-    out.write(chunk);
-});
+stream.pipe(out);

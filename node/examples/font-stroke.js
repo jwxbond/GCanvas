@@ -10,8 +10,6 @@ ctx.strokeText("Hello world", 50, 100);
 
 const fs = require('fs')
 const path = require('path')
-const out = fs.createWriteStream(path.join(__dirname,"..") + '/fontStroke.png');
+const out = fs.createWriteStream(path.join(__dirname,"..") + '/font-stroke.png');
 var stream = canvas.createPNGStream();
-stream.on('data', function (chunk) {
-    out.write(chunk);
-});
+stream.pipe(out);

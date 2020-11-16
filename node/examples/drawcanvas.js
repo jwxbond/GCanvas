@@ -24,19 +24,13 @@ ctx1.fillRect(45, 45, 60, 60) // Draw a rectangle with restored settings
 ctx1.restore() // Restore original state
 ctx1.fillRect(60, 60, 30, 30) // Draw a rectangle with restored settings
 var stream = canvas1.createPNGStream();
-stream.on('data', function (chunk) {
-    out1.write(chunk);
-});
+stream.pipe(out1);
 
 
-setTimeout(function(){
-    const canvas2 = createCanvas(150, 150);
-    const ctx2 = canvas2.getContext('2d');
-    console.log("ctx2 drawimage with canvas1")
-    ctx2.drawImage(canvas1, 0, 0);
-    var stream = canvas2.createPNGStream();
-    stream.on('data', function (chunk) {
-        out2.write(chunk);
-    });
-}, 1);
+const canvas2 = createCanvas(150, 150);
+const ctx2 = canvas2.getContext('2d');
+console.log("ctx2 drawimage with canvas1")
+ctx2.drawImage(canvas1, 0, 0);
+var stream2 = canvas2.createPNGStream();
+stream2.pipe(out2);
 

@@ -24,10 +24,7 @@ img.onload = () => {
   ctx.drawImage(img, 0, 0, width, height)
   
   var stream = canvas.createPNGStream();
-  stream.on('data', function (chunk) {
-      out.write(chunk);
-  });
-
+  stream.pipe(out);
 }
 
 img.src = path.join(__dirname, 'images', 'squid.png')

@@ -115,12 +115,8 @@ function WriteFont(options) {
     };
 
     this.save = function () {
-        // obj.canvas.createPNG("brush");
         var stream = obj.canvas.createPNGStream();
-            stream.on('data', function (chunk) {
-            out.write(chunk);
-        });
-
+        stream.pipe(out);
     }
 }
 

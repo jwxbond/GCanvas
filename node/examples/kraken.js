@@ -13,9 +13,8 @@ img.onload = () => {
   buildKernel()
   blurTest()
   var stream = canvas.createPNGStream();
-  stream.on('data', function (chunk) {
-      out.write(chunk);
-  });
+  stream.pipe(out);
+
 
 }
 img.onerror = err => {

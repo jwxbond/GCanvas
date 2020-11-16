@@ -19,8 +19,6 @@ ctx.strokeRect(100, 100, 200, 200);
 
 const fs = require('fs')
 const path = require('path')
-const out = fs.createWriteStream(path.join(__dirname, "..") + '/pathShadowStroke.png');
+const out = fs.createWriteStream(path.join(__dirname, "..") + '/path-shadow-stroke.png');
 var stream = canvas.createPNGStream();
-stream.on('data', function (chunk) {
-    out.write(chunk);
-});
+stream.pipe(out);

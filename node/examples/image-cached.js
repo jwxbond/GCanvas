@@ -35,10 +35,6 @@ setTimeout(() => {
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.drawImage(img, 0, 0, 100, 100);
-        // var stream = canvas.createPNGStream();
-        // stream.on('data', function (chunk) {
-        //     out1.write(chunk);
-        // });
         canvas.createPNGStream().pipe(out1);
 
         nextCanvasDrawImage();
@@ -61,10 +57,6 @@ setTimeout(() => {
             ctx2.fillStyle = "#000000";
             ctx2.fillRect(0, 0, ctx2.canvas.width, ctx2.canvas.height);
             ctx2.drawImage(img, 0, 0, 100, 100);
-            // var stream = canvas.createPNGStream();
-            // stream.on('data', function (chunk) {
-            //     out2.write(chunk);
-            // });
             canvas2.createPNGStream().pipe(out2);
 
         }

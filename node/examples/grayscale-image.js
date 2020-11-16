@@ -10,9 +10,7 @@ img.onload = () => {
   ctx.drawImage(img, 0, 0)
   console.log("Image onload success!!!")
   var stream = canvas.createPNGStream();
-    stream.on('data', function (chunk) {
-    out.write(chunk);
-  });
+  stream.pipe(out);
 
 }
 img.onerror = err => {

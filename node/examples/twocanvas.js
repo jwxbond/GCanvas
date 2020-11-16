@@ -46,12 +46,9 @@ ctx2.restore() // Restore original state
 ctx2.fillRect(60, 60, 30, 30) // Draw a rectangle with restored settings
 
 
-var stream = canvas1.createPNGStream();
-stream.on('data', function (chunk) {
-    out1.write(chunk);
-});
+var stream1 = canvas1.createPNGStream();
+stream1.pipe(out1);
 
-var stream = canvas2.createPNGStream();
-stream.on('data', function (chunk) {
-    out2.write(chunk);
-});
+
+var stream2 = canvas2.createPNGStream();
+stream2.pipe(out2);

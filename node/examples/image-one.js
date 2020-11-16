@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const out = fs.createWriteStream(path.join(__dirname, "..")+ '/imageone.png');
+const out = fs.createWriteStream(path.join(__dirname, "..")+ '/image-one.png');
 const { createCanvas, Image } = require('../export');
 const canvas = createCanvas(400, 400);
 const ctx = canvas.getContext('2d');

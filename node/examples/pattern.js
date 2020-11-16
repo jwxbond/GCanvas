@@ -15,9 +15,7 @@ img.onload = () => {
     ctx.fillRect(0, 0, img.width*3, img.height*1);
 
     var stream = canvas.createPNGStream();
-    stream.on('data', function (chunk) {
-        out.write(chunk);
-    });
+    stream.pipe(out);
 }
 img.onerror = err => {
     console.log(err)

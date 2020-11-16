@@ -20,7 +20,4 @@ const fs = require('fs')
 const path = require('path');
 const out = fs.createWriteStream(path.join(__dirname, "..")+ '/transfrom.png');
 var stream = canvas.createPNGStream();
-stream.on('data', function (chunk) {
-    out.write(chunk);
-});
-
+stream.pipe(out);

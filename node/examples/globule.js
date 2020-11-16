@@ -58,9 +58,7 @@ var handler =  setInterval(function () {
         const path = require('path')
         const out = fs.createWriteStream(path.join(__dirname, "..")+ '/globule.png');
         var stream = canvas.createPNGStream();
-        stream.on('data', function (chunk) {
-            out.write(chunk);
-        });
+        stream.pipe(out);
         return;
     }
     console.log("the arr length is " + circleArr.length);

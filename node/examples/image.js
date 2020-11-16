@@ -17,10 +17,7 @@ img.onload = () => {
     img2.onload = () => {
         ctx.drawImage(img2, 150, 150, 100, 100);
         var stream = canvas.createPNGStream();
-        stream.on('data', function (chunk) {
-            out.write(chunk);
-        });
-
+        stream.pipe(out);
     }
     img2.src = "https://img.alicdn.com/imgextra/i3/80/O1CN011CSgGWymNlCrNO3_!!80-2-luban.png"
 }

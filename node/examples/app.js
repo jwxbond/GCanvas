@@ -22,4 +22,5 @@ ctx.fillRect(60, 60, 30, 30) // Draw a rectangle with restored settings
 const fs = require('fs')
 const path = require('path');
 const out = fs.createWriteStream(path.join(__dirname, "..")+ '/app.png');
-canvas.createPNGStream().pipe(out)
+const stream = canvas.createPNGStream();
+stream.pipe(out);
