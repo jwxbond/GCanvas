@@ -85,7 +85,7 @@ Napi::Object createImage(const Napi::CallbackInfo &info)
 
 void registerParseFont(const Napi::CallbackInfo &info )
 {
-  printf("createCanvas registerParseFont\n");
+  std::cout << "createCanvas registerParseFont" << std::endl;
 
 
   Napi::Env env = info.Env();

@@ -225,6 +225,7 @@ void Context2d::registerParseFont(Napi::Function func)
   if ( func != nullptr)
   {
     _parseFont = Napi::Persistent(func);
+    _parseFont.SuppressDestruct();
     std::cout << "Context2d::registerParseFont success " << std::endl;
   }
 }

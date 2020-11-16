@@ -12,7 +12,7 @@ const { JPGStream } = require('./libs/jpgstream');
 const { parseFont } = require('./libs/parse-font');
 
 
-// registerParseFont(parseFont);
+registerParseFont(parseFont);
 
 module.exports = {
     createCanvas: createCanvasInner,
