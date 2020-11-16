@@ -3,6 +3,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
+#include <csetjmp>
 #include <iostream>
 
 
@@ -13,6 +14,12 @@ typedef struct {
     unsigned len;
     uint8_t *buf;
 } read_closure_t;
+
+
+struct canvas_jpeg_error_mgr: jpeg_error_mgr {
+    Image* image;
+    jmp_buf setjmp_buffer;
+};
 
 Napi::FunctionReference Image::constructor;
 
@@ -82,13 +89,21 @@ void Image::DownloadCallback(Napi::Env env, uint8_t *data, size_t size, std::str
         if( CAIRO_STATUS_SUCCESS == status )
         {
             loaded();
-        }
 
-        //callback
-        if( mCallbackSet->mOnLoadCallback )
-        {
-            mCallbackSet->mOnLoadCallback.Call({env.Undefined()});
+            //callback
+            if( mCallbackSet->mOnLoadCallback )
+            {
+                mCallbackSet->mOnLoadCallback.Call({env.Undefined()});
+            }
         }
+        else
+        {
+          if( mCallbackSet->mOnErrorCallback )
+            {
+                mCallbackSet->mOnErrorCallback.Call({Napi::String::New(env, "load image error")});
+            }
+        }
+        
     }
     else
     {
@@ -233,20 +248,10 @@ cairo_status_t Image::loadFromBuffer(uint8_t *buf, unsigned len)
     memcpy(data, buf, (len < 4 ? len : 4) * sizeof(uint8_t));
 
     if (isPNG(data)) return loadPNGFromBuffer(buf);
-    // if (isJPEG(data)) 
-    // {
-    //     if (DATA_IMAGE == data_mode) 
-    //         return loadJPEGFromBuffer(buf, len);
-        // if (DATA_MIME == data_mode) 
-            // return decodeJPEGBufferIntoMimeSurface(buf, len);
-        // if ((DATA_IMAGE | DATA_MIME) == data_mode) {
-        //     cairo_status_t status;
-        //     status = loadJPEGFromBuffer(buf, len);
-        //     if (status) 
-        //         return status;
-        //     return assignDataAsMime(buf, len, CAIRO_MIME_TYPE_JPEG);
-        // }
-    // }
+    if (isJPEG(data)) 
+    {
+        return loadJPEGFromBuffer(buf, len);
+    }
 
     // errorInfo = "Unsupported image type";   
     return CAIRO_STATUS_READ_ERROR;
@@ -302,6 +307,155 @@ cairo_status_t Image::readPNG(void *c, uint8_t *data, unsigned int len) {
     memcpy(data, closure->buf + closure->len, len);
     closure->len += len;
     return CAIRO_STATUS_SUCCESS;
+}
+
+
+
+static void canvas_jpeg_error_exit(j_common_ptr cinfo) {
+  canvas_jpeg_error_mgr *cjerr = static_cast<canvas_jpeg_error_mgr*>(cinfo->err);
+  cjerr->output_message(cinfo);
+  // Return control to the setjmp point
+  longjmp(cjerr->setjmp_buffer, 1);
+}
+
+// Capture libjpeg errors instead of writing stdout
+static void canvas_jpeg_output_message(j_common_ptr cinfo) {
+  canvas_jpeg_error_mgr *cjerr = static_cast<canvas_jpeg_error_mgr*>(cinfo->err);
+  char buff[JMSG_LENGTH_MAX];
+  cjerr->format_message(cinfo, buff);
+  // (Only the last message will be returned to JS land.)
+//   cjerr->image->errorInfo.set(buff);
+}
+
+
+/*
+ * Load jpeg from buffer.
+ */
+
+cairo_status_t
+Image::loadJPEGFromBuffer(uint8_t *buf, unsigned len) {
+  // TODO: remove this duplicate logic
+  // JPEG setup
+  struct jpeg_decompress_struct args;
+  struct canvas_jpeg_error_mgr err;
+
+  err.image = this;
+  args.err = jpeg_std_error(&err);
+  args.err->error_exit = canvas_jpeg_error_exit;
+  args.err->output_message = canvas_jpeg_output_message;
+
+  // Establish the setjmp return context for canvas_jpeg_error_exit to use
+  if (setjmp(err.setjmp_buffer)) {
+    // If we get here, the JPEG code has signaled an error.
+    // We need to clean up the JPEG object, close the input file, and return.
+    jpeg_destroy_decompress(&args);
+    return CAIRO_STATUS_READ_ERROR;
+  }
+
+  jpeg_create_decompress(&args);
+
+  jpeg_mem_src(&args, buf, len);
+
+  jpeg_read_header(&args, 1);
+  jpeg_start_decompress(&args);
+  width = naturalWidth = args.output_width;
+  height = naturalHeight = args.output_height;
+
+  return decodeJPEGIntoSurface(&args);
+}
+
+/*
+ * Takes an initialised jpeg_decompress_struct and decodes the
+ * data into _surface.
+ */
+
+cairo_status_t
+Image::decodeJPEGIntoSurface(jpeg_decompress_struct *args) {
+  cairo_status_t status = CAIRO_STATUS_SUCCESS;
+
+  uint8_t *data = new uint8_t[naturalWidth * naturalHeight * 4];
+  if (!data) {
+    jpeg_abort_decompress(args);
+    jpeg_destroy_decompress(args);
+    // this->errorInfo.set(NULL, "malloc", errno);
+    return CAIRO_STATUS_NO_MEMORY;
+  }
+
+  uint8_t *src = new uint8_t[naturalWidth * args->output_components];
+  if (!src) {
+    free(data);
+    jpeg_abort_decompress(args);
+    jpeg_destroy_decompress(args);
+    // this->errorInfo.set(NULL, "malloc", errno);
+    return CAIRO_STATUS_NO_MEMORY;
+  }
+
+  // These are the three main cases to handle. libjpeg converts YCCK to CMYK
+  // and YCbCr to RGB by default.
+  switch (args->out_color_space) {
+    case JCS_CMYK:
+      jpegToARGB(args, data, src, [](uint8_t const* src) {
+        uint16_t k = static_cast<uint16_t>(src[3]);
+        uint8_t r = k * src[0] / 255;
+        uint8_t g = k * src[1] / 255;
+        uint8_t b = k * src[2] / 255;
+        return 255 << 24 | r << 16 | g << 8 | b;
+      });
+      break;
+    case JCS_RGB:
+      jpegToARGB(args, data, src, [](uint8_t const* src) {
+        uint8_t r = src[0], g = src[1], b = src[2];
+        return 255 << 24 | r << 16 | g << 8 | b;
+      });
+      break;
+    case JCS_GRAYSCALE:
+      jpegToARGB(args, data, src, [](uint8_t const* src) {
+        uint8_t v = src[0];
+        return 255 << 24 | v << 16 | v << 8 | v;
+      });
+      break;
+    default:
+    //   this->errorInfo.set("Unsupported JPEG encoding");
+      status = CAIRO_STATUS_READ_ERROR;
+      break;
+  }
+
+  if (!status) {
+    _surface = cairo_image_surface_create_for_data(
+        data
+      , CAIRO_FORMAT_ARGB32
+      , naturalWidth
+      , naturalHeight
+      , cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, naturalWidth));
+  }
+
+  jpeg_finish_decompress(args);
+  jpeg_destroy_decompress(args);
+  status = cairo_surface_status(_surface);
+
+  delete[] src;
+
+  if (status) {
+    delete[] data;
+    return status;
+  }
+
+  _data = data;
+
+  return CAIRO_STATUS_SUCCESS;
+}
+
+
+void Image::jpegToARGB(jpeg_decompress_struct* args, uint8_t* data, uint8_t* src, JPEGDecodeL decode) {
+  int stride = naturalWidth * 4;
+  for (int y = 0; y < naturalHeight; ++y) {
+    jpeg_read_scanlines(args, &src, 1);
+    uint32_t *row = (uint32_t*)(data + stride * y);
+    for (int x = 0; x < naturalWidth; ++x) {
+      int bx = args->output_components * x;
+      row[x] = decode(src + bx);
+    }
+  }
 }
 
 void Image::loaded() 

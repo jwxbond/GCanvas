@@ -13,8 +13,12 @@
 #include "ImageCahced.h"
 #include "ImageAsyncWorker.h"
 
+#include "jpeglib.h"
+#include "jerror.h"
 namespace cairocanvas
 {
+
+using JPEGDecodeL = std::function<uint32_t (uint8_t* const src)>;
 
 struct ImageCallbackSet
 {
@@ -80,6 +84,12 @@ class Image: public Napi::ObjectWrap<Image>
     cairo_status_t loadFromBuffer(uint8_t *buf, unsigned len);
     cairo_status_t loadPNGFromBuffer(uint8_t *buf);
     cairo_status_t loadPNG();
+
+    cairo_status_t loadJPEGFromBuffer(uint8_t *buf, unsigned len);
+    void jpegToARGB(jpeg_decompress_struct* args, uint8_t* data, uint8_t* src, JPEGDecodeL decode);
+    cairo_status_t decodeJPEGIntoSurface(jpeg_decompress_struct *info);
+    
+
     void loaded();
 
 
