@@ -94,7 +94,7 @@ void Image::DownloadCallback(Napi::Env env, uint8_t *data, size_t size, std::str
     }
     else
     {
-        if( mCallbackSet->mOnLoadCallback )
+        if( mCallbackSet->mOnErrorCallback )
         {
             mCallbackSet->mOnErrorCallback.Call({Napi::String::New(env, errMsg)});
         }

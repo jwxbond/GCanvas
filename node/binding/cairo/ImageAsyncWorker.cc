@@ -50,11 +50,7 @@ namespace cairocanvas
             content.size = NodeBinding::downloadImage(url, &content);
             if ((int)content.size <= 0)
             {
-                if( content.memory != nullptr )
-                {
-                    free(content.memory);
-                    content.memory = nullptr;
-                }
+                content.memory = nullptr;
                 this->SetError(std::move("Image Download Fail"));
                 return;
             }
@@ -64,11 +60,7 @@ namespace cairocanvas
             content.size = NodeBinding::readImageFromLocalFile(url, &content);
             if ((int)content.size <= 0)
             {
-                if( content.memory != nullptr )
-                {
-                    free(content.memory);
-                    content.memory = nullptr;
-                }
+                content.memory = nullptr;
                 this->SetError(std::move("Image Read Fail"));
                 return;
             }

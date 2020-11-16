@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const out = fs.createWriteStream(path.join(__dirname, "..")+ '/passedThroughGrayscale.png');
+const out = fs.createWriteStream(path.join(__dirname, "..")+ '/image-exception.png');
 
 const { createCanvas, Image } = require('../export');
 const canvas = createCanvas(400, 400);

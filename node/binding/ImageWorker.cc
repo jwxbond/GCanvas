@@ -50,7 +50,6 @@ namespace NodeBinding
             content.size = downloadImage(url, &content);
             if ((int)content.size <= 0)
             {
-                free(content.memory);
                 content.memory = nullptr;
                 this->SetError(std::move("Image Download Fail"));
                 return;
@@ -61,7 +60,6 @@ namespace NodeBinding
             content.size = readImageFromLocalFile(url, &content);
             if ((int)content.size <= 0)
             {
-                free(content.memory);
                 content.memory = nullptr;
                 this->SetError(std::move("Image Read Fail"));
                 return;
