@@ -6,9 +6,6 @@
 #include <cairo.h>
 #include <napi.h>
 
-/*
- * Canvas types.
- */
 namespace cairocanvas
 {
 
