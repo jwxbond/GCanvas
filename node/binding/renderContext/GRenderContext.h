@@ -22,11 +22,6 @@
 
 namespace NodeBinding
 {
-    typedef enum {
-        CONTEXT2D_GCANVAS,
-        CONTEXT2D_CAIRO
-    } Context2DType;
-
     extern void encodePixelsToPNGFile(std::string filename, uint8_t *buffer, int width, int height);
     extern void decodeFile2Pixels(std::string filename, std::vector<unsigned char> &image);
     extern void encodePixelsToJPEGFile(std::string filename, uint8_t *buffer, int width, int height);
@@ -64,8 +59,7 @@ namespace NodeBinding
         std::shared_ptr<gcanvas::WebGL::GWebGLRenderContext> mCanvasWebGL;
         void initCanvas2d();
         void initCanvasWebGL();
-        Context2DType mContext2DType;
-        
+
         int mHeight;
         int mWidth;
         int mCanvasHeight;

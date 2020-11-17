@@ -33,7 +33,28 @@
 
 #endif
 
-static bool useCairo = true;  //TODO check use cairo 
+static bool useCairo = true;
+bool checkUseCairo()
+{
+  alreadyCheckGPUInfo = true;
+  FILE *fstream = NULL;      
+  if(NULL == (fstream = popen("lspci | grep VGA", "r")))      
+  {     
+    fprintf(stderr,"execute command failed: %s", strerror(errno));      
+    return true;      
+  }   
+
+  bool hasGPUInfo = false;
+  char gpuInfoBuffer[1024] = {0};
+  while( NULL != fgets(gpuInfoBuffer,  sizeof(gpuInfoBuffer), fstream) ) 
+  {  
+    printf("GPUInfo: %s\n",gpuInfoBuffer); 
+    hasGPUInfo = true;
+  }  
+  pclose(fstream); 
+
+  return !hasGPUInfo;
+}
 
 Napi::Object createCanvas(const Napi::CallbackInfo &info)
 {
@@ -44,15 +65,19 @@ Napi::Object createCanvas(const Napi::CallbackInfo &info)
     return Napi::Object::New(env);
   }
   
-  if( info.Length() >= 3 && info[2].IsBoolean() )
-  {
-    useCairo = info[2].As<Napi::Boolean>().ToBoolean();
-  }
-
+ 
 #ifdef __APPLE__
   std::cout << "createCanvas use cairo in MacOS" << std::endl;
   return cairocanvas::Canvas::NewInstance(env, info[0], info[1]);
 #else
+  useCairo =  checkUseCairo();
+
+   if( info.Length() >= 3 && info[2].IsBoolean() )
+  {
+    std::cout << "createCanvas use cairo set in param" << std::endl;
+    useCairo = info[2].As<Napi::Boolean>().ToBoolean();
+  }
+
   if( useCairo ){
     std::cout << "createCanvas use cairo in Unix"  << std::endl;
     return cairocanvas::Canvas::NewInstance(env, info[0], info[1]);
@@ -71,8 +96,6 @@ Napi::Object createImage(const Napi::CallbackInfo &info)
   std::cout << "createImage use cairo in MacOS" << std::endl;
   return cairocanvas::Image::NewInstance(env);
 #else
-  //TODO check useCairo in Unix
-
   if( useCairo ) {
     std::cout << "createImage use cairo in Unix"  << std::endl;
     return cairocanvas::Image::NewInstance(env);
@@ -85,9 +108,6 @@ Napi::Object createImage(const Napi::CallbackInfo &info)
 
 void registerParseFont(const Napi::CallbackInfo &info )
 {
-  std::cout << "createCanvas registerParseFont" << std::endl;
-
-
   Napi::Env env = info.Env();
   if ( info.Length() == 1 && info[0].IsFunction() )
   {
