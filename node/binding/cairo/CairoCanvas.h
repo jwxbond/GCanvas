@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "backend/CairoImageBackend.h"
+#include "CairoImageBackend.h"
 
 #include <cairo.h>
 #include <napi.h>

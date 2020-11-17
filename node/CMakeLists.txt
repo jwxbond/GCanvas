@@ -90,7 +90,7 @@ set(SOURCE_FILES
         ./binding/Export.cc
         ./binding/util/NodeBindingUtil.cc
         ./third_party/lodepng.cc
-        ./binding/cairo/backend/CairoImageBackend.cc
+        ./binding/cairo/CairoImageBackend.cc
         ./binding/cairo/CairoCanvas.cc
         ./binding/cairo/CairoCanvasGradient.cc
         ./binding/cairo/CairoCanvasPattern.cc
@@ -126,7 +126,7 @@ set(SOURCE_FILES
         ./binding/util/NodeBindingUtil.cc
         ./third_party/lodepng.cc
 
-        ./binding/cairo/backend/CairoImageBackend.cc
+        ./binding/cairo/CairoImageBackend.cc
         ./binding/cairo/CairoCanvas.cc
         ./binding/cairo/CairoCanvasGradient.cc
         ./binding/cairo/CairoCanvasPattern.cc

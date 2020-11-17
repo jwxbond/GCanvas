@@ -12,7 +12,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-#include "backend/CairoImageBackend.h"
+#include "CairoImageBackend.h"
 #include "NodeBindingUtil.h"
 #include "closure.h"
 #include "PNG.h"
