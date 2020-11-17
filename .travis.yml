@@ -56,7 +56,7 @@ before_deploy:
   # - git push origin --tags
 deploy:
   provider: releases
-  github_token: $GITHUB_TOKEN  
+  api_key: $GITHUB_TOKEN  
   file: 
     - build/Release/canvas.node
   skip_cleanup: true
