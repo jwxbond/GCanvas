@@ -63,7 +63,7 @@ deploy:
   overwrite: true
   draft: true
   on:
-    branch: feature_cairo_binding
+    branch: master
 
 
 
