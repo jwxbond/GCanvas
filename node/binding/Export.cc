@@ -36,7 +36,6 @@
 static bool useCairo = true;
 bool checkUseCairo()
 {
-  alreadyCheckGPUInfo = true;
   FILE *fstream = NULL;      
   if(NULL == (fstream = popen("lspci | grep VGA", "r")))      
   {     
