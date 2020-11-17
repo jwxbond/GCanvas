@@ -35,9 +35,7 @@ public:
     std::vector<unsigned char> &getPixels();
     void setTextureId(int textureId);
     int getTextureId();
-    std::string getUrl(){
-        return this->src;
-    }
+    std::string getUrl(){ return src; }
     static Napi::Object NewInstance(Napi::Env env);
 private:
     static Napi::FunctionReference constructor;
@@ -54,7 +52,7 @@ private:
     void setOnErrorCallback(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getWidth(const Napi::CallbackInfo &info);
     Napi::Value getHeight(const Napi::CallbackInfo &info);
-    int textureId=-1;
+    int mTextureId=-1;
 };
 } // namespace NodeBinding
 

@@ -17,15 +17,15 @@ public:
     ImageData(const Napi::CallbackInfo &info);
     static void Init(Napi::Env env);
     static Napi::Object NewInstance(Napi::Env env, const Napi::Value width, const Napi::Value height);
-    std::vector<u_int8_t> &getPixles();
+    std::vector<u_int8_t> &getPixels();
     int getWidth();
     int getHeight();
 
 private:
     static Napi::FunctionReference constructor;
     Napi::ObjectReference mImageDataRef;
-    int width = 0;
-    int height = 0;
+    int mWidth = 0;
+    int mHeight = 0;
     std::vector<u_int8_t> pixels;
     Napi::Value getData(const Napi::CallbackInfo &info);
     void setData(const Napi::CallbackInfo &info, const Napi::Value &value);

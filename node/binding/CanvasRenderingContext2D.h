@@ -28,13 +28,14 @@ public:
     static Napi::Object NewInstance(Napi::Env env);
     void inline setRenderContext(std::shared_ptr<GRenderContext> renderContext)
     {
-        this->mRenderContext = renderContext;
+        mRenderContext = renderContext;
     }
 
 private:
+    static Napi::FunctionReference constructor;
     NodeBinding::Canvas *mCanvas = nullptr;
     std::shared_ptr<GRenderContext> mRenderContext = nullptr;
-    static Napi::FunctionReference constructor;
+
     void fillRect(const Napi::CallbackInfo &info);
     void arc(const Napi::CallbackInfo &info);
     void arcTo(const Napi::CallbackInfo &info);

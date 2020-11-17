@@ -9,7 +9,16 @@ public:
     }
     unsigned int width = 0;
     unsigned int height = 0;
+
+    size_t size(){
+        return  this->pixels.size();
+    }
+
+    char *buffer;
+    size_t bufferSize;
+
 private:
     std::vector<unsigned char> pixels;
+
 };
 #endif

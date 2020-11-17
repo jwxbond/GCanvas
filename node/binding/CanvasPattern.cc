@@ -16,20 +16,20 @@ Pattern::Pattern(const Napi::CallbackInfo &info)
     : Napi::ObjectWrap<Pattern>(info) {
     if (info[0].IsNull())
     {
-        this->repetition = "repeat";
+        repetition = "repeat";
         return;
     }
-    this->repetition = info[0].As<Napi::String>().Utf8Value();
-    if (this->repetition != "" &&
-        this->repetition != "repeat" &&
-        this->repetition != "repeat-x" && this->repetition != "repeat-y" &&
-        this->repetition != "no-repeat")
+    repetition = info[0].As<Napi::String>().Utf8Value();
+    if (repetition != "" &&
+        repetition != "repeat" &&
+        repetition != "repeat-x" && repetition != "repeat-y" &&
+        repetition != "no-repeat")
     {
         throwError(info, "repetition value wrong");
     }
-    if (this->repetition == "")
+    if (repetition == "")
     {
-        this->repetition = "repeat";
+        repetition = "repeat";
     }
 }
 
@@ -42,15 +42,10 @@ Napi::Object Pattern::NewInstance(Napi::Env env, const Napi::Value arg) {
 void Pattern::Init(Napi::Env env) {
     Napi::HandleScope scope(env);
 
-    Napi::Function func =
-        DefineClass(env,
-                    "CanvasPattern",
-                    {
-
-                    });
+    Napi::Function func =  DefineClass(env, "CanvasPattern", {});
     constructor = Napi::Persistent(func);
     constructor.SuppressDestruct();
 }
 
-const std::string &Pattern::getRepetition() { return this->repetition; }
+const std::string &Pattern::getRepetition() { return repetition; }
 } // namespace NodeBinding

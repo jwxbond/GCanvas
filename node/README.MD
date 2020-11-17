@@ -10,15 +10,13 @@ npm install @gcanvas/node
 ```
 Note: Node.js version >=10.0。
 
-
 ## Compiling
-
 Since GCanvas relies on OpenGL for graphics rendering, you need to install the dependency libraries needed for OpenGL operation on the corresponding system. Meanwhile, the GCanvas is built with CMake, so the system needs to install the CMake version >=3.8.0. The dependency libraries required to install the GCanvas run on each operating system are listed below.
 
 OS | Command
 ----- | -----
 OS X | Not support 
-Ubuntu 18.04 |  `sudo apt-get update && apt-get install -y libglfw3-dev libgles2-mesa-dev libboost-all-dev libfreetype6-dev libcurl4-openssl-dev libjpeg-dev`  && install [freetype字体库](http://www.linuxfromscratch.org/blfs/view/svn/general/freetype2.html) && install cmake
+Ubuntu 18.04 |  `sudo apt-get update && apt-get install -y libglfw3-dev libgles2-mesa-dev libboost-all-dev libfreetype6-dev libcurl4-openssl-dev libjpeg-dev libcairo2-dev  libpangocairo-1.0-0 libpango-1.0 libglib2.0-dev`  && install [freetype字体库](http://www.linuxfromscratch.org/blfs/view/svn/general/freetype2.html) && install cmake
 Windows  | Not support 
 Docker   | [Dockerfile](./docker/Dockerfile)
 

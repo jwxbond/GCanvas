@@ -6,7 +6,7 @@ language: node_js
 node_js:
   - 10
 os:
-- linux
+  - linux
 dist: bionic
 addons:
   apt:
@@ -15,7 +15,7 @@ addons:
     - cppcheck
 before_install:
 - sudo apt-get update && sudo apt-get install libglfw3-dev libgles2-mesa-dev libcurl4-openssl-dev 
-- sudo apt-get install libboost-all-dev
+- sudo apt-get install libboost-all-dev libjpeg-dev libcairo2-dev libpango1.0-dev libglib2.0-dev
 - npm install -g cmake-js
 - |
   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
@@ -45,5 +45,25 @@ script:
 - cat result.txt | awk '{printf "%-30s| %-18s|  %-20s\n",$1,$2,$3}'| column -t 
 - cd ../../../../ && npm install cmake-js -g && cd ./node/ && local=true npm install && npm run dev
 - case=app.js npm run test 
+before_deploy:
+  # Set up git username & tag this commit
+  # - git config --local user.name "jwxbond"
+  # - git config --local user.email "jwxbond@gmail.com"
+  echo "before deplay $GITHUB_TOKEN"
+  # - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+  # - echo $TRAVIS_TAG
+  # - git tag $TRAVIS_TAG
+  # - git push origin --tags
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN  
+  file: 
+    - build/Release/canvas.node
+  skip_cleanup: true
+  overwrite: true
+  draft: true
+  on:
+    branch: master
+
 
 

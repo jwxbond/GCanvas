@@ -6,15 +6,20 @@
  * For the full copyright and license information, please view
  * the LICENSE file in the root directory of this source tree.
  */
-const { createCanvas ,Image, createImage} = require('bindings')('canvas');
-const { PNGStream } = require("./stream/pngstream");
-const { JPGStream } = require('./stream/jpgstream')
+const { createCanvas , createImage, registerParseFont} = require('bindings')('canvas');
+const { PNGStream } = require("./libs/pngstream");
+const { JPGStream } = require('./libs/jpgstream');
+const { parseFont } = require('./libs/parse-font');
+
+
+registerParseFont(parseFont);
+
 module.exports = {
     createCanvas: createCanvasInner,
     Image: createImage,
 }
-function createCanvasInner(width, height) {
-    let canvas = createCanvas(width, height);
+function createCanvasInner(width, height, usecairo) {
+    let canvas = createCanvas(width, height, usecairo);
     Object.defineProperty(canvas, 'createPNGStream', {
         value: function (options) {
             return new PNGStream(canvas, options);
@@ -27,8 +32,5 @@ function createCanvasInner(width, height) {
     })
     return canvas;    
 }
-
-
-
 
 
