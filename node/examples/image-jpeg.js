@@ -13,19 +13,15 @@ img.onload = () => {
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.drawImage(img, 0, 0);
 
-    console.log("----1")
-    const stream = canvas.createJPEGStream();
-    stream.pipe(out);
-
-    // img2.onerror = err => {
-    //     console.log(err)
-    // }
-    // img2.onload = () => {
-    //     ctx.drawImage(img2, 300, 300, 100, 100);
-    //     const stream = canvas.createJPEGStream();
-    //     stream.pipe(out);
-    // }
-    // img2.src = "https://gw.alicdn.com/tfs/TB1cHyouXT7gK0jSZFpXXaTkpXa-240-180.jpg"
+    img2.onerror = err => {
+        console.log(err)
+    }
+    img2.onload = () => {
+        ctx.drawImage(img2, 300, 300, 100, 100);
+        const stream = canvas.createJPEGStream();
+        stream.pipe(out);
+    }
+    img2.src = "https://gw.alicdn.com/tfs/TB1cHyouXT7gK0jSZFpXXaTkpXa-240-180.jpg"
 }
 img.onerror = err => {
     console.log(err)
