@@ -17,9 +17,8 @@
 #include "CairoImage.h"
 #include "CairoImageData.h"
 
-#ifdef __APPLE__
+#ifndef __APPLE__
 
-#else
 #include "Canvas.h"
 #include "Image.h"
 #include "TextMetrics.h"
@@ -36,51 +35,52 @@
 
 static bool useCairo = true;  //TODO check use cairo 
 
-
-
 Napi::Object createCanvas(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
   if (info.Length() < 2)
   {
-    Napi::TypeError::New(env, "canvas need width & height")
-        .ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "canvas need width & height").ThrowAsJavaScriptException();
     return Napi::Object::New(env);
   }
   
-  if( info.Length() >=3 && info[2].IsBoolean() )
+  if( info.Length() >= 3 && info[2].IsBoolean() )
   {
     useCairo = info[2].As<Napi::Boolean>().ToBoolean();
   }
 
-  #ifdef __APPLE__
-    printf("createCanvas use cairo in MacOS\n");
+#ifdef __APPLE__
+  std::cout << "createCanvas use cairo in MacOS" << std::endl;
+  return cairocanvas::Canvas::NewInstance(env, info[0], info[1]);
+#else
+  if( useCairo ){
+    std::cout << "createCanvas use cairo in Unix"  << std::endl;
     return cairocanvas::Canvas::NewInstance(env, info[0], info[1]);
-  #else
-    if( useCairo ){
-      printf("createCanvas  use cairo \n");
-      return cairocanvas::Canvas::NewInstance(env, info[0], info[1]);
-    } else {
-    printf("createCanvas  use gcanvas \n");
-      return NodeBinding::Canvas::NewInstance(env, info[0], info[1]);
-    }
-  #endif 
+  } else {
+    std::cout << "createCanvas use gcanvas in Unix"  << std::endl;
+    return NodeBinding::Canvas::NewInstance(env, info[0], info[1]);
+  }
+#endif 
 }
 
 Napi::Object createImage(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
 
-  #ifdef __APPLE__
+#ifdef __APPLE__
+  std::cout << "createImage use cairo in MacOS" << std::endl;
+  return cairocanvas::Image::NewInstance(env);
+#else
+  //TODO check useCairo in Unix
+
+  if( useCairo ) {
+    std::cout << "createImage use cairo in Unix"  << std::endl;
     return cairocanvas::Image::NewInstance(env);
-  #else
-    //TODO check useCairo in Unix
-    if( useCairo ) {
-      return cairocanvas::Image::NewInstance(env);
-    }else{
-      return NodeBinding::Image::NewInstance(env);
-    }
-  #endif
+  }else{
+    std::cout << "createImage use gcanvas in Unix"  << std::endl;
+    return NodeBinding::Image::NewInstance(env);
+  }
+#endif
 }
 
 void registerParseFont(const Napi::CallbackInfo &info )

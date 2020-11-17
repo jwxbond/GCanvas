@@ -42,10 +42,11 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
 
     Napi::ObjectReference mRef;
     Canvas(const Napi::CallbackInfo &info);
+    Canvas(CairoImageBackend* backend);
     virtual ~Canvas();
 
 
-    inline CairoImageBackend* backend() { return _backend; }
+    inline CairoImageBackend* backend() { return mBackend; }
     inline cairo_surface_t* surface(){ return backend()->getSurface(); }
     cairo_t* createCairoContext();
 
@@ -56,7 +57,6 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
     inline int getWidth() { return backend()->getWidth(); }
     inline int getHeight() { return backend()->getHeight(); }
 
-    Canvas(CairoImageBackend* backend);
     
  private:
     static Napi::FunctionReference constructor;
@@ -81,9 +81,7 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
     int mWidth = 0;
     int mHeight = 0;
     unsigned char *mDataRaw;
-
-  private:
-    CairoImageBackend* _backend;
+    CairoImageBackend* mBackend;
 };
 
 }

@@ -65,16 +65,16 @@ Canvas::Canvas(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Canvas>(info),
   mWidth = info[0].As<Napi::Number>().Int32Value();
   mHeight = info[1].As<Napi::Number>().Int32Value();
 
-  _backend = new CairoImageBackend(mWidth, mHeight);
+  mBackend = new CairoImageBackend(mWidth, mHeight);
 
-  if( !_backend->isSurfaceValid() )
+  if( !mBackend->isSurfaceValid() )
   {
-    delete _backend;
+    delete mBackend;
     return;
   }
 
 // std::cout << "create CairoImageBackend Success width:" << mWidth << ", height:" << mHeight << std::endl;
-  _backend->setCanvas(this);
+  mBackend->setCanvas(this);
 }
 
 Canvas::~Canvas()

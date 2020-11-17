@@ -26,12 +26,13 @@ private:
     Napi::ObjectReference mImageDataRef;
     int mWidth = 0;
     int mHeight = 0;
-    std::vector<u_int8_t> pixels;
+    bool hasImageDataWrite = false;
+
+    std::vector<uint8_t> pixels;
     Napi::Value getData(const Napi::CallbackInfo &info);
     void setData(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getWidth(const Napi::CallbackInfo &info);
     Napi::Value getHeight(const Napi::CallbackInfo &info);
-    bool hasImageDataWrite = false;
 };
 } // namespace NodeBinding
 

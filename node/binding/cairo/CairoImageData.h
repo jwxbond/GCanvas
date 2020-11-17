@@ -30,7 +30,7 @@ class ImageData: public Napi::ObjectWrap<ImageData>
   private:
     static Napi::FunctionReference constructor;
     Napi::ObjectReference mImageDataRef;
-    std::vector<u_int8_t> pixels;
+    std::vector<uint8_t> pixels;
     Napi::Value getData(const Napi::CallbackInfo &info);
     // void setData(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getWidth(const Napi::CallbackInfo &info);
