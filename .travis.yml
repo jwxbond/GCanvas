@@ -1,19 +1,20 @@
 language: cpp
-sudo: required
 compiler:
   - clang
   - g++
 node_js:
   - 10
   - 12
-os:
-  - linux
-  - osx
 
-  dist: bionic
-  osx_image: xcode10.1
+os: linux
+dist: bionic
 
 jobs:
+  include:
+    - os: linux
+      dist: bionic
+    - os: osx
+      osx_image: xcode10.1
   allow_failures:
     - os: osx
 
@@ -75,6 +76,3 @@ deploy:
   draft: true
   on:
     branch: feature_cairo_binding
-
-
-
