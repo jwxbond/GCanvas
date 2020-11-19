@@ -14,16 +14,11 @@
 
 namespace cairocanvas
 {
-
 typedef std::function<void (Napi::Env env, uint8_t *data, size_t size, std::string msg )> ImageDownloadCallback;
-
-// //使用asyncWorker来进行node中的异步调用
-// void cachedImage(const std::string url, std::shared_ptr<ImageCached> imageCached);
 
 class ImageAsyncWorker : public Napi::AsyncWorker
 {
 public:
-
     ImageAsyncWorker(Napi::Env env, std::string url, std::shared_ptr<ImageCached>& image, ImageDownloadCallback callback); 
     ~ImageAsyncWorker();
 
@@ -35,7 +30,6 @@ public:
 
 private:
     std::shared_ptr<ImageCached> &mImageMemCached;
-    NodeBinding::ImageContent content;
     ImageDownloadCallback cb;
 };
 }

@@ -14,8 +14,8 @@ void ImageData::Init(Napi::Env env)
         InstanceAccessor("height", &ImageData::getHeight, nullptr),
     });
 
-  constructor = Napi::Persistent(func);
-  constructor.SuppressDestruct();
+    constructor = Napi::Persistent(func);
+    constructor.SuppressDestruct();
 }
 
 Napi::Object ImageData::NewInstance(const Napi::CallbackInfo &info)
@@ -52,20 +52,20 @@ ImageData::ImageData(const Napi::CallbackInfo &info) : Napi::ObjectWrap<ImageDat
 
 Napi::Value ImageData::getData(const Napi::CallbackInfo &info)
 {
-    hasImageDataWrite = true;
+    mHasImageDataWrite = true;
     if (mImageDataRef.IsEmpty())
     {
-        Napi::Array ret = Napi::Array::New(info.Env(), pixels.size());
+        Napi::Array pixelsArray = Napi::Array::New(info.Env(), pixels.size());
 
         if (!pixels.empty())
         {
             for (int i = 0; i < pixels.size(); i++)
             {
-                ret.Set(i, Napi::Number::New(info.Env(), pixels[i]));
+                pixelsArray.Set(i, Napi::Number::New(info.Env(), pixels[i]));
             }
         }
-        mImageDataRef = Napi::ObjectReference::New(ret);
-        return ret;
+        mImageDataRef = Napi::ObjectReference::New(pixelsArray);
+        return pixelsArray;
     }
     else
     {
@@ -80,19 +80,19 @@ Napi::Value ImageData::getWidth(const Napi::CallbackInfo &info)
 
 Napi::Value ImageData::getHeight(const Napi::CallbackInfo &info)
 {
-    return Napi::Number::New(info.Env(),_height);
+    return Napi::Number::New(info.Env(), _height);
 }
 
-std::vector<u_int8_t> &ImageData::getPixels()
+std::vector<uint8_t> &ImageData::getPixels()
 {
-    if (!mImageDataRef.IsEmpty() && hasImageDataWrite)
+    if (!mImageDataRef.IsEmpty() && mHasImageDataWrite)
     {
         Napi::Array ret = mImageDataRef.Value().As<Napi::Array>();
         for (int i = 0; i < pixels.size(); i++)
         {
             pixels[i] = ret.Get(i).As<Napi::Number>().Int32Value();
         }
-        hasImageDataWrite = false;
+        mHasImageDataWrite = false;
     }
     return pixels;
 }

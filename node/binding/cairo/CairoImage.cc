@@ -25,13 +25,13 @@ Napi::FunctionReference Image::constructor;
 
 void Image::Init(Napi::Env env, Napi::Object exports)
 {
-    Napi::Function func = DefineClass(env, "Image", {
-        InstanceAccessor("src", &Image::getSrc, &Image::setSrc),
-        InstanceAccessor("width", &Image::getWidth, nullptr),
-        InstanceAccessor("height", &Image::getHeight, nullptr),
-        InstanceAccessor("onload", &Image::getOnLoadCallback, &Image::setOnLoadCallback),
-        InstanceAccessor("onerror", &Image::getOnErrorCallback, &Image::setOnErrorCallback),
-    });
+  Napi::Function func = DefineClass(env, "Image", {
+      InstanceAccessor("src", &Image::getSrc, &Image::setSrc),
+      InstanceAccessor("width", &Image::getWidth, nullptr),
+      InstanceAccessor("height", &Image::getHeight, nullptr),
+      InstanceAccessor("onload", &Image::getOnLoadCallback, &Image::setOnLoadCallback),
+      InstanceAccessor("onerror", &Image::getOnErrorCallback, &Image::setOnErrorCallback),
+  });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -422,7 +422,7 @@ Image::decodeJPEGIntoSurface(jpeg_decompress_struct *args) {
 
   if (!status) {
     _surface = cairo_image_surface_create_for_data(
-        data
+      data
       , CAIRO_FORMAT_ARGB32
       , naturalWidth
       , naturalHeight

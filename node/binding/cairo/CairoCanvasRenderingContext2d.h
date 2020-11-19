@@ -128,11 +128,6 @@ class Context2d: public Napi::ObjectWrap<Context2d> {
     static Napi::FunctionReference _DOMMatrix;
     static Napi::FunctionReference _parseFont;
 
-    int mWidth = 0;
-    int mHeight = 0;
-    unsigned char *mDataRaw;
-
-  private:
     void fillRect(const Napi::CallbackInfo &info);
     void arc(const Napi::CallbackInfo &info);
     void arcTo(const Napi::CallbackInfo &info);

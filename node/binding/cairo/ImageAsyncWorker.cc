@@ -43,6 +43,9 @@ namespace cairocanvas
             this->mImageMemCached=cacheRet;
             return;
         }
+
+        NodeBinding::ImageContent content;
+
         bool isHttpProtocol=url.rfind("http", 0) == 0;
         bool isHttpsProtocol=url.rfind("https", 0) == 0;
         if ( isHttpProtocol|| isHttpsProtocol)

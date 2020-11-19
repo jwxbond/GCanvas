@@ -73,7 +73,6 @@ Canvas::Canvas(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Canvas>(info),
     return;
   }
 
-// std::cout << "create CairoImageBackend Success width:" << mWidth << ", height:" << mHeight << std::endl;
   mBackend->setCanvas(this);
 }
 

@@ -10,8 +10,6 @@
 #include <pango/pangocairo.h>
 #include <vector>
 
-
-
 #ifndef CANVAS_MAX_STATES
 #define CANVAS_MAX_STATES 64
 #endif
@@ -19,19 +17,12 @@
 
 namespace cairocanvas
 {
-/*
- * FontFace describes a font file in terms of one PangoFontDescription that
- * will resolve to it and one that the user describes it as (like @font-face)
- */
 class FontFace {
   public:
     PangoFontDescription *sys_desc = nullptr;
     PangoFontDescription *user_desc = nullptr;
 };
 
-/*
- * Canvas.
- */
 class Canvas: public Napi::ObjectWrap<Canvas> {
   public:
     static void Init(Napi::Env env, Napi::Object exports);
@@ -42,9 +33,7 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
 
     Napi::ObjectReference mRef;
     Canvas(const Napi::CallbackInfo &info);
-    Canvas(CairoImageBackend* backend);
     virtual ~Canvas();
-
 
     inline CairoImageBackend* backend() { return mBackend; }
     inline cairo_surface_t* surface(){ return backend()->getSurface(); }

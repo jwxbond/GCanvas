@@ -17,7 +17,7 @@ public:
     ImageData(const Napi::CallbackInfo &info);
     static void Init(Napi::Env env);
     static Napi::Object NewInstance(Napi::Env env, const Napi::Value width, const Napi::Value height);
-    std::vector<u_int8_t> &getPixels();
+    std::vector<uint8_t> &getPixels();
     int getWidth();
     int getHeight();
 
