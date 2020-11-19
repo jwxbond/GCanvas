@@ -6,13 +6,10 @@ node_js:
   - 10
   - 12
 
-os: linux
-dist: bionic
-
 jobs:
   include:
-    - os: linux
-      dist: bionic
+    # - os: linux
+    #   dist: bionic
     - os: osx
       osx_image: xcode10.1
   allow_failures:
@@ -55,6 +52,8 @@ script:
     cat result.txt | awk '{printf "%-30s| %-18s|  %-20s\n",$1,$2,$3}'| column -t
     cd ../../../../ && npm install cmake-js -g && cd ./node/ && local=true npm install && npm run dev
     case=app.js npm run test
+  elif
+    cd ./node/ && local=true npm install && npm run dev
   fi
 before_deploy:
   # Set up git username & tag this commit
