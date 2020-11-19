@@ -1,13 +1,18 @@
 language: cpp
 sudo: required
 compiler:
-- g++
+  - clang
+  - g++
 node_js:
   - 10
 os:
   - linux
   - osx
 dist: bionic
+osx_image: xcode10.1
+
+git:
+  depth: 5
 
 jobs:
   allow_failures:
@@ -22,9 +27,15 @@ addons:
       - xvfb
       - cppcheck
 before_install:
-- if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then sudo apt-get update && sudo apt-get install libglfw3-dev libgles2-mesa-dev libcurl4-openssl-dev libboost-all-dev libjpeg-dev libcairo2-dev libpango1.0-dev libglib2.0-dev ; fi
-- if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then brew update && sudo brew install cairo pango libpng jpeg-turbo curl-openssl ; fi
-- npm install -g cmake-js
+- |
+  if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then 
+    sudo apt-get update && sudo apt-get install libglfw3-dev libgles2-mesa-dev libcurl4-openssl-dev libboost-all-dev libjpeg-dev libcairo2-dev libpango1.0-dev libglib2.0-dev
+  fi
+  if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then 
+    brew update && sudo brew install cairo pango libpng jpeg-turbo curl-openssl
+  fi
+  npm install -g cmake-js
+
 # - |
 #   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
 #     mkdir -p external/cmake
@@ -46,14 +57,16 @@ before_script:
 - npm i && node app.js
 - cd ../../../
 script:
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cppcheck --error-exitcode=0 --enable=warning,style,unusedFunction --std=c++11 --verbose --language=c++ core/src; fi
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cd ./core/test/linux && mkdir build && cd build && cmake ../ && make; fi
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then mkdir -p ~/.gAssets/fonts/ && cp ../util/font/wqy-microhei.ttc ~/.gAssets/fonts/wqy-microhei.ttc  &&  cp ../util/font/.fontcache  ~/.gAssets/fonts/.fontcache ; fi
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then "./gcanvasTest" ; fi
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cat result.txt | awk '{printf "%-30s| %-18s|  %-20s\n",$1,$2,$3}'| column -t  ; fi
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cd ../../../../ && npm install cmake-js -g && cd ./node/ && local=true npm install && npm run dev ; fi
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then case=app.js npm run test  ; fi
-fi
+- |
+  if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+    cppcheck --error-exitcode=0 --enable=warning,style,unusedFunction --std=c++11 --verbose --language=c++ core/src
+    cd ./core/test/linux && mkdir build && cd build && cmake ../ && make
+    mkdir -p ~/.gAssets/fonts/ && cp ../util/font/wqy-microhei.ttc ~/.gAssets/fonts/wqy-microhei.ttc  &&  cp ../util/font/.fontcache  ~/.gAssets/fonts/.fontcache 
+    "./gcanvasTest"
+    cat result.txt | awk '{printf "%-30s| %-18s|  %-20s\n",$1,$2,$3}'| column -t
+    cd ../../../../ && npm install cmake-js -g && cd ./node/ && local=true npm install && npm run dev
+    then case=app.js npm run test
+  fi
 before_deploy:
   # Set up git username & tag this commit
   # - git config --local user.name "jwxbond"
