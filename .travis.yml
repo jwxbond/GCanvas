@@ -52,7 +52,8 @@ script:
     cat result.txt | awk '{printf "%-30s| %-18s|  %-20s\n",$1,$2,$3}'| column -t
     cd ../../../../ && npm install cmake-js -g && cd ./node/ && local=true npm install && npm run dev
     case=app.js npm run test
-  elif
+  if
+  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     cd ./node/ && local=true npm install && npm run dev
   fi
 before_deploy:
