@@ -29,7 +29,7 @@ before_install:
     sudo apt-get update && sudo apt-get install libglfw3-dev libgles2-mesa-dev libcurl4-openssl-dev libboost-all-dev libjpeg-dev libcairo2-dev libpango1.0-dev libglib2.0-dev
   fi
   if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-    brew update && sudo brew install cairo pango libpng jpeg-turbo curl-openssl
+    sudo brew install cairo pango libpng jpeg-turbo curl-openssl
   fi
   npm install -g cmake-js
 install:
