@@ -12,9 +12,6 @@ os:
   - osx
   osx_image: xcode10.1
 
-git:
-  depth: 5
-
 jobs:
   allow_failures:
     - os: osx
