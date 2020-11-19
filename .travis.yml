@@ -68,7 +68,7 @@ script:
     "./gcanvasTest"
     cat result.txt | awk '{printf "%-30s| %-18s|  %-20s\n",$1,$2,$3}'| column -t
     cd ../../../../ && npm install cmake-js -g && cd ./node/ && local=true npm install && npm run dev
-    then case=app.js npm run test
+    case=app.js npm run test
   fi
 before_deploy:
   # Set up git username & tag this commit
