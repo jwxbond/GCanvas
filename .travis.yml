@@ -7,9 +7,9 @@ node_js:
   - 10
 os:
   - linux
+  dist: bionic
   - osx
-dist: bionic
-osx_image: xcode10.1
+  osx_image: xcode10.1
 
 git:
   depth: 5
@@ -53,12 +53,15 @@ install:
 - export DISPLAY=':99.0'
 - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 before_script:
-- cd ./core/test/w3c &&mkdir build
-- npm i && node app.js
-- cd ../../../
-script:
 - |
   if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+    cd ./core/test/w3c &&mkdir build
+    npm i && node app.js
+    cd ../../../
+  fi
+script:
+- |
+  if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
     cppcheck --error-exitcode=0 --enable=warning,style,unusedFunction --std=c++11 --verbose --language=c++ core/src
     cd ./core/test/linux && mkdir build && cd build && cmake ../ && make
     mkdir -p ~/.gAssets/fonts/ && cp ../util/font/wqy-microhei.ttc ~/.gAssets/fonts/wqy-microhei.ttc  &&  cp ../util/font/.fontcache  ~/.gAssets/fonts/.fontcache 
@@ -78,11 +81,11 @@ before_deploy:
   # - git push origin --tags
 deploy:
   provider: releases
-  api_key: $GITHUB_TOKEN
+  token: $GITHUB_TOKEN
   file_glob: true
   file: 
     - build/Release/canvas.node
-  skip_cleanup: true
+  cleanup: true
   overwrite: true
   draft: true
   on:
