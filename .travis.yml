@@ -6,6 +6,9 @@ node_js:
   - 10
   - 12
 
+- os: osx
+  osx_image: xcode10.1
+
 jobs:
   include:
     # - os: linux
