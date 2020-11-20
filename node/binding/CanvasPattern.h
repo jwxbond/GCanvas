@@ -23,7 +23,7 @@ public:
     const std::string& getRepetition();
 private:
     static Napi::FunctionReference constructor;
-   std::string repetition;
+    std::string repetition;
 };
 } // namespace NodeBinding
 #endif

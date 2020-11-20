@@ -93,7 +93,8 @@ void Gradient::addColorStop(const Napi::CallbackInfo &info)
     return;
 }
 
-const   std::vector<ColorStop> &  Gradient::getColorStops(){
-        return mColorStopSet;
+const std::vector<ColorStop>& Gradient::getColorStops()
+{
+    return mColorStopSet;
 }
 } // namespace NodeBinding
