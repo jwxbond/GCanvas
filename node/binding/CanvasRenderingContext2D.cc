@@ -388,11 +388,7 @@ DEFINE_GETTER_METHOD(createPattern)
 Napi::Env env = info.Env();
 NodeBinding::checkArgs(info, 2);
 
-Image *img = Napi::ObjectWrap<Image>::Unwrap(info[0].As<Napi::Object>());
-Napi::Object ret = Pattern::NewInstance(env, info[1]);
-Pattern *pattern = Napi::ObjectWrap<Pattern>::Unwrap(ret);
-pattern->content = std::make_shared<Image>(*img);
-return ret;
+return Pattern::NewInstance(info, info[0], info[1]);
 }
 
 DEFINE_GETTER_METHOD(createRadialGradient)

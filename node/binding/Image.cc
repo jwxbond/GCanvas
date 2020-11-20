@@ -32,7 +32,7 @@ namespace NodeBinding
         Napi::HandleScope scope(env);
 
         Napi::Function func = DefineClass(env, "Image",{
-            InstanceAccessor("src", &Image::getSrc, &Image::setSrc),
+            InstanceAccessor("src", &Image::getSource, &Image::setSource),
             InstanceAccessor("width", &Image::getWidth, nullptr),
             InstanceAccessor("height", &Image::getHeight, nullptr),
             InstanceAccessor("onload", &Image::getOnLoadCallback, &Image::setOnLoadCallback),
@@ -50,12 +50,12 @@ namespace NodeBinding
         return obj;
     }
 
-    Napi::Value Image::getSrc(const Napi::CallbackInfo &info)
+    Napi::Value Image::getSource(const Napi::CallbackInfo &info)
     {
         return Napi::String::New(info.Env(), mSrc);
     }
 
-    void Image::setSrc(const Napi::CallbackInfo &info, const Napi::Value &value)
+    void Image::setSource(const Napi::CallbackInfo &info, const Napi::Value &value)
      {
         NodeBinding::checkArgs(info, 1);
         mSrc = value.As<Napi::String>().Utf8Value();
@@ -75,7 +75,7 @@ namespace NodeBinding
             }
             if( mOnErrorCallback )
             {
-                mDownloadImageWorker->setOnErrorCallback(mOnErrorCallback.Value());
+                mDownloadImageWorker->setOnLoadCallback(mOnLoadCallback.Value());
             }
             mDownloadImageWorker->Queue();
         }

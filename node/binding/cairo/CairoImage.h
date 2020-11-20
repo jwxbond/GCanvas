@@ -47,8 +47,8 @@ class Image: public Napi::ObjectWrap<Image>
 
     void DownloadCallback(Napi::Env env, uint8_t *data, size_t size, std::string errMsg );
 
-    Napi::Value getSrc(const Napi::CallbackInfo &info);
-    void setSrc(const Napi::CallbackInfo &info, const Napi::Value &value);
+    Napi::Value getSource(const Napi::CallbackInfo &info);
+    void setSource(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getOnLoadCallback(const Napi::CallbackInfo &info);
     void setOnLoadCallback(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getOnErrorCallback(const Napi::CallbackInfo &info);

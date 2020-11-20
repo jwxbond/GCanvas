@@ -42,8 +42,8 @@ private:
     ImageWorker *mDownloadImageWorker = nullptr;
     std::vector<unsigned char> emptyPixels;
     std::shared_ptr<ImageCached> mImageMemCached;
-    Napi::Value getSrc(const Napi::CallbackInfo &info);
-    void setSrc(const Napi::CallbackInfo &info, const Napi::Value &value);
+    Napi::Value getSource(const Napi::CallbackInfo &info);
+    void setSource(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getOnLoadCallback(const Napi::CallbackInfo &info);
     void setOnLoadCallback(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getOnErrorCallback(const Napi::CallbackInfo &info);

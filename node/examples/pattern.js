@@ -8,7 +8,7 @@ const img = new Image()
 
 img.onload = () => {
 
-    console.log("image onlaod.." + ",w:" +img.width + ",h:"+img.height)
+    console.log("image onload.." + ",w:" +img.width + ",h:"+img.height)
 
     var pattern1 = ctx.createPattern(img, 'repeat');
     ctx.fillStyle = pattern1;
@@ -18,6 +18,8 @@ img.onload = () => {
     stream.pipe(out);
 }
 img.onerror = err => {
+    console.log("image onerror.." )
+
     console.log(err)
 }
 img.src = "https://img.alicdn.com/imgextra/i3/80/O1CN011CSgGWymNlCrNO3_!!80-2-luban.png"
