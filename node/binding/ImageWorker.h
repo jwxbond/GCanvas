@@ -41,7 +41,6 @@ private:
     std::shared_ptr<ImageCached> &mImageMemCached;
     unsigned int &_width;
     unsigned int &_height;
-    ImageContent content;
 };
 }
 #endif

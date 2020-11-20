@@ -20,7 +20,7 @@ static size_t
 writeMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
     size_t realsize = size * nmemb;
-    struct ImageContent *mem = (struct ImageContent *)userp;
+    struct ImageMemoryChunk *mem = (struct ImageMemoryChunk *)userp;
 
     char *ptr = (char *)realloc(mem->memory, mem->size + realsize + 1);
     if (ptr == NULL)
@@ -83,7 +83,7 @@ void throwError(const Napi::Env &env, const std::string &exception)
     Napi::TypeError::New(env, exception)
         .ThrowAsJavaScriptException();
 }
-unsigned int downloadImage(const std::string &src, ImageContent *content)
+unsigned int downloadImage(const std::string &src, ImageMemoryChunk *content)
 {
     CURL *curl_handle;
     CURLcode res;
@@ -182,7 +182,7 @@ PIC_FORMAT parseFormat(char *content, int len)
     return getImageTypeByMagic((unsigned char *)content, (unsigned int)len);
 }
 
-int readImageFromLocalFile(const std::string &path, ImageContent *content)
+int readImageFromLocalFile(const std::string &path, ImageMemoryChunk *content)
 {
     FILE *pFile;
     size_t result; // 返回值是读取的内容数量

@@ -15,11 +15,12 @@
 #define TIMEOUT_VALUE 5L
 namespace NodeBinding
 {
-struct ImageContent
+struct ImageMemoryChunk
 {
     char *memory;
-    unsigned int size;
+    size_t size;
 };
+
 enum PIC_FORMAT
 {
     PNG_FORAMT,
@@ -33,10 +34,10 @@ void decodeImageJPEG(std::vector<unsigned char> &pixels, unsigned int &width, un
 void decodeImagePNG(std::vector<unsigned char> &pixels, unsigned int &width, unsigned int &height, const unsigned char *content, int len);
 void encodeJPEGInBuffer(unsigned char **out,unsigned long &size ,unsigned char *data,int width,int height);
 void encodePNGInBuffer(std::vector<unsigned char> &in,unsigned char *data,int width,int height);
-int readImageFromLocalFile(const std::string &path, ImageContent *content);
+int readImageFromLocalFile(const std::string &path, ImageMemoryChunk *content);
 bool checkArgs(const Napi::CallbackInfo &info, int exectedN);
 // bool checkArgs(const Napi::CallbackInfo &info, double*args, int exectedN, int offset=0);
-unsigned int downloadImage(const std::string &src, ImageContent *content);
+unsigned int downloadImage(const std::string &src, ImageMemoryChunk *content);
 void throwError(const Napi::CallbackInfo &info, const std::string &exception);
 void throwError(const Napi::Env &env, const std::string &exception);
 void pixelsConvertARGBToRGBA(unsigned char * data, int width, int height);

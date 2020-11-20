@@ -8,9 +8,10 @@ namespace cairocanvas
   CairoImageBackend::CairoImageBackend(int w, int h) : width(w), height(h)
   {
   }
+  
   CairoImageBackend::~CairoImageBackend()
   {
-    this->destroySurface();
+    destroySurface();
   }
 
   cairo_format_t CairoImageBackend::getFormat()
@@ -20,7 +21,7 @@ namespace cairocanvas
 
   void CairoImageBackend::setFormat(cairo_format_t _format)
   {
-    this->format = _format;
+    format = _format;
   }
 
   // This returns an approximate value only, suitable for Nan::AdjustExternalMemory.
@@ -48,7 +49,7 @@ namespace cairocanvas
 
   void CairoImageBackend::setCanvas(Canvas *_canvas)
   {
-    this->canvas = _canvas;
+    canvas = _canvas;
   }
 
   cairo_surface_t *CairoImageBackend::createSurface()
@@ -57,15 +58,15 @@ namespace cairocanvas
     surface = cairo_image_surface_create(format, width, height);
     assert(surface);
 
-    //TODO
+    // TODO
     // Napi::MemoryManagement::AdjustExternalMemory(env, approxBytesPerPixel() * width * height);
     return surface;
   }
 
   cairo_surface_t *CairoImageBackend::recreateSurface()
   {
-    this->destroySurface();
-    return this->createSurface();
+    destroySurface();
+    return createSurface();
   }
 
   cairo_surface_t *CairoImageBackend::getSurface()
@@ -77,10 +78,10 @@ namespace cairocanvas
 
   void CairoImageBackend::destroySurface()
   {
-    if (this->surface)
+    if (surface)
     {
-      cairo_surface_destroy(this->surface);
-      this->surface = NULL;
+      cairo_surface_destroy(surface);
+      surface = NULL;
       //TODO
       // Napi::MemoryManagement::AdjustExternalMemory(env, -approxBytesPerPixel() * width * height);
     }
@@ -88,22 +89,22 @@ namespace cairocanvas
 
   int CairoImageBackend::getWidth()
   {
-    return this->width;
+    return width;
   }
   void CairoImageBackend::setWidth(int width_)
   {
-    this->width = width_;
-    this->recreateSurface();
+    width = width_;
+    recreateSurface();
   }
 
   int CairoImageBackend::getHeight()
   {
-    return this->height;
+    return height;
   }
   void CairoImageBackend::setHeight(int height_)
   {
-    this->height = height_;
-    this->recreateSurface();
+    height = height_;
+    recreateSurface();
   }
   
   bool CairoImageBackend::isSurfaceValid()

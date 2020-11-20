@@ -44,45 +44,45 @@ namespace cairocanvas
             return;
         }
 
-        NodeBinding::ImageContent content;
+        NodeBinding::ImageMemoryChunk chunk;
 
         bool isHttpProtocol=url.rfind("http", 0) == 0;
         bool isHttpsProtocol=url.rfind("https", 0) == 0;
         if ( isHttpProtocol|| isHttpsProtocol)
         {
-            content.size = NodeBinding::downloadImage(url, &content);
-            if ((int)content.size <= 0)
+            chunk.size = NodeBinding::downloadImage(url, &chunk);
+            if ((int)chunk.size <= 0)
             {
-                content.memory = nullptr;
+                chunk.memory = nullptr;
                 this->SetError(std::move("Image Download Fail"));
                 return;
             }
         }
         else
         { //本地文件
-            content.size = NodeBinding::readImageFromLocalFile(url, &content);
-            if ((int)content.size <= 0)
+            chunk.size = NodeBinding::readImageFromLocalFile(url, &chunk);
+            if ((int)chunk.size <= 0)
             {
-                content.memory = nullptr;
+                chunk.memory = nullptr;
                 this->SetError(std::move("Image Read Fail"));
                 return;
             }
         }
 
-        //callback with content.memory & context.size
-        if( content.memory && content.size > 0 )
+        //callback with chunk.memory & chunk.size
+        if( chunk.memory && chunk.size > 0 )
         {
             //callback & decode
-            mImageMemCached->bufferSize = content.size;
+            mImageMemCached->bufferSize = chunk.size;
             mImageMemCached->buffer = new char[mImageMemCached->bufferSize];
-            memcpy(mImageMemCached->buffer,content.memory, content.size);
+            memcpy(mImageMemCached->buffer,chunk.memory, chunk.size);
         }
         else
         {
             this->SetError(std::move("Image Content Size is 0 "));
         }
 
-        free(content.memory);
-        content.memory = nullptr;
+        free(chunk.memory);
+        chunk.memory = nullptr;
     }
 } // namespace NodeBinding

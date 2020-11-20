@@ -231,7 +231,7 @@ void Image::clearData()
 {
     if (_surface) {
         cairo_surface_destroy(_surface);
-        // Nan::AdjustExternalMemory(-_data_len);
+        Napi::MemoryManagement::AdjustExternalMemory(Env(), -_data_len);
         _data_len = 0;
         _surface = NULL;
     }
@@ -460,11 +460,12 @@ void Image::jpegToARGB(jpeg_decompress_struct* args, uint8_t* data, uint8_t* src
 
 void Image::loaded() 
 {
-    state = COMPLETE;
-    width = naturalWidth = cairo_image_surface_get_width(_surface);
-    height = naturalHeight = cairo_image_surface_get_height(_surface);
-    _data_len = naturalHeight * cairo_image_surface_get_stride(_surface);
-    // Nan::AdjustExternalMemory(_data_len);
+  state = COMPLETE;
+  width = naturalWidth = cairo_image_surface_get_width(_surface);
+  height = naturalHeight = cairo_image_surface_get_height(_surface);
+  _data_len = naturalHeight * cairo_image_surface_get_stride(_surface);
+
+  Napi::MemoryManagement::AdjustExternalMemory(Env(), _data_len);
 }
 
 

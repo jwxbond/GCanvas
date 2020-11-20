@@ -43,43 +43,46 @@ namespace NodeBinding
             this->mImageMemCached=cacheRet;
             return;
         }
+
+        ImageMemoryChunk chunk;
+
         bool isHttpProtocol=url.rfind("http", 0) == 0;
         bool isHttpsProtocol=url.rfind("https", 0) == 0;
         if ( isHttpProtocol|| isHttpsProtocol)
         {
-            content.size = downloadImage(url, &content);
-            if ((int)content.size <= 0)
+            chunk.size = downloadImage(url, &chunk);
+            if ((int)chunk.size <= 0)
             {
-                content.memory = nullptr;
+                chunk.memory = nullptr;
                 this->SetError(std::move("Image Download Fail"));
                 return;
             }
         }
         else
         { //本地文件
-            content.size = readImageFromLocalFile(url, &content);
-            if ((int)content.size <= 0)
+            chunk.size = readImageFromLocalFile(url, &chunk);
+            if ((int)chunk.size <= 0)
             {
-                content.memory = nullptr;
+                chunk.memory = nullptr;
                 this->SetError(std::move("Image Read Fail"));
                 return;
             }
         }
 
-        PIC_FORMAT format = parseFormat(content.memory, content.size);
+        PIC_FORMAT format = parseFormat(chunk.memory, chunk.size);
         if (format == PNG_FORAMT)
         {
-            decodeImagePNG(this->mImageMemCached->getPixels(), _width, _height, (const unsigned char *)content.memory, content.size);
+            decodeImagePNG(this->mImageMemCached->getPixels(), _width, _height, (const unsigned char *)chunk.memory, chunk.size);
         }
         else if (format == JPEG_FORMAT)
         {
-            decodeImageJPEG(this->mImageMemCached->getPixels(), _width, _height, (const unsigned char *)content.memory, (unsigned int)content.size);
+            decodeImageJPEG(this->mImageMemCached->getPixels(), _width, _height, (const unsigned char *)chunk.memory, (unsigned int)chunk.size);
         }
         else if (format == UNKOWN_PIC_FORMAT)
         {
             this->SetError(std::move("Image Format Unspported"));
         }
-        free(content.memory);
-        content.memory = nullptr;
+        free(chunk.memory);
+        chunk.memory = nullptr;
     }
 } // namespace NodeBinding
