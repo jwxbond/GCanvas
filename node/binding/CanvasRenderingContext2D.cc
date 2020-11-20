@@ -464,12 +464,12 @@ if (name.IsString())
         textureHeight = srcHeight;
         if (image->getTextureId() == -1)
         {
-            int id = mRenderContext->getTextureIdByUrl(image->getUrl());
+            int id = mRenderContext->getTextureIdByUrl(image->getSrc());
             if (id == -1)
             {
                 id = mRenderContext->getCtx2d()->BindImage(&image->getPixels()[0], GL_RGBA, srcWidth, srcHeight);
                 //缓存下url和纹理id的关系,避免重复bind
-                mRenderContext->recordImageTexture(image->getUrl(), id);
+                mRenderContext->recordImageTexture(image->getSrc(), id);
             }
             else
             {
