@@ -206,7 +206,7 @@ void Context2d::setupContext2d(Canvas *canvas)
     return;
   }
   
-  std::cout << "Context2d::setupContext2d()  createCairoContext success  " << std::endl;
+  std::cout << "Context2d::setupContext2d() success  " << std::endl;
   
   _layout = pango_cairo_create_layout(_context);
   state = states[stateno = 0] = (canvas_state_t *)malloc(sizeof(canvas_state_t));
@@ -226,7 +226,7 @@ void Context2d::registerParseFont(Napi::Function func)
   {
     _parseFont = Napi::Persistent(func);
     _parseFont.SuppressDestruct();
-    std::cout << "Context2d::registerParseFont success " << std::endl;
+    // std::cout << "Context2d::registerParseFont success " << std::endl;
   }
 }
 

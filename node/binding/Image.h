@@ -19,10 +19,7 @@
 
 namespace NodeBinding
 {
-struct ImageCallbackSet{
-    Napi::FunctionReference mOnErrorCallback;
-    Napi::FunctionReference mOnLoadCallback;
-};
+
 extern std::shared_ptr<ImageCached> findCacheByUrl(const std::string &url);
 class Image : public Napi::ObjectWrap<Image>
 {
@@ -39,8 +36,9 @@ public:
     static Napi::Object NewInstance(Napi::Env env);
 private:
     static Napi::FunctionReference constructor;
-    std::string src;
-    ImageCallbackSet *mCallbackSet;
+    std::string mSrc;
+    Napi::FunctionReference mOnErrorCallback;
+    Napi::FunctionReference mOnLoadCallback;
     ImageWorker *mDownloadImageWorker = nullptr;
     std::vector<unsigned char> emptyPixels;
     std::shared_ptr<ImageCached> mImageMemCached;

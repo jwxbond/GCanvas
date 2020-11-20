@@ -17,14 +17,8 @@
 #include "jerror.h"
 namespace cairocanvas
 {
-
 using JPEGDecodeL = std::function<uint32_t (uint8_t* const src)>;
 
-struct ImageCallbackSet
-{
-  Napi::FunctionReference mOnErrorCallback;
-  Napi::FunctionReference mOnLoadCallback;
-};
 extern std::shared_ptr<ImageCached> findCacheByUrl(const std::string &url);
 
 class Image: public Napi::ObjectWrap<Image> 
@@ -40,29 +34,18 @@ class Image: public Napi::ObjectWrap<Image>
     int getHeight();
     std::vector<unsigned char> &getPixels();
 
-  public:
     cairo_surface_t* getSurface();
-
-  private:
-    //cairo data
-    cairo_surface_t *_surface;
-    uint8_t *_data = nullptr;
-    int _data_len;
-    int width, height;
-    int naturalWidth, naturalHeight;
-
-    void clearData();
-
   private:
     static Napi::FunctionReference constructor;
-    std::string src;
-    ImageCallbackSet *mCallbackSet;
+    std::string mSrc;
+    Napi::FunctionReference mOnErrorCallback;
+    Napi::FunctionReference mOnLoadCallback;
+
     ImageAsyncWorker *mDownloadImageWorker = nullptr;
     std::vector<unsigned char> emptyPixels;
     std::shared_ptr<ImageCached> mImageMemCached;
 
     void DownloadCallback(Napi::Env env, uint8_t *data, size_t size, std::string errMsg );
-
 
     Napi::Value getSrc(const Napi::CallbackInfo &info);
     void setSrc(const Napi::CallbackInfo &info, const Napi::Value &value);
@@ -89,8 +72,16 @@ class Image: public Napi::ObjectWrap<Image>
     void jpegToARGB(jpeg_decompress_struct* args, uint8_t* data, uint8_t* src, JPEGDecodeL decode);
     cairo_status_t decodeJPEGIntoSurface(jpeg_decompress_struct *info);
     
-
     void loaded();
+
+    //cairo data
+    cairo_surface_t *_surface;
+    uint8_t *_data = nullptr;
+    int _data_len;
+    int width, height;
+    int naturalWidth, naturalHeight;
+
+    void clearData();
 
 
     enum {
@@ -106,10 +97,8 @@ class Image: public Napi::ObjectWrap<Image>
 
     typedef enum {
         UNKNOWN
-      , GIF
       , JPEG
       , PNG
-      , SVG
     } type;
 
     static type extension(const char *filename);

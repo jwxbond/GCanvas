@@ -16,18 +16,13 @@ namespace NodeBinding
     Napi::FunctionReference Image::constructor;
     Image::Image(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Image>(info)
     {
-        mCallbackSet = new ImageCallbackSet();
     }
 
     Image::~Image()
     {
-        if(mDownloadImageWorker) {
+        if(mDownloadImageWorker) 
+        {
             mDownloadImageWorker->Cancel();
-        }
-
-        if( mCallbackSet ) {
-            delete mCallbackSet;
-            mCallbackSet = nullptr;
         }
         mImageMemCached = nullptr;
     }
@@ -57,13 +52,13 @@ namespace NodeBinding
 
     Napi::Value Image::getSrc(const Napi::CallbackInfo &info)
     {
-        return Napi::String::New(info.Env(), src);
+        return Napi::String::New(info.Env(), mSrc);
     }
 
     void Image::setSrc(const Napi::CallbackInfo &info, const Napi::Value &value)
      {
         NodeBinding::checkArgs(info, 1);
-        src = value.As<Napi::String>().Utf8Value();
+        mSrc = value.As<Napi::String>().Utf8Value();
         mImageMemCached=std::make_shared<ImageCached>();
         if (!mDownloadImageWorker)
         {
@@ -73,31 +68,37 @@ namespace NodeBinding
         }
         if (mDownloadImageWorker)
         {
-            mDownloadImageWorker->url = src;
-            mDownloadImageWorker->setOnErrorCallback(mCallbackSet->mOnErrorCallback.Value());
-            mDownloadImageWorker->setOnLoadCallback(mCallbackSet->mOnLoadCallback.Value());
+            mDownloadImageWorker->url = mSrc;
+            if( mOnLoadCallback ) 
+            {
+                mDownloadImageWorker->setOnErrorCallback(mOnErrorCallback.Value());
+            }
+            if( mOnErrorCallback )
+            {
+                mDownloadImageWorker->setOnErrorCallback(mOnErrorCallback.Value());
+            }
             mDownloadImageWorker->Queue();
         }
     }
     Napi::Value Image::getOnLoadCallback(const Napi::CallbackInfo &info)
     {
-        return mCallbackSet->mOnLoadCallback.Value();
+        return mOnLoadCallback ? mOnLoadCallback.Value() : info.Env().Undefined();
     }
     Napi::Value Image::getOnErrorCallback(const Napi::CallbackInfo &info)
     {
-        return mCallbackSet->mOnErrorCallback.Value();
+        return mOnErrorCallback ? mOnErrorCallback.Value() : info.Env().Undefined();
     }
 
     void Image::setOnLoadCallback(const Napi::CallbackInfo &info, const Napi::Value &value)
     {
         NodeBinding::checkArgs(info, 1);
-        mCallbackSet->mOnLoadCallback = Napi::Persistent(value.As<Napi::Function>());
+        mOnLoadCallback = Napi::Persistent(value.As<Napi::Function>());
     }
 
     void Image::setOnErrorCallback(const Napi::CallbackInfo &info, const Napi::Value &value)
     {
         NodeBinding::checkArgs(info, 1);
-        mCallbackSet->mOnErrorCallback = Napi::Persistent(value.As<Napi::Function>());
+        mOnErrorCallback = Napi::Persistent(value.As<Napi::Function>());
     }
 
     Napi::Value Image::getWidth(const Napi::CallbackInfo &info)
