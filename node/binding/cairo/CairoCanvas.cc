@@ -51,7 +51,7 @@ Napi::Object Canvas::NewInstance(Napi::Env env, Napi::Value arg, Napi::Value arg
   Napi::Object obj = constructor.New({arg, arg2});
   obj.Set("name", Napi::String::New(env, "canvas"));
   Canvas *canvas = Napi::ObjectWrap<Canvas>::Unwrap(obj);
-  canvas->mRef = Napi::ObjectReference::New(obj);
+  canvas->mCanvasRef = Napi::ObjectReference::New(obj);
   return obj;
 }
 

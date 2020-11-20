@@ -156,7 +156,7 @@ void Context2d::Init(Napi::Env env, Napi::Object exports)
     InstanceMethod("ellipse", &Context2d::ellipse),
     InstanceMethod("isPointInPath", &Context2d::IsPointInPath),
 
-    InstanceAccessor("fillStyle", &Context2d::getFillStyle, &Context2d::setFillStyle),
+    InstanceAccessor("fillStyle", &Context2d::getfillStyle, &Context2d::setfillStyle),
     InstanceAccessor("font", &Context2d::getfont, &Context2d::setfont),
     InstanceAccessor("globalAlpha", &Context2d::getglobalAlpha, &Context2d::setglobalAlpha),
     InstanceAccessor("globalCompositeOperation", &Context2d::getglobalCompositeOperation, &Context2d::setglobalCompositeOperation),
@@ -216,7 +216,7 @@ void Context2d::setupContext2d(Canvas *canvas)
 
 Napi::Value Context2d::getCanvas(const Napi::CallbackInfo &info)
 {
-  return _canvas->mRef.Value();
+  return _canvas->mCanvasRef.Value();
 }
 
 
@@ -1569,8 +1569,7 @@ void Context2d::setquality(const Napi::CallbackInfo &info, const Napi::Value &va
 //   //TODO
 // }
 
-// TODO FillStyle
-Napi::Value Context2d::getFillStyle(const Napi::CallbackInfo &info)
+Napi::Value Context2d::getfillStyle(const Napi::CallbackInfo &info)
 {
   TRACE_CONTEXT_API
 
@@ -1585,7 +1584,7 @@ Napi::Value Context2d::getFillStyle(const Napi::CallbackInfo &info)
   }
   return style;
 }
-void Context2d::setFillStyle(const Napi::CallbackInfo &info, const Napi::Value &value)
+void Context2d::setfillStyle(const Napi::CallbackInfo &info, const Napi::Value &value)
 {
   TRACE_CONTEXT_API
   if (value.IsString())

@@ -121,7 +121,7 @@ namespace NodeBinding
             InstanceMethod("transform", &Context2D::transform),
             InstanceMethod("translate", &Context2D::translate),
 
-            InstanceAccessor("fillStyle", &Context2D::getFillStyle, &Context2D::setFillStyle),
+            InstanceAccessor("fillStyle", &Context2D::getfillStyle, &Context2D::setfillStyle),
             InstanceAccessor("font", &Context2D::getfont, &Context2D::setfont),
             InstanceAccessor("globalAlpha", &Context2D::getglobalAlpha, &Context2D::setglobalAlpha),
             InstanceAccessor("globalCompositeOperation", &Context2D::getglobalCompositeOperation, &Context2D::setglobalCompositeOperation),
@@ -167,7 +167,7 @@ namespace NodeBinding
     return;
 } // namespace NodeBinding
 
-DEFINE_SETTER_METHOD(setFillStyle)
+DEFINE_SETTER_METHOD(setfillStyle)
 if (mRenderContext)
 {
     if (value.IsString())
@@ -238,7 +238,7 @@ RECORD_TIME_END
 return;
 }
 
-DEFINE_RETURN_VALUE_METHOD(getFillStyle)
+DEFINE_RETURN_VALUE_METHOD(getfillStyle)
 Napi::Env env = info.Env();
 if (mRenderContext)
 {

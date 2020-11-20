@@ -31,7 +31,6 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
     static PangoStyle GetStyleFromCSSString(const char *style);
     static PangoFontDescription *ResolveFontDescription(const PangoFontDescription *desc);
 
-    Napi::ObjectReference mRef;
     Canvas(const Napi::CallbackInfo &info);
     virtual ~Canvas();
 
@@ -46,6 +45,7 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
     inline int getWidth() { return backend()->getWidth(); }
     inline int getHeight() { return backend()->getHeight(); }
 
+    Napi::ObjectReference mCanvasRef;
     
  private:
     static Napi::FunctionReference constructor;
@@ -59,13 +59,15 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
     Napi::Buffer<unsigned char> getJPGBuffer(const Napi::CallbackInfo &info, unsigned long &size);
     Napi::Buffer<unsigned char> getRawDataBuffer(const Napi::CallbackInfo &info, unsigned long &size);
 
-    Napi::ObjectReference mContext2dRef;
-    Napi::ObjectReference mContextWebGLRef;
-
+  
     void setWidth(const Napi::CallbackInfo &info, const Napi::Value &value);
     void setHeight(const Napi::CallbackInfo &info, const Napi::Value &value);
     void createPNG(const Napi::CallbackInfo &info);
     void createJPEG(const Napi::CallbackInfo &info);
+
+
+    Napi::ObjectReference mContext2dRef;
+    Napi::ObjectReference mContextWebGLRef;
 
     int mWidth = 0;
     int mHeight = 0;

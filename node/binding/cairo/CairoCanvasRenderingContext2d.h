@@ -167,8 +167,8 @@ class Context2d: public Napi::ObjectWrap<Context2d> {
 
     Napi::Value IsPointInPath(const Napi::CallbackInfo &info);
 
-    Napi::Value getFillStyle(const Napi::CallbackInfo &info);
-    void setFillStyle(const Napi::CallbackInfo &info, const Napi::Value &value);
+    Napi::Value getfillStyle(const Napi::CallbackInfo &info);
+    void setfillStyle(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getfont(const Napi::CallbackInfo &info);
     void setfont(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getglobalAlpha(const Napi::CallbackInfo &info);
