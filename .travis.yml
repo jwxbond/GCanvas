@@ -6,14 +6,17 @@ node_js:
   - 10
   - 12
 
-jobs:
-  include:
-    # - os: linux
-    #   dist: bionic
-    - os: osx
-      osx_image: xcode10.1
-  allow_failures:
-    - os: osx
+os: linux
+dist: bionic
+
+# jobs:
+#   include:
+#     # - os: linux
+#     #   dist: bionic
+#     - os: osx
+#       osx_image: xcode10.1
+#   allow_failures:
+#     - os: osx
 
 addons:
   apt:
@@ -61,12 +64,13 @@ script:
     cd ./node/ && local=true npm install && npm run dev
   fi
 before_deploy:
+  - echo "start deploy"
   # Set up git username & tag this commit
-  # - git config --local user.name "jwxbond"
-  # - git config --local user.email "jwxbond@gmail.com"
-  echo "before deplay $GITHUB_TOKEN"
-  # - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
-  # - echo $TRAVIS_TAG
+  - git config --local user.name "jwxbond"
+  - git config --local user.email "jwxbond@gmail.com"
+  # echo "before deplay $GITHUB_TOKEN"
+  - export TRAVIS_TAG=${TRAVIS_TAG:-$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)}
+  - echo $TRAVIS_TAG
   # - git tag $TRAVIS_TAG
   # - git push origin --tags
 deploy:
