@@ -58,12 +58,6 @@ Image::Image(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Image>(info)
 Image::~Image()
 {
   clearData();
-  
-  if(mDownloadImageWorker) 
-  {
-    mDownloadImageWorker->Cancel();
-  }
-
   mImageMemCached = nullptr;
 }
 

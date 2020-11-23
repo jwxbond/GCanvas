@@ -21,9 +21,6 @@ namespace NodeBinding
     Image::~Image()
     {
         if(mDownloadImageWorker) 
-        {
-            mDownloadImageWorker->Cancel();
-        }
         mImageMemCached = nullptr;
     }
 
