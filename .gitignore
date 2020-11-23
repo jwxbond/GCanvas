@@ -29,3 +29,4 @@ distribution/
 package-lock.json
 /node/*.png
 /node/*.jpg
+/node/*.jpeg
