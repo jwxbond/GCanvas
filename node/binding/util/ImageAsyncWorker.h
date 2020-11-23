@@ -12,8 +12,6 @@
 #include "ImagePixelInfo.h"
 #include "NodeBindingUtil.h"
 
-namespace cairocanvas
-{
 typedef std::function<void (Napi::Env env, uint8_t *data, size_t size, std::string msg )> ImageDownloadCallback;
 
 class ImageAsyncWorker : public Napi::AsyncWorker
@@ -32,5 +30,5 @@ private:
     std::shared_ptr<ImagePixelInfo> &mImageMemCached;
     ImageDownloadCallback cb;
 };
-}
+
 #endif

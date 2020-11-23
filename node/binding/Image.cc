@@ -20,7 +20,6 @@ namespace NodeBinding
 
     Image::~Image()
     {
-        if(mDownloadImageWorker) 
         mImageMemCached = nullptr;
     }
 
@@ -52,31 +51,48 @@ namespace NodeBinding
         return Napi::String::New(info.Env(), mSrc);
     }
 
+    void Image::DownloadCallback(Napi::Env env, uint8_t *data, size_t size, std::string errMsg )
+    {
+        if( data != nullptr && size > 0 )
+        {
+            //decode 
+            PIC_FORMAT format = parseFormat((char *)data, size);
+            if (format == PNG_FORAMT)
+            {
+                decodeImagePNG(this->mImageMemCached->getPixels(), mImageMemCached->width, mImageMemCached->height, (const unsigned char *)data, size);
+            }
+            else if (format == JPEG_FORMAT)
+            {
+                decodeImageJPEG(this->mImageMemCached->getPixels(),  mImageMemCached->width, mImageMemCached->height, (const unsigned char *)data, size);
+            }
+            //callback
+            if( mImageMemCached->width > 0 &&  mImageMemCached->height > 0 )
+            {
+                if( mOnLoadCallback )
+                {
+                    mOnLoadCallback.Call({env.Undefined()});
+                    return;
+                }
+            }
+        }
+        
+         if( mOnErrorCallback )
+        {
+            mOnErrorCallback.Call({Napi::String::New(env, "load image error")});
+        }   
+    }
     void Image::setSource(const Napi::CallbackInfo &info, const Napi::Value &value)
-     {
+    {
         NodeBinding::checkArgs(info, 1);
         mSrc = value.As<Napi::String>().Utf8Value();
         mImageMemCached=std::make_shared<ImagePixelInfo>();
         if (!mDownloadImageWorker)
         {
-            mDownloadImageWorker = new ImageWorker(info.Env(), mImageMemCached,
-                                      mImageMemCached->width,
-                                      mImageMemCached->height);
+            mDownloadImageWorker = new ImageAsyncWorker(info.Env(), mSrc, mImageMemCached, std::bind(&Image::DownloadCallback, this,  std::placeholders::_1, std::placeholders::_2,  std::placeholders::_3,  std::placeholders::_4) );
         }
-        if (mDownloadImageWorker)
-        {
-            mDownloadImageWorker->url = mSrc;
-            if( mOnLoadCallback ) 
-            {
-                mDownloadImageWorker->setOnErrorCallback(mOnErrorCallback.Value());
-            }
-            if( mOnErrorCallback )
-            {
-                mDownloadImageWorker->setOnLoadCallback(mOnLoadCallback.Value());
-            }
-            mDownloadImageWorker->Queue();
-        }
+        mDownloadImageWorker->Queue();
     }
+
     Napi::Value Image::getOnLoadCallback(const Napi::CallbackInfo &info)
     {
         return mOnLoadCallback ? mOnLoadCallback.Value() : info.Env().Undefined();

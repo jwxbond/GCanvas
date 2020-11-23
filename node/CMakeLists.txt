@@ -60,7 +60,7 @@ ELSEIF (UNIX)
         link_directories("/usr/lib/x86_64-linux-gnu")
 
         # force USE_CAIRO
-        add_definitions(-DUSE_CAIRO)
+        # add_definitions(-DUSE_CAIRO)
 ENDIF()
 
 include_directories("./binding")
@@ -106,7 +106,6 @@ set(SOURCE_FILES
         ./binding/ImageData.cc
         ./binding/TextMetrics.cc
         ./binding/Image.cc
-        ./binding/ImageWorker.cc
         ./binding/CanvasPattern.cc
         ./binding/webgl/WebGLShader.cc
         ./binding/webgl/WebGLBuffer.cc
@@ -119,6 +118,8 @@ set(SOURCE_FILES
         ./binding/renderContext/GRenderContext.cc
         
         ./binding/util/NodeBindingUtil.cc
+        ./binding/util/ImageAsyncWorker.cc
+
         ./third_party/lodepng.cc
 
         ./binding/cairo/CairoImageBackend.cc
@@ -130,7 +131,6 @@ set(SOURCE_FILES
         ./binding/cairo/CairoImageData.cc
         ./binding/cairo/color.cc
         ./binding/cairo/closure.cc
-        ./binding/cairo/ImageAsyncWorker.cc
 
         ${CORE_DIR}src/GCanvas.cpp        
         ${CORE_DIR}src/GCanvasManager.cpp

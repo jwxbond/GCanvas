@@ -14,7 +14,7 @@
 #include "NodeBindingUtil.h"
 #include "lodepng.h"
 #include "ImagePixelInfo.h"
-#include "ImageWorker.h"
+#include "ImageAsyncWorker.h"
 
 
 namespace NodeBinding
@@ -39,7 +39,7 @@ private:
     std::string mSrc;
     Napi::FunctionReference mOnErrorCallback;
     Napi::FunctionReference mOnLoadCallback;
-    ImageWorker *mDownloadImageWorker = nullptr;
+    ImageAsyncWorker *mDownloadImageWorker = nullptr;
     std::vector<unsigned char> emptyPixels;
     std::shared_ptr<ImagePixelInfo> mImageMemCached;
     Napi::Value getSource(const Napi::CallbackInfo &info);
@@ -50,6 +50,9 @@ private:
     void setOnErrorCallback(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getWidth(const Napi::CallbackInfo &info);
     Napi::Value getHeight(const Napi::CallbackInfo &info);
+
+    void DownloadCallback(Napi::Env env, uint8_t *data, size_t size, std::string errMsg );
+
     int mTextureId=-1;
 };
 } // namespace NodeBinding
