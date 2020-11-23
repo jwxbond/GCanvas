@@ -24,25 +24,21 @@ include_directories(${CMAKE_JS_INC})
 
 IF (APPLE)
         MESSAGE(STSTUS "############# APPLE ######################")
-        # include_directories("/usr/local/include")
+
         include_directories("/usr/local/include/cairo")
         include_directories("/usr/local/include/pango-1.0")
         include_directories("/usr/local/include/glib-2.0")
         include_directories("/usr/local/include/harfbuzz")
-        # include_directories("/usr/local/opt/jpeg/include")
         include_directories("/usr/local/opt/jpeg-turbo/include")
-
         include_directories("/usr/local/lib/glib-2.0/include")  #fix glibconfig.h not found
         include_directories("/usr/local/opt/curl-openssl/include")
 
-        link_directories("/usr/local/opt/jpeg-turbo/lib")
-
-        # link_directories("/usr/local/lib")
         link_directories("/usr/local/opt/glib/lib")
         link_directories("/usr/local/opt/cairo/lib")
         link_directories("/usr/local/opt/pango/lib")
         link_directories("/usr/local/opt/libffi/lib")
         link_directories("/usr/local/opt/curl-openssl/lib")
+        link_directories("/usr/local/opt/jpeg-turbo/lib")
 
         find_package(PNG REQUIRED)
         if(PNG_FOUND)
@@ -62,18 +58,18 @@ ELSEIF (UNIX)
         include_directories("/usr/lib/x86_64-linux-gnu/glib-2.0/include") #fix glibconfig.h not found
 
         link_directories("/usr/lib/x86_64-linux-gnu")
-ENDIF()
 
+        # force USE_CAIRO
+        add_definitions(-DUSE_CAIRO)
+ENDIF()
 
 include_directories("./binding")
 include_directories("./binding/util")
 include_directories("./binding/cairo")
 include_directories("./binding/renderContext")
-include_directories("./binding/renderContext/gcanvas")
-include_directories("./binding/renderContext/cairo")
+include_directories("./binding/webgl")
 include_directories("./third_party")
 include_directories("./third_party/font/freetype2/")
-include_directories("./image/")
 
 include_directories("${CORE_DIR}")
 include_directories("${CORE_DIR}src/")
@@ -83,7 +79,6 @@ include_directories("${CORE_DIR}src/gcanvas/GL")
 include_directories("${CORE_DIR}src/support")
 include_directories("${CORE_DIR}src/platform/Android")
 include_directories("${CORE_DIR}src/platform/Linux")
-
 
 IF(APPLE)
 set(SOURCE_FILES 
@@ -184,16 +179,13 @@ ENDIF()
 
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
-
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
-
 
 if( APPLE )
   target_link_libraries(${PROJECT_NAME} 
                         ${CMAKE_JS_LIB}
                         "-framework GLUT"
                         "-framework OpenGL"
-                        # ${JPEG_LIBRARIES}
                         ${PNG_LIBRARIES}
                         jpeg
                         ffi
@@ -219,9 +211,6 @@ elseif(UNIX)
                         cairo
                         pango-1.0
                         pangocairo-1.0)
-
-
-                #       ${Cairo_LIBRARIES}
 endif()
 
 # Include N-API wrappers

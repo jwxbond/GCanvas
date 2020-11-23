@@ -36,6 +36,10 @@
 static bool useCairo = true;
 bool checkUseCairo()
 {
+  #ifdef USE_CAIRO
+    return true;
+  #endif
+
   FILE *fstream = NULL;      
   if(NULL == (fstream = popen("lspci | grep VGA", "r")))      
   {     
@@ -46,7 +50,7 @@ bool checkUseCairo()
   bool hasGPUInfo = false;
   char gpuInfoBuffer[1024] = {0};
   while( NULL != fgets(gpuInfoBuffer,  sizeof(gpuInfoBuffer), fstream) ) 
-  {  
+  { 
     printf("GPUInfo: %s\n",gpuInfoBuffer); 
     hasGPUInfo = true;
   }  
@@ -95,6 +99,8 @@ Napi::Object createImage(const Napi::CallbackInfo &info)
   std::cout << "createImage use cairo in MacOS" << std::endl;
   return cairocanvas::Image::NewInstance(env);
 #else
+  useCairo =  checkUseCairo();
+
   if( useCairo ) {
     std::cout << "createImage use cairo in Unix"  << std::endl;
     return cairocanvas::Image::NewInstance(env);
