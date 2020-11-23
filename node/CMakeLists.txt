@@ -84,6 +84,7 @@ IF(APPLE)
 set(SOURCE_FILES 
         ./binding/Export.cc
         ./binding/util/NodeBindingUtil.cc
+        ./binding/util/ImageAsyncWorker.cc
         ./third_party/lodepng.cc
         ./binding/cairo/CairoImageBackend.cc
         ./binding/cairo/CairoCanvas.cc
@@ -94,7 +95,6 @@ set(SOURCE_FILES
         ./binding/cairo/CairoImageData.cc
         ./binding/cairo/color.cc
         ./binding/cairo/closure.cc
-        ./binding/cairo/ImageAsyncWorker.cc
 )
 ELSEIF(UNIX)
 set(SOURCE_FILES 
