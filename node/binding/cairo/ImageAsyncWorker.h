@@ -9,7 +9,7 @@
 #ifndef IMAGE_ASYNC_WORKER_H
 #define IMAGE_ASYNC_WORKER_H
 #include <napi.h>
-#include "ImageCahced.h"
+#include "ImagePixelInfo.h"
 #include "NodeBindingUtil.h"
 
 namespace cairocanvas
@@ -19,7 +19,7 @@ typedef std::function<void (Napi::Env env, uint8_t *data, size_t size, std::stri
 class ImageAsyncWorker : public Napi::AsyncWorker
 {
 public:
-    ImageAsyncWorker(Napi::Env env, std::string url, std::shared_ptr<ImageCached>& image, ImageDownloadCallback callback); 
+    ImageAsyncWorker(Napi::Env env, std::string url, std::shared_ptr<ImagePixelInfo>& image, ImageDownloadCallback callback); 
     ~ImageAsyncWorker();
 
     void Execute();
@@ -29,7 +29,7 @@ public:
     std::string url;
 
 private:
-    std::shared_ptr<ImageCached> &mImageMemCached;
+    std::shared_ptr<ImagePixelInfo> &mImageMemCached;
     ImageDownloadCallback cb;
 };
 }

@@ -13,14 +13,14 @@
 #include <vector>
 #include "NodeBindingUtil.h"
 #include "lodepng.h"
-#include "ImageCahced.h"
+#include "ImagePixelInfo.h"
 #include "ImageWorker.h"
 
 
 namespace NodeBinding
 {
 
-extern std::shared_ptr<ImageCached> findCacheByUrl(const std::string &url);
+extern std::shared_ptr<ImagePixelInfo> findCacheByUrl(const std::string &url);
 class Image : public Napi::ObjectWrap<Image>
 {
 public:
@@ -41,7 +41,7 @@ private:
     Napi::FunctionReference mOnLoadCallback;
     ImageWorker *mDownloadImageWorker = nullptr;
     std::vector<unsigned char> emptyPixels;
-    std::shared_ptr<ImageCached> mImageMemCached;
+    std::shared_ptr<ImagePixelInfo> mImageMemCached;
     Napi::Value getSource(const Napi::CallbackInfo &info);
     void setSource(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getOnLoadCallback(const Napi::CallbackInfo &info);

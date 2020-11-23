@@ -15,7 +15,7 @@
 #include <iostream>
 namespace NodeBinding
 {
-static std::unordered_map<std::string,std::shared_ptr<ImageCached>> imagePool;
+static std::unordered_map<std::string,std::shared_ptr<ImagePixelInfo>> imagePool;
 static size_t
 writeMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
@@ -110,7 +110,7 @@ unsigned int downloadImage(const std::string &src, ImageMemoryChunk *content)
 
     return content->size;
 }
-std::shared_ptr<ImageCached> findCacheByUrl(const std::string &url){
+std::shared_ptr<ImagePixelInfo> findCacheByUrl(const std::string &url){
     if(imagePool.find(url) == imagePool.end()){
         return nullptr;
     }else{
@@ -118,7 +118,7 @@ std::shared_ptr<ImageCached> findCacheByUrl(const std::string &url){
     }
 }
 
-void cachedImage(const std::string url,std::shared_ptr<ImageCached> imageCached){
+void cachedImage(const std::string url,std::shared_ptr<ImagePixelInfo> imageCached){
      imagePool[url]=imageCached;
 }
 void encodePixelsToPNGFile(std::string filename, uint8_t *buffer, int width, int height)

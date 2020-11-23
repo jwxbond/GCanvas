@@ -37,7 +37,7 @@ namespace NodeBinding
     void ImageWorker::Execute()
     {
 
-        std::shared_ptr<ImageCached> cacheRet= findCacheByUrl(url);
+        std::shared_ptr<ImagePixelInfo> cacheRet= findCacheByUrl(url);
         // 命中缓存,直接返回
         if(cacheRet){
             this->mImageMemCached=cacheRet;

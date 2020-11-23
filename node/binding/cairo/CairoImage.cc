@@ -104,7 +104,7 @@ void Image::setSource(const Napi::CallbackInfo &info, const Napi::Value &value)
   {
     NodeBinding::checkArgs(info, 1);
     mSrc = value.As<Napi::String>().Utf8Value();
-    mImageMemCached=std::make_shared<ImageCached>();
+    mImageMemCached=std::make_shared<ImagePixelInfo>();
     if (!mDownloadImageWorker)
     {
       mDownloadImageWorker = new ImageAsyncWorker(info.Env(), mSrc, mImageMemCached, std::bind(&Image::DownloadCallback, this,  std::placeholders::_1, std::placeholders::_2,  std::placeholders::_3,  std::placeholders::_4) );
@@ -170,7 +170,7 @@ std::vector<unsigned char> &Image::getPixels()
  {
   if( !_surface ) 
   {
-    ImageCached *imageCached = mImageMemCached.get();
+    ImagePixelInfo *imageCached = mImageMemCached.get();
     if (imageCached) 
     {
       unsigned int len = imageCached->getPixels().size();

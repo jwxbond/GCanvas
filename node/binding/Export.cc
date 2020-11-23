@@ -51,11 +51,9 @@ bool checkUseCairo()
   char gpuInfoBuffer[1024] = {0};
   while( NULL != fgets(gpuInfoBuffer,  sizeof(gpuInfoBuffer), fstream) ) 
   { 
-    printf("GPUInfo: %s\n",gpuInfoBuffer); 
     hasGPUInfo = true;
   }  
   pclose(fstream); 
-
   return !hasGPUInfo;
 }
 
@@ -64,7 +62,7 @@ Napi::Object createCanvas(const Napi::CallbackInfo &info)
   Napi::Env env = info.Env();
   if (info.Length() < 2)
   {
-    Napi::TypeError::New(env, "canvas need width & height").ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "createCanvas need width & height").ThrowAsJavaScriptException();
     return Napi::Object::New(env);
   }
   

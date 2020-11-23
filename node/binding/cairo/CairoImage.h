@@ -10,7 +10,7 @@
 #include <vector>
 #include "NodeBindingUtil.h"
 #include "lodepng.h"
-#include "ImageCahced.h"
+#include "ImagePixelInfo.h"
 #include "ImageAsyncWorker.h"
 
 #include "jpeglib.h"
@@ -19,7 +19,7 @@ namespace cairocanvas
 {
 using JPEGDecodeL = std::function<uint32_t (uint8_t* const src)>;
 
-extern std::shared_ptr<ImageCached> findCacheByUrl(const std::string &url);
+extern std::shared_ptr<ImagePixelInfo> findCacheByUrl(const std::string &url);
 
 class Image: public Napi::ObjectWrap<Image> 
 {
@@ -43,7 +43,7 @@ class Image: public Napi::ObjectWrap<Image>
 
     ImageAsyncWorker *mDownloadImageWorker = nullptr;
     std::vector<unsigned char> emptyPixels;
-    std::shared_ptr<ImageCached> mImageMemCached;
+    std::shared_ptr<ImagePixelInfo> mImageMemCached;
 
     void DownloadCallback(Napi::Env env, uint8_t *data, size_t size, std::string errMsg );
 
@@ -62,7 +62,6 @@ class Image: public Napi::ObjectWrap<Image>
     static int isPNG(uint8_t *data);
     static int isJPEG(uint8_t *data);
     static cairo_status_t readPNG(void *closure, unsigned char *data, unsigned len);
-    // inline int isComplete(){ return COMPLETE == state; }
 
     cairo_status_t loadFromBuffer(uint8_t *buf, unsigned len);
     cairo_status_t loadPNGFromBuffer(uint8_t *buf);

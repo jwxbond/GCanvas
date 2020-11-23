@@ -10,7 +10,7 @@
 #define NODE_BINDING_UTIL_H
 #include <napi.h>
 #include <unordered_map>
-#include "ImageCahced.h"
+#include "ImagePixelInfo.h"
 
 #define TIMEOUT_VALUE 5L
 namespace NodeBinding
@@ -27,8 +27,8 @@ enum PIC_FORMAT
     JPEG_FORMAT,
     UNKOWN_PIC_FORMAT,
 };
-std::shared_ptr<ImageCached> findCacheByUrl(const std::string &url);
-void cachedImage(const std::string url,std::shared_ptr<ImageCached> imageCached);
+std::shared_ptr<ImagePixelInfo> findCacheByUrl(const std::string &url);
+void cachedImage(const std::string url,std::shared_ptr<ImagePixelInfo> imageCached);
 PIC_FORMAT parseFormat(char *content, int len);
 void decodeImageJPEG(std::vector<unsigned char> &pixels, unsigned int &width, unsigned int &height, const unsigned char *content, int len);
 void decodeImagePNG(std::vector<unsigned char> &pixels, unsigned int &width, unsigned int &height, const unsigned char *content, int len);

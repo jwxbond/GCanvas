@@ -3,7 +3,7 @@
 namespace cairocanvas
 {
 
-    ImageAsyncWorker::ImageAsyncWorker(Napi::Env env, std::string url, std::shared_ptr<ImageCached>& image, ImageDownloadCallback callback) 
+    ImageAsyncWorker::ImageAsyncWorker(Napi::Env env, std::string url, std::shared_ptr<ImagePixelInfo>& image, ImageDownloadCallback callback) 
       : Napi::AsyncWorker(env), 
         url(url),
         mImageMemCached(image),
@@ -37,7 +37,7 @@ namespace cairocanvas
 
     void ImageAsyncWorker::Execute()
     {
-        std::shared_ptr<ImageCached> cacheRet= NodeBinding::findCacheByUrl(url);
+        std::shared_ptr<ImagePixelInfo> cacheRet= NodeBinding::findCacheByUrl(url);
         // 命中缓存,直接返回
         if(cacheRet){
             this->mImageMemCached=cacheRet;
