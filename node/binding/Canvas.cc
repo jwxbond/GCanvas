@@ -49,6 +49,7 @@ namespace NodeBinding
             {
                 mWidth = newWidth;
                 mRenderContext->resize(mWidth, mHeight);
+                mContext2dRef.Reset();
             }
         }
     }
@@ -67,6 +68,7 @@ namespace NodeBinding
             {
                 mHeight = newHeight;
                 mRenderContext->resize(mWidth, mHeight);
+                mContext2dRef.Reset();
             }
         }
     }

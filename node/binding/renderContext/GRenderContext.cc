@@ -131,7 +131,9 @@ namespace NodeBinding
         {
             destoryRenderEnviroment();
             mWidth = width;
+            mCanvasWidth = mWidth * mDpi;
             mHeight = height;
+            mCanvasHeight = mHeight * mDpi;
             initRenderEnviroment();
         }
     }
@@ -167,7 +169,9 @@ namespace NodeBinding
         }
         else
         {
-            printf("FBO Create success %p, FboId=%d, RenderbufferId=%d DepthbufferId=%d\n", this, fboId2Ret, *renderBufferId, *depthBufferId);
+        // #ifdef DEBUG
+        //     printf("FBO Create success %p, FboId=%d, RenderbufferId=%d DepthbufferId=%d\n", this, fboId2Ret, *renderBufferId, *depthBufferId);
+        // #endif
         }
         return fboId2Ret;
     }
