@@ -1,13 +1,15 @@
+#!/bin/bash
+
 platformSupport=0
 unamestr=`uname`
 
-if [[ "$unamestr" == 'Darwin' ]]; then
+if [[ "$unamestr" == 'Darwin' ]] ;then
     platform='mac osx'
     platformSupport=1
 elif [[ "$unamestr" == 'Linux' ]]; then
     platform='linux'
     platformSupport=2
-    mkdir -p ~/.gAssets/fonts/ &&  cp ./third_party/font/wqy-microhei.ttc ~/.gAssets/fonts/wqy-microhei.ttc &&  cp ./third_party/font/.fontcache  ~/.gAssets/fonts/.fontcache
+    mkdir -p ~/.gAssets/fonts/ &&  cp ./node/third_party/font/wqy-microhei.ttc ~/.gAssets/fonts/wqy-microhei.ttc &&  cp ./node/third_party/font/.fontcache  ~/.gAssets/fonts/.fontcache
 fi
 
 if [ $platformSupport -eq 0 ]; then

@@ -9,7 +9,7 @@
   },
   "scripts": {
     "install": "./node/script/install.sh",
-    "dev": "cmake-js -d ./node -D build",
+    "dev": "cmake-js -d ./node build",
     "clean": "cmake-js -d ./node clean",
     "debug": "cmake-js -d ./node -D build",
     "compile": "cmake-js -d ./node compile --CDCORE_DIR=../core/",
