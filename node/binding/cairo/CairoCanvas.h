@@ -50,21 +50,16 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
  private:
     static Napi::FunctionReference constructor;
     Napi::Value getWidth(const Napi::CallbackInfo &info);
+    void setWidth(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getHeight(const Napi::CallbackInfo &info);
+    void setHeight(const Napi::CallbackInfo &info, const Napi::Value &value);
     Napi::Value getContext(const Napi::CallbackInfo &info);
     Napi::Value createPNGStreamSync(const Napi::CallbackInfo &info);
     Napi::Value createJPGStreamSync(const Napi::CallbackInfo &info);
-    Napi::Value ToBuffer(const Napi::CallbackInfo &info);
+    Napi::Value toBuffer(const Napi::CallbackInfo &info);
     Napi::Buffer<unsigned char> getPNGBuffer(const Napi::CallbackInfo &info, unsigned long &size);
     Napi::Buffer<unsigned char> getJPGBuffer(const Napi::CallbackInfo &info, unsigned long &size);
     Napi::Buffer<unsigned char> getRawDataBuffer(const Napi::CallbackInfo &info, unsigned long &size);
-
-  
-    void setWidth(const Napi::CallbackInfo &info, const Napi::Value &value);
-    void setHeight(const Napi::CallbackInfo &info, const Napi::Value &value);
-    void createPNG(const Napi::CallbackInfo &info);
-    void createJPEG(const Napi::CallbackInfo &info);
-
 
     Napi::ObjectReference mContext2dRef;
     Napi::ObjectReference mContextWebGLRef;

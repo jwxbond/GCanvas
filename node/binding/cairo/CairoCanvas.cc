@@ -32,14 +32,12 @@ void Canvas::Init(Napi::Env env, Napi::Object exports)
   Napi::Function func = DefineClass(env, "Canvas", {
     // InstanceAccessor("type", &Canvas::getType, nullptr),
     // InstanceAccessor("stride", &Canvas::getStride, nullptr),
-    InstanceAccessor("width", &Canvas::getWidth, nullptr),
-    InstanceAccessor("height", &Canvas::getHeight, nullptr),
+    InstanceAccessor("width", &Canvas::getWidth, &Canvas::setWidth),
+    InstanceAccessor("height", &Canvas::getHeight, &Canvas::setHeight),
     InstanceMethod("getContext", &Canvas::getContext),
-    InstanceMethod("createPNG", &Canvas::createPNG),
-    InstanceMethod("createJPEG", &Canvas::createJPEG),
     InstanceMethod("createPNGStreamSync", &Canvas::createPNGStreamSync),
     InstanceMethod("createJPGStreamSync", &Canvas::createJPGStreamSync),
-    InstanceMethod("toBuffer", &Canvas::ToBuffer),
+    InstanceMethod("toBuffer", &Canvas::toBuffer),
   });
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -94,9 +92,43 @@ Napi::Value Canvas::getWidth(const Napi::CallbackInfo &info)
   return Napi::Number::New(info.Env(), mWidth);
 }
 
+void Canvas::setWidth(const Napi::CallbackInfo &info, const Napi::Value &value)
+{
+  if( info.Length() > 0 && info[0].IsNumber() )
+  {
+    int w = backend()->getWidth();
+
+    int newWidth = info[0].As<Napi::Number>().Int32Value();
+    if( newWidth > 0 && newWidth != w )
+    {
+      backend()->setWidth(newWidth);
+      backend()->recreateSurface();
+
+      mContext2dRef.Reset();
+    }
+  }
+}
+
 Napi::Value Canvas::getHeight(const Napi::CallbackInfo &info)
 {
   return Napi::Number::New(info.Env(), mHeight);
+}
+
+void Canvas::setHeight(const Napi::CallbackInfo &info, const Napi::Value &value)
+{
+  if( info.Length() > 0 && info[0].IsNumber() )
+  {
+    int h = backend()->getHeight();
+
+    int newHeight = info[0].As<Napi::Number>().Int32Value();
+    if( newHeight > 0 && newHeight != h )
+    {
+      backend()->setHeight(newHeight);
+      backend()->recreateSurface();
+      
+      mContext2dRef.Reset();
+    }
+  }
 }
 
 Napi::Value Canvas::getContext(const Napi::CallbackInfo &info)
@@ -128,15 +160,6 @@ Napi::Value Canvas::getContext(const Napi::CallbackInfo &info)
     napi_throw_error(env, "", "type is invalid");
     return Napi::Object::New(env);
   }
-}
-
-void Canvas::createPNG(const Napi::CallbackInfo &info)
-{
-  return;
-}
-void Canvas::createJPEG(const Napi::CallbackInfo &info)
-{
-  
 }
 Napi::Value Canvas::createJPGStreamSync(const Napi::CallbackInfo &info)
 {
@@ -244,7 +267,7 @@ Napi::Buffer<unsigned char> Canvas::getRawDataBuffer(const Napi::CallbackInfo &i
   NodeBinding::encodeJPEGInBuffer(&jpegBuffer, size, mDataRaw, mWidth, mHeight);
   return Napi::Buffer<unsigned char>::Copy(info.Env(), jpegBuffer, size);
 }
-Napi::Value Canvas::ToBuffer(const Napi::CallbackInfo &info)
+Napi::Value Canvas::toBuffer(const Napi::CallbackInfo &info)
 {
   unsigned long size = 0;
   //默认输出png 编码

@@ -15,7 +15,7 @@
 #include <functional>
 #include <unordered_map>
 #include "GConvert.h"
-#include "GWebGLRenderContext.hpp"
+// #include "GWebGLRenderContext.hpp"
 #include "NodeBindingUtil.h"
 #include "Util.h"
 #include "GFrameBufferObject.h"
@@ -37,8 +37,9 @@ namespace NodeBinding
         void render2file(std::string caseName, PIC_FORMAT format);
         void drawFrame();
         void setContextType(std::string type);
+        void resize(int width, int height);
         inline GCanvasContext *getCtx2d() { return mCanvas2d->GetGCanvasContext(); }
-        inline std::shared_ptr<gcanvas::WebGL::GWebGLRenderContext> getCtxWebGL(){ return mCanvasWebGL; }
+        // inline std::shared_ptr<gcanvas::WebGL::GWebGLRenderContext> getCtxWebGL(){ return mCanvasWebGL; }
 
 
         inline int  getWdith() { return mWidth; }
@@ -56,7 +57,7 @@ namespace NodeBinding
 
     private:
         std::shared_ptr<gcanvas::GCanvas> mCanvas2d;
-        std::shared_ptr<gcanvas::WebGL::GWebGLRenderContext> mCanvasWebGL;
+        // std::shared_ptr<gcanvas::WebGL::GWebGLRenderContext> mCanvasWebGL;
         void initCanvas2d();
         void initCanvasWebGL();
 

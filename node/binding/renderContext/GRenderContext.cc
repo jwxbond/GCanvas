@@ -125,9 +125,19 @@ namespace NodeBinding
         g_RenderContextVC.push_back(this);
     }
 
+    void GRenderContext::resize(int width, int height)
+    {
+        if( width > 0 && height > 0 && (mWidth != width || mHeight != height) )
+        {
+            destoryRenderEnviroment();
+            mWidth = width;
+            mHeight = height;
+            initRenderEnviroment();
+        }
+    }
+
     void GRenderContext::initCanvasWebGL()
     {
-        // mCanvasWebGL = std::make_shared<gcanvas::WebGL::GWebGLRenderContext>("node-gcanvas");
     }
     GLuint GRenderContext::createFBO(int fboWidth, int fboHeight, GLuint *renderBufferId, GLuint *depthBufferId)
     {
