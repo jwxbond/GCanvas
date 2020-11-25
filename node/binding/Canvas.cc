@@ -294,8 +294,73 @@ namespace NodeBinding
     }
     Napi::Value Canvas::toDataURL(const Napi::CallbackInfo &info)
     {
-        //默认输出png 编码
-        // TODO
+        if( mWidth == 0 || mHeight == 0 )
+        {
+            return Napi::String::New(info.Env(), "data:,");
+        }
+
+        bool isJPEG = false; //default output
+        float jepgQuality = 1.0;
+        unsigned long size = 0;
+        if (info.Length() >= 1)
+        {
+            std::string mimeType = info[0].As<Napi::String>().Utf8Value();
+            if (mimeType == "image/png")
+            {
+                isJPEG = false;
+            }
+            else if (mimeType == "image/jpeg")
+            {
+                isJPEG = true;
+            }
+
+            if( isJPEG && info.Length() >= 2 && info[1].IsNumber() )
+            {
+                jepgQuality = info[1].As<Napi::Number>().FloatValue();
+            }
+        }
+
+        if (mRenderContext)
+        {
+            mRenderContext->makeCurrent();
+            mRenderContext->drawFrame();
+        }
+        
+        if ( isJPEG )
+        {
+            std::string base64Str = "data:image/jpeg;base64,";
+            unsigned char *jpegBuffer = nullptr;
+            int ret = mRenderContext->getImagePixelJPG(&jpegBuffer, size);
+            if (ret != 0)
+            {
+                //jepgbuffer & size
+                std::string jpegStr((const char*)jpegBuffer, (size_t)size);
+
+                std::string tmpStr;
+                NodeBinding::toBase64(tmpStr, jpegStr);
+
+                 std::cout << "JPEG in: " << jpegStr.size() << ",out:" << tmpStr.size() << std::endl;
+
+                base64Str.append(tmpStr);
+            }
+            return Napi::Buffer<unsigned char>::Copy(info.Env(), (unsigned char *)base64Str.c_str(), base64Str.size());
+        }
+        else
+        {
+            std::string base64Str = "data:image/png;base64,";
+            std::vector<unsigned char> pngData;
+            int ret = mRenderContext->getImagePixelPNG(pngData);
+            
+            if( ret != 0 )
+            {
+                std::vector<unsigned char> base64Vec;
+                NodeBinding::toBase64(base64Vec, pngData);
+
+                std::cout << "PNG in: " << pngData.size() << ",out:" << base64Vec.size() << std::endl;
+                base64Str.append((const char*)(&base64Vec[0]), base64Vec.size());
+            }
+            return Napi::Buffer<unsigned char>::Copy(info.Env(), (unsigned char *)base64Str.c_str(), base64Str.size());
+        }
     }
 
     Canvas::~Canvas()

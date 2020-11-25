@@ -341,8 +341,6 @@ Napi::Value Canvas::toDataURL(const Napi::CallbackInfo &info)
   unsigned int width = cairo_image_surface_get_width(s);
   unsigned int height = cairo_image_surface_get_height(s);
   
-
-
   if ( isJPEG )
   {
     size = 4 * width * height;
@@ -355,9 +353,13 @@ Napi::Value Canvas::toDataURL(const Napi::CallbackInfo &info)
     std::string jpegStr((const char*)jpegBuffer, (size_t)size);
 
     std::string base64Str = "data:image/jpeg;base64,";
-    NodeBinding::toBase64(base64Str, jpegStr);
 
-    std::cout << "JPEG base64: " << base64Str << std::endl;
+    std::string tmpStr;
+    NodeBinding::toBase64(tmpStr, jpegStr);
+  
+    std::cout << "JPEG in: " << jpegStr.size() << ",out:" << tmpStr.size() << std::endl;
+
+    base64Str.append(tmpStr);
     return Napi::Buffer<unsigned char>::Copy(info.Env(), (unsigned char *)base64Str.c_str(), base64Str.size());
   }
   else
@@ -380,11 +382,10 @@ Napi::Value Canvas::toDataURL(const Napi::CallbackInfo &info)
       // &closure.vec[0],  closure.vec.size()
       std::vector<unsigned char> base64Vec;
       NodeBinding::toBase64(base64Vec, closure.vec);
+
+      std::cout << "PNG in: " << closure.vec.size() << ",out:" << base64Vec.size() << std::endl;
       base64Str.append((const char*)(&base64Vec[0]), base64Vec.size());
     }
-
-    std::cout << "PNG base64: " << base64Str << std::endl;
-
     return Napi::Buffer<unsigned char>::Copy(info.Env(), (unsigned char *)base64Str.c_str(), base64Str.size());
   }
 }
