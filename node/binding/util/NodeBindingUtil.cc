@@ -281,7 +281,7 @@ void decodeImageJPEG(std::vector<unsigned char> &pixels, unsigned int &width, un
     jpeg_destroy_decompress(&cinfo);
 }
 
-void encodeJPEGInBuffer(unsigned char **out,unsigned long &size ,unsigned char *data,int width,int height)
+void encodeJPEGInBuffer(unsigned char **out,unsigned long &size ,unsigned char *data,int width,int height, int quality)
 {   
     struct jpeg_compress_struct cinfo;
     struct jpeg_error_mgr jerr;
@@ -298,6 +298,9 @@ void encodeJPEGInBuffer(unsigned char **out,unsigned long &size ,unsigned char *
 
     
     jpeg_set_defaults(&cinfo);
+
+    jpeg_set_quality(&cinfo, quality, (quality < 25) ? 0 : 1);
+    
     jpeg_start_compress(&cinfo, TRUE);
     row_stride = width * 4;
     while (cinfo.next_scanline < cinfo.image_height)
@@ -413,6 +416,47 @@ void pixelsConvertRGBAToARGB(unsigned char * data, int width, int height)
             b[3] = bv;
         }
     }
+  }
+}
+
+
+static const std::string BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+template<typename T, typename U>
+void toBase64(T& out, const U& in) {
+  for(size_t i = 0; i < in.size(); i += 3) {
+    int v = 65536 * in[i];
+    if(i + 1 < in.size()) v += 256 * in[i + 1];
+    if(i + 2 < in.size()) v += in[i + 2];
+    out.push_back(BASE64[(v >> 18) & 0x3f]);
+    out.push_back(BASE64[(v >> 12) & 0x3f]);
+    if(i + 1 < in.size()) out.push_back(BASE64[(v >> 6) & 0x3f]);
+    else out.push_back('=');
+    if(i + 2 < in.size()) out.push_back(BASE64[(v >> 0) & 0x3f]);
+    else out.push_back('=');
+  }
+}
+
+template void toBase64(std::vector<unsigned char> &out, const std::vector<unsigned char> &in);
+template void toBase64(std::string &out, const std::string &in);
+
+
+int fromBase64(int v) {
+  if(v >= 'A' && v <= 'Z') return (v - 'A');
+  if(v >= 'a' && v <= 'z') return (v - 'a' + 26);
+  if(v >= '0' && v <= '9') return (v - '0' + 52);
+  if(v == '+') return 62;
+  if(v == '/') return 63;
+  return 0;
+}
+
+template<typename T, typename U>
+void fromBase64(T& out, const U& in) {
+  for(size_t i = 0; i + 3 < in.size(); i += 4) {
+    int v = 262144 * fromBase64(in[i]) + 4096 * fromBase64(in[i + 1]) + 64 * fromBase64(in[i + 2]) + fromBase64(in[i + 3]);
+    out.push_back((v >> 16) & 0xff);
+    if(in[i + 2] != '=') out.push_back((v >> 8) & 0xff);
+    if(in[i + 3] != '=') out.push_back((v >> 0) & 0xff);
   }
 }
 

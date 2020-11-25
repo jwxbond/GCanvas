@@ -38,6 +38,8 @@ void Canvas::Init(Napi::Env env, Napi::Object exports)
     InstanceMethod("createPNGStreamSync", &Canvas::createPNGStreamSync),
     InstanceMethod("createJPGStreamSync", &Canvas::createJPGStreamSync),
     InstanceMethod("toBuffer", &Canvas::toBuffer),
+    InstanceMethod("toDataURL", &Canvas::toDataURL),
+
   });
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -273,38 +275,119 @@ Napi::Value Canvas::toBuffer(const Napi::CallbackInfo &info)
   //默认输出png 编码
   if (info.Length() == 0)
   {
-      return getPNGBuffer(info, size);
+    return getPNGBuffer(info, size);
   }
   else
   {
-      Napi::Buffer<unsigned char> ret;
-      if (info.Length() == 1)
-      {
-          std::string mimeType = info[0].As<Napi::String>().Utf8Value();
-          if (mimeType == "image/png")
-          {
-              ret = getPNGBuffer(info, size);
-          }
-          else if (mimeType == "image/jpeg")
-          {
-              ret = getJPGBuffer(info, size);
-          }
-          else if (mimeType == "raw")
-          {
-              ret = getRawDataBuffer(info, size);
-          }
-      }
-      if (size <= 0)
-      {
-          return info.Env().Null();
-      }
-      else
-      {
-          return ret;
-      }
+    Napi::Buffer<unsigned char> ret;
+    if (info.Length() == 1)
+    {
+        std::string mimeType = info[0].As<Napi::String>().Utf8Value();
+        if (mimeType == "image/png")
+        {
+            ret = getPNGBuffer(info, size);
+        }
+        else if (mimeType == "image/jpeg")
+        {
+            ret = getJPGBuffer(info, size);
+        }
+        else if (mimeType == "raw")
+        {
+            ret = getRawDataBuffer(info, size);
+        }
+    }
+    if (size <= 0)
+    {
+        return info.Env().Null();
+    }
+    else
+    {
+        return ret;
+    }
   }
 }
+Napi::Value Canvas::toDataURL(const Napi::CallbackInfo &info)
+{
+  if( mWidth == 0 || mHeight == 0 )
+  {
+    return Napi::String::New(info.Env(), "data:,");
+  }
 
+  bool isJPEG = false; //default output
+  float jepgQuality = 1.0;
+  unsigned long size = 0;
+  if (info.Length() >= 1)
+  {
+    std::string mimeType = info[0].As<Napi::String>().Utf8Value();
+    if (mimeType == "image/png")
+    {
+      isJPEG = false;
+    }
+    else if (mimeType == "image/jpeg")
+    {
+      isJPEG = true;
+    }
+
+    if( isJPEG && info.Length() >= 2 && info[1].IsNumber() )
+    {
+      jepgQuality = info[1].As<Napi::Number>().FloatValue();
+    }
+  }
+
+  cairo_surface_t *s = surface();
+  cairo_surface_flush(s);
+  unsigned char *data = cairo_image_surface_get_data(s);
+  //TODO check argb only
+  unsigned int width = cairo_image_surface_get_width(s);
+  unsigned int height = cairo_image_surface_get_height(s);
+  
+
+
+  if ( isJPEG )
+  {
+    size = 4 * width * height;
+    NodeBinding::pixelsConvertARGBToRGBA(( unsigned char *)data, width, height);
+
+    unsigned char *jpegBuffer = nullptr;
+    NodeBinding::encodeJPEGInBuffer(&jpegBuffer, size, data, width, height, jepgQuality);
+
+    //jepgbuffer & size
+    std::string jpegStr((const char*)jpegBuffer, (size_t)size);
+
+    std::string base64Str = "data:image/jpeg;base64,";
+    NodeBinding::toBase64(base64Str, jpegStr);
+
+    std::cout << "JPEG base64: " << base64Str << std::endl;
+    return Napi::Buffer<unsigned char>::Copy(info.Env(), (unsigned char *)base64Str.c_str(), base64Str.size());
+  }
+  else
+  {
+    PngClosure closure(this);
+    try
+    {
+      cairo_status_t status = canvas_write_to_png_stream(s, PngClosure::writeVec, &closure);
+    }
+    catch(const std::exception& e)
+    {
+      std::cerr << e.what() << '\n';
+    }
+
+    size = closure.vec.size();
+    std::string base64Str = "data:image/png;base64,";
+
+    if( size > 0 )
+    {
+      // &closure.vec[0],  closure.vec.size()
+      std::vector<unsigned char> base64Vec;
+      NodeBinding::toBase64(base64Vec, closure.vec);
+      base64Str.append((const char*)(&base64Vec[0]), base64Vec.size());
+    }
+
+    std::cout << "PNG base64: " << base64Str << std::endl;
+
+    return Napi::Buffer<unsigned char>::Copy(info.Env(), (unsigned char *)base64Str.c_str(), base64Str.size());
+  }
+}
 
 /*
  * Get a PangoStyle from a CSS string (like "italic")

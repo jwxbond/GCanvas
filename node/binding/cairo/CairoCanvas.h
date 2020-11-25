@@ -57,6 +57,7 @@ class Canvas: public Napi::ObjectWrap<Canvas> {
     Napi::Value createPNGStreamSync(const Napi::CallbackInfo &info);
     Napi::Value createJPGStreamSync(const Napi::CallbackInfo &info);
     Napi::Value toBuffer(const Napi::CallbackInfo &info);
+    Napi::Value toDataURL(const Napi::CallbackInfo &info);
     Napi::Buffer<unsigned char> getPNGBuffer(const Napi::CallbackInfo &info, unsigned long &size);
     Napi::Buffer<unsigned char> getJPGBuffer(const Napi::CallbackInfo &info, unsigned long &size);
     Napi::Buffer<unsigned char> getRawDataBuffer(const Napi::CallbackInfo &info, unsigned long &size);

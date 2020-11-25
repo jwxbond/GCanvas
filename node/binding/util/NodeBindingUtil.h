@@ -32,7 +32,7 @@ void cachedImage(const std::string url,std::shared_ptr<ImagePixelInfo> imageCach
 PIC_FORMAT parseFormat(char *content, int len);
 void decodeImageJPEG(std::vector<unsigned char> &pixels, unsigned int &width, unsigned int &height, const unsigned char *content, int len);
 void decodeImagePNG(std::vector<unsigned char> &pixels, unsigned int &width, unsigned int &height, const unsigned char *content, int len);
-void encodeJPEGInBuffer(unsigned char **out,unsigned long &size ,unsigned char *data,int width,int height);
+void encodeJPEGInBuffer(unsigned char **out,unsigned long &size ,unsigned char *data,int width,int height, int quality=75);
 void encodePNGInBuffer(std::vector<unsigned char> &in,unsigned char *data,int width,int height);
 int readImageFromLocalFile(const std::string &path, ImageMemoryChunk *content);
 bool checkArgs(const Napi::CallbackInfo &info, int exectedN);
@@ -42,5 +42,9 @@ void throwError(const Napi::CallbackInfo &info, const std::string &exception);
 void throwError(const Napi::Env &env, const std::string &exception);
 void pixelsConvertARGBToRGBA(unsigned char * data, int width, int height);
 void pixelsConvertRGBAToARGB(unsigned char * data, int width, int height);
+
+
+template<typename T, typename U> void toBase64(T& out, const U& in);
+template<typename T, typename U> void fromBase64(T& out, const U& in);
 } // namespace NodeBinding
 #endif

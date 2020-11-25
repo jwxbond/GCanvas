@@ -26,7 +26,7 @@ namespace NodeBinding
     extern void decodeFile2Pixels(std::string filename, std::vector<unsigned char> &image);
     extern void encodePixelsToJPEGFile(std::string filename, uint8_t *buffer, int width, int height);
     extern void encodePNGInBuffer(std::vector<unsigned char> &in, unsigned char *data, int width, int height);
-    extern void encodeJPEGInBuffer(unsigned char **in, unsigned long &size, unsigned char *data, int width, int height);
+    extern void encodeJPEGInBuffer(unsigned char **in, unsigned long &size, unsigned char *data, int width, int height, int quality=75);
     class GRenderContext
     {
     public:
