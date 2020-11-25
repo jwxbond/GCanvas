@@ -331,7 +331,7 @@ namespace NodeBinding
             std::string base64Str = "data:image/jpeg;base64,";
             unsigned char *jpegBuffer = nullptr;
             int ret = mRenderContext->getImagePixelJPG(&jpegBuffer, size);
-            if (ret != 0)
+            if (ret == 0)
             {
                 //jepgbuffer & size
                 std::string jpegStr((const char*)jpegBuffer, (size_t)size);
@@ -351,7 +351,7 @@ namespace NodeBinding
             std::vector<unsigned char> pngData;
             int ret = mRenderContext->getImagePixelPNG(pngData);
             
-            if( ret != 0 )
+            if( ret == 0 )
             {
                 std::vector<unsigned char> base64Vec;
                 NodeBinding::toBase64(base64Vec, pngData);
