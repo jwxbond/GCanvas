@@ -6,8 +6,8 @@
  * For the full copyright and license information, please view
  * the LICENSE file in the root directory of this source tree.
  */
-// const { createCanvas , createImage, registerParseFont} = require('bindings')('canvas');
-const { createCanvas , createImage, registerParseFont} = require('./build/Release/canvas.node');
+const { createCanvas , createImage, registerParseFont} = require('bindings')('canvas');
+// const { createCanvas , createImage, registerParseFont} = require('./build/Release/canvas.node');
 const { PNGStream } = require("./libs/pngstream");
 const { JPGStream } = require('./libs/jpgstream');
 const { parseFont } = require('./libs/parse-font');
