@@ -19,6 +19,7 @@
   },
   "main": "node/export.js",
   "files": [
+    "node/libs/so",
     "node/CMakeLists.txt",
     "node/script",
     "node/binding/**/*.{h,cc,hpp,cpp}",

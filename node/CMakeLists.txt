@@ -12,6 +12,8 @@ set(CORE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../core/")
 endif()
 message(STATUS ${CORE_DIR})
 project(canvas)
+
+message(STATUS  ${CMAKE_JS_LIB} )
  
  # CMake JS
 include_directories(${CMAKE_JS_INC})
@@ -57,10 +59,11 @@ ELSEIF (UNIX)
         include_directories("/usr/include/glib-2.0")
         include_directories("/usr/lib/x86_64-linux-gnu/glib-2.0/include") #fix glibconfig.h not found
 
-        link_directories("/usr/lib/x86_64-linux-gnu")
+        # link_directories("/usr/lib/x86_64-linux-gnu")
+        link_directories("./libs/so")
 
         # force USE_CAIRO
-        # add_definitions(-DUSE_CAIRO)
+        add_definitions(-DUSE_CAIRO)
 ENDIF()
 
 include_directories("./binding")
